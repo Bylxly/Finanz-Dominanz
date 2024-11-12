@@ -10,9 +10,7 @@ public abstract class Field {
         this.name = name;
     }
 
-    public void startAction(Player p){
-
-    }
+    public abstract void startAction(Player p);
 
     public String getName() {
         return name;
