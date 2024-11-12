@@ -4,16 +4,16 @@ import java.util.ArrayList;
 
 public class GameUtilities {
 
-    public void transferMoney(Player fromPlayer, Player toPlayer, int amount){
+    public static void transferMoney(Player fromPlayer, Player toPlayer, int amount){
         fromPlayer.takeMoney(amount);
         toPlayer.giveMoney(amount);
     }
 
-    public void payBank(Player p, int amount){
+    public static void payBank(Player p, int amount){
         p.takeMoney(amount);
     }
 
-    public void receiveFromBank(Player p, int amount){
+    public static void receiveFromBank(Player p, int amount){
         p.giveMoney(amount);
     }
 
