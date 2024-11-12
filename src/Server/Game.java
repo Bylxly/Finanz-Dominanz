@@ -1,5 +1,8 @@
 package Server;
 
+import Server.Field.AbInKnast;
+import Server.Field.Field;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;

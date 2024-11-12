@@ -1,6 +1,8 @@
 package Server;
 
 
+import Server.Field.Field;
+
 public class Player {
 
     private int money;

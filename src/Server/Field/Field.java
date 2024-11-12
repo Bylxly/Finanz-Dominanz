@@ -1,4 +1,6 @@
-package Server;
+package Server.Field;
+
+import Server.Player;
 
 public abstract class Field {
 

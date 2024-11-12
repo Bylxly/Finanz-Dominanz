@@ -1,4 +1,4 @@
-package Server;
+package Server.Field;
 
 public class AbInKnast extends Field {
 
