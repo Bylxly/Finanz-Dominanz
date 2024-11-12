@@ -24,4 +24,8 @@ public class GameUtilities {
     public void drawCard(ArrayList<Card> cards){
 
     }*/
+
+    public static boolean checkIfEnoughMoney(Player p, int amount){
+        return p.getMoney() >= amount;
+    }
 }
