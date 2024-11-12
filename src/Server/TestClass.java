@@ -11,13 +11,9 @@ public class TestClass {
 
         game.printBoard();
 
-        game.move();
-        game.printBoard();
-
-        game.move();
-        game.printBoard();
-
-        game.move();
-        game.printBoard();
+        for (int i = 0; i < 9; i++) {
+            game.move();
+            game.printBoard();
+        }
     }
 }
