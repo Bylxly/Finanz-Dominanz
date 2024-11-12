@@ -10,10 +10,6 @@ public class TestClass {
         game.makePlayer("Tim");
 
         game.printBoard();
-
-        for (int i = 0; i < 9; i++) {
-            game.move();
-            game.printBoard();
-        }
+        game.startGame();
     }
 }
