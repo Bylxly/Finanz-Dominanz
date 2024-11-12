@@ -17,11 +17,11 @@ public class GameUtilities {
         p.giveMoney(amount);
     }
 
-    public void shuffleCards(ArrayList<Card> cards){
+    /*public void shuffleCards(ArrayList<Card> cards){
 
     }
 
     public void drawCard(ArrayList<Card> cards){
 
-    }
+    }*/
 }
