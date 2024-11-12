@@ -1,6 +1,5 @@
 package Server;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,7 +25,10 @@ public class Game {
 
     private void createBoard() {
         for (int i = 0; i < board.length; i++) {
-            board[i] = new Field("Feld Nr." + i);
+            if (i == 0) {
+                board[i] = new AbInKnast("Startfeld");
+            }
+            board[i] = new AbInKnast("Feld Nr." + i);
         }
     }
 
@@ -45,14 +47,14 @@ public class Game {
         int pos = 0;
         for (Field f : board) {
             if (f == activePlayer.getCurrentField()) {
-                return;
+                break;
             }
             else {pos++;}
         }
 
         int newPos = pos + roll.getTotal();
         activePlayer.setCurrentField(board[newPos]);
-        if (players.indexOf(activePlayer) == players.size()) {
+        if (players.indexOf(activePlayer) == players.size() - 1) {
             activePlayer = players.get(0);
         }
         else {
@@ -60,6 +62,7 @@ public class Game {
         }
     }
 
+    // Temporäre Methode für Debug Zwecke
     public void printBoard() {
         System.out.println("Status:");
         System.out.println("Spieleranzahl: " + players.size());
@@ -67,18 +70,25 @@ public class Game {
         System.out.println("nächster Spieler: " + activePlayer.getName());
 
         System.out.println();
+        System.out.println();
 
         for (Player p : players) {
             System.out.println("Status von Spieler " + p.getName());
             System.out.println("Geld: " + p.getMoney());
             System.out.println("Aktuelles Feld: " + p.getCurrentField().getName());
+            System.out.println();
         }
 
+        System.out.println();
         System.out.println();
 
         System.out.println("Status vom Spielbrett");
         for (Field f : board) {
             System.out.println(f.getName());
+        }
+
+        for (int i = 0; i < 5; i++) {
+            System.out.println();
         }
     }
 }
