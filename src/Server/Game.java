@@ -2,6 +2,7 @@ package Server;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 public class Game {
 
@@ -14,6 +15,7 @@ public class Game {
     private Field[] board;
     private Player activePlayer;
     private Roll roll;
+    private Scanner scanner;
 
     public Game() {
         players = new ArrayList<Player>();
@@ -21,6 +23,7 @@ public class Game {
         createBoard();
         activePlayer = null;
         roll = new Roll();
+        scanner = new Scanner(System.in);
     }
 
     private void createBoard() {
@@ -28,7 +31,9 @@ public class Game {
             if (i == 0) {
                 board[i] = new AbInKnast("Startfeld");
             }
-            board[i] = new AbInKnast("Feld Nr." + i);
+            else {
+                board[i] = new AbInKnast("Feld Nr." + i);
+            }
         }
     }
 
@@ -41,9 +46,16 @@ public class Game {
         p.setCurrentField(board[0]);
     }
 
+    public void getPlayerInput() {
+        scanner.nextLine();
+    }
+
     public void move() {
+        System.out.println("Spieler " + activePlayer.getName() + " ist am Zug");
+        getPlayerInput();
         roll.generate();
 
+        // get array position of Player
         int pos = 0;
         for (Field f : board) {
             if (f == activePlayer.getCurrentField()) {
@@ -52,8 +64,14 @@ public class Game {
             else {pos++;}
         }
 
+        // move player to new field
         int newPos = pos + roll.getTotal();
+        if (newPos >= BOARD_SIZE) {
+            newPos -= BOARD_SIZE;
+        }
         activePlayer.setCurrentField(board[newPos]);
+
+        // set next player as activePlayer
         if (players.indexOf(activePlayer) == players.size() - 1) {
             activePlayer = players.get(0);
         }
@@ -68,6 +86,7 @@ public class Game {
         System.out.println("Spieleranzahl: " + players.size());
         System.out.println("Felderanzahl: " + board.length);
         System.out.println("nächster Spieler: " + activePlayer.getName());
+        System.out.println("Augenanzahl vom letzten Wurf: " + roll.getTotal());
 
         System.out.println();
         System.out.println();
