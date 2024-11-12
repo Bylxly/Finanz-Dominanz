@@ -20,10 +20,18 @@ public class Roll {
     }
 
     public void calcTotal(){
-        total = number1 ;
+        total = number1 + number2;
     }
 
     public int getTotal() {
         return total;
+    }
+
+    public int getNumber1() {
+        return number1;
+    }
+
+    public int getNumber2() {
+        return number2;
     }
 }
