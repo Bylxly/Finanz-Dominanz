@@ -24,7 +24,7 @@ public class Game {
         roll = new Roll();
     }
 
-    public void createBoard() {
+    private void createBoard() {
         for (int i = 0; i < board.length; i++) {
             board[i] = new Field("Feld Nr." + i);
         }
