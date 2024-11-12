@@ -2,6 +2,9 @@ package Server;
 
 import Server.Field.AbInKnast;
 import Server.Field.Field;
+import Server.Field.Property.Property;
+import Server.Field.Property.Utility;
+import Server.State.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,7 +14,7 @@ public class Game {
 
     //Konstanten
     private final int START_MONEY = 2000;
-    private final int BOARD_SIZE = 40;
+    private final int BOARD_SIZE = 10;
 
     //Attribute
     private List<Player> players;
@@ -20,6 +23,8 @@ public class Game {
     private Roll roll;
     private Scanner scanner;
 
+    private GameState currentGameState;
+
     public Game() {
         players = new ArrayList<Player>();
         board = new Field[BOARD_SIZE];
@@ -27,12 +32,16 @@ public class Game {
         activePlayer = null;
         roll = new Roll();
         scanner = new Scanner(System.in);
+        currentGameState = null;
     }
 
     private void createBoard() {
         for (int i = 0; i < board.length; i++) {
             if (i == 0) {
                 board[i] = new AbInKnast("Startfeld");
+            }
+            if (i % 4 == 0) {
+                board[i] = new Utility("Wasserwerk Nr. " + i / 4, 100, 50, 50);
             }
             else {
                 board[i] = new AbInKnast("Feld Nr." + i);
@@ -50,6 +59,7 @@ public class Game {
     }
 
     public void getPlayerInput() {
+        scanner.reset();
         scanner.nextLine();
     }
 
@@ -73,13 +83,35 @@ public class Game {
             newPos -= BOARD_SIZE;
         }
         activePlayer.setCurrentField(board[newPos]);
+    }
 
+    public void nextPlayer() {
         // set next player as activePlayer
         if (players.indexOf(activePlayer) == players.size() - 1) {
             activePlayer = players.get(0);
         }
         else {
             activePlayer = players.get(players.indexOf(activePlayer) + 1);
+        }
+    }
+
+    public void startGame() {
+        while (true) {
+            currentGameState = new RollDiceState(this);
+            currentGameState.execute();
+            move();
+
+            if (activePlayer.getCurrentField() instanceof Property
+                    && !((Property) activePlayer.getCurrentField()).isOwned()) {
+                currentGameState = new BuyFieldState(this);
+            } else {
+                currentGameState = new ExecuteFieldState(this);
+            }
+            currentGameState.execute();
+
+            currentGameState = new EndTurnState(this);
+            currentGameState.execute();
+            printBoard();
         }
     }
 
@@ -126,5 +158,13 @@ public class Game {
         for (int i = 0; i < 5; i++) {
             System.out.println();
         }
+    }
+
+    public Roll getRoll() {
+        return roll;
+    }
+
+    public Player getActivePlayer() {
+        return activePlayer;
     }
 }
