@@ -8,7 +8,7 @@ public class Game {
 
     //Konstanten
     private final int START_MONEY = 2000;
-    private final int BOARD_SIZE = 8;
+    private final int BOARD_SIZE = 40;
 
     //Attribute
     private List<Player> players;
@@ -86,7 +86,7 @@ public class Game {
         System.out.println("Spieleranzahl: " + players.size());
         System.out.println("Felderanzahl: " + board.length);
         System.out.println("nächster Spieler: " + activePlayer.getName());
-        System.out.println("Augenanzahl vom letzten Wurf: " + roll.getTotal());
+        System.out.println("Augenanzahl vom letzten Wurf: " + roll.getNumber1() + "+" + roll.getNumber2() + "=" + roll.getTotal());
 
         System.out.println();
         System.out.println();
@@ -103,7 +103,21 @@ public class Game {
 
         System.out.println("Status vom Spielbrett");
         for (Field f : board) {
-            System.out.println(f.getName());
+            int playerAmount = 0;
+            for (Player p : players) {
+                if (f == p.getCurrentField() && playerAmount == 0) {
+                    System.out.print(f.getName() + " <-- " + p.getName());
+                    playerAmount++;
+                }
+                else if (f == p.getCurrentField()) {
+                    System.out.print(", " + p.getName());
+                    playerAmount++;
+                }
+            }
+            if (playerAmount == 0) {
+                System.out.print(f.getName());
+            }
+            System.out.println();
         }
 
         for (int i = 0; i < 5; i++) {
