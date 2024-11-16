@@ -92,6 +92,13 @@ public class Game {
         }
     }
 
+    public void declareBankruptcy() {
+        for (Property property : activePlayer.getProperties()) {
+            property.setOwner(null);
+        }
+        players.remove(activePlayer);
+    }
+
     public void startGame() {
         while (true) {
             currentGameState = new RollDiceState(this);
@@ -109,6 +116,11 @@ public class Game {
             currentGameState = new EndTurnState(this);
             currentGameState.execute();
             printBoard();
+
+            // ends game if only one player is left
+            if (players.size() <= 1) {
+                return;
+            }
         }
     }
 
