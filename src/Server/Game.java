@@ -63,7 +63,7 @@ public class Game {
         scanner.nextLine();
     }
 
-    public void move() {
+    public void movePlayer() {
         System.out.println("Spieler " + activePlayer.getName() + " ist am Zug");
         getPlayerInput();
         roll.generate();
@@ -99,7 +99,7 @@ public class Game {
         while (true) {
             currentGameState = new RollDiceState(this);
             currentGameState.execute();
-            move();
+            movePlayer();
 
             if (activePlayer.getCurrentField() instanceof Property
                     && !((Property) activePlayer.getCurrentField()).isOwned()) {
