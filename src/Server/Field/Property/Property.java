@@ -25,6 +25,7 @@ public abstract class Property extends Field {
         if (owner == null) {
             GameUtilities.payBank(player, price);
             owner = player;
+            player.addProperty(this);
         }
     }
 

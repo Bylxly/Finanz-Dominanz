@@ -126,10 +126,25 @@ public class Game {
         System.out.println();
         System.out.println();
 
-        for (Player p : players) {
-            System.out.println("Status von Spieler " + p.getName());
-            System.out.println("Geld: " + p.getMoney());
-            System.out.println("Aktuelles Feld: " + p.getCurrentField().getName());
+        for (Player player : players) {
+            System.out.println("Status von Spieler " + player.getName());
+            System.out.println("Geld: " + player.getMoney());
+            System.out.print("Felder im Besitz: ");
+            if (player.getProperties().isEmpty()) {
+                System.out.println("keine");
+            }
+            else {
+                for (Property property : player.getProperties()) {
+                    if (player.getProperties().indexOf(property) == 0) {
+                        System.out.print(property.getName());
+                    }
+                    else {
+                        System.out.print(", " + property.getName());
+                    }
+                }
+                System.out.println();
+            }
+            System.out.println("Aktuelles Feld: " + player.getCurrentField().getName());
             System.out.println();
         }
 
