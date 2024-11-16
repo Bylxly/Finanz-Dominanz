@@ -10,7 +10,7 @@ public abstract class Field {
         this.name = name;
     }
 
-    public abstract void startAction(Player p);
+    public abstract boolean startAction(Player p);
 
     public String getName() {
         return name;
