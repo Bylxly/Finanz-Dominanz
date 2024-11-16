@@ -54,4 +54,12 @@ public abstract class Property extends Field {
     public boolean isOwned() {
         return owner != null;
     }
+
+    public int getRent() {
+        return rent;
+    }
+
+    public void setOwner(Player owner) {
+        this.owner = owner;
+    }
 }
