@@ -40,7 +40,7 @@ public class Game {
             if (i == 0) {
                 board[i] = new AbInKnast("Startfeld");
             }
-            if (i % 4 == 0) {
+            else if (i % 4 == 0) {
                 board[i] = new Utility("Wasserwerk Nr. " + i / 4, 100, 50, 50);
             }
             else {
@@ -130,7 +130,8 @@ public class Game {
         System.out.println("Spieleranzahl: " + players.size());
         System.out.println("Felderanzahl: " + board.length);
         System.out.println("nächster Spieler: " + activePlayer.getName());
-        System.out.println("Augenanzahl vom letzten Wurf: " + roll.getNumber1() + "+" + roll.getNumber2() + "=" + roll.getTotal());
+        System.out.println("Augenanzahl vom letzten Wurf: " +
+                roll.getNumber1() + "+" + roll.getNumber2() + "=" + roll.getTotal());
 
         System.out.println();
         System.out.println();
