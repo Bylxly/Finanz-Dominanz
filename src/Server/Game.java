@@ -78,10 +78,7 @@ public class Game {
         }
 
         // move player to new field
-        int newPos = pos + roll.getTotal();
-        if (newPos >= BOARD_SIZE) {
-            newPos -= BOARD_SIZE;
-        }
+        int newPos = (pos + roll.getTotal()) % BOARD_SIZE;
         activePlayer.setCurrentField(board[newPos]);
     }
 
