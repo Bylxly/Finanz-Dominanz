@@ -1,5 +1,6 @@
 package Server.Field.Property;
 
+import Server.GameUtilities;
 import Server.Player;
 
 public class Utility extends Property {
@@ -9,7 +10,11 @@ public class Utility extends Property {
     }
 
     @Override
-    public void startAction(Player player) {
-        super.payRent(player);
+    public boolean startAction(Player player) {
+        if (GameUtilities.checkIfEnoughMoney(player, getRent())) {
+            super.payRent(player);
+            return true;
+        }
+        return false;
     }
 }
