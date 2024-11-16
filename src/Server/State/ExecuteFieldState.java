@@ -12,6 +12,10 @@ public class ExecuteFieldState implements GameState {
 
     @Override
     public void execute() {
-        game.getActivePlayer().getCurrentField().startAction(game.getActivePlayer());
+        if (!game.getActivePlayer().getCurrentField().startAction(game.getActivePlayer())) {
+            game.printBoard();
+            System.out.println("Der Spieler " + game.getActivePlayer().getName() + " ist bankrott.");
+            game.declareBankruptcy();
+        }
     }
 }
