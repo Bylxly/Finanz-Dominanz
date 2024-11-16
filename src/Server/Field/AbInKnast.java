@@ -9,7 +9,7 @@ public class AbInKnast extends Field {
     }
 
     @Override
-    public void startAction(Player p) {
-
+    public boolean startAction(Player p) {
+        return true;
     }
 }
