@@ -4,11 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ColorGroup {
-    private final String color;
+    private final String colorName;
+    private final String colorCode;
     private final List<Street> streets;
 
-    public ColorGroup(String color) {
-        this.color = color;
+    public ColorGroup(String colorName, String colorCode) {
+        this.colorName = colorName;
+        this.colorCode = colorCode;
         this.streets = new ArrayList<>();
     }
 
@@ -32,7 +34,11 @@ public class ColorGroup {
         return streets;
     }
 
-    public String getColor() {
-        return color;
+    public String getColorName() {
+        return colorName;
+    }
+
+    public String getColorCode() {
+        return colorCode;
     }
 }
