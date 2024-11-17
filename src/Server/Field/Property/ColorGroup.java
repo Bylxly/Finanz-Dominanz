@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ColorGroup {
-    private String color;
-    private List<Street> streets;
+    private final String color;
+    private final List<Street> streets;
 
     public ColorGroup(String color) {
         this.color = color;
