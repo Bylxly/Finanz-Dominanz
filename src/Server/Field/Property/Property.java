@@ -62,4 +62,8 @@ public abstract class Property extends Field {
     public void setOwner(Player owner) {
         this.owner = owner;
     }
+
+    public Player getOwner() {
+        return owner;
+    }
 }
