@@ -2,7 +2,9 @@ package Server;
 
 import Server.Field.AbInKnast;
 import Server.Field.Field;
+import Server.Field.Property.ColorGroup;
 import Server.Field.Property.Property;
+import Server.Field.Property.Street;
 import Server.Field.Property.Utility;
 import Server.State.*;
 
@@ -14,7 +16,7 @@ public class Game {
 
     //Konstanten
     private final int START_MONEY = 2000;
-    private final int BOARD_SIZE = 10;
+    private final int BOARD_SIZE = 21;
 
     //Attribute
     private List<Player> players;
@@ -40,8 +42,16 @@ public class Game {
             if (i == 0) {
                 board[i] = new AbInKnast("Startfeld");
             }
-            else if (i % 4 == 0) {
-                board[i] = new Utility("Wasserwerk Nr. " + i / 4, 100, 50, 50);
+            else if (i == 5) {
+                board[i] = new Street("Schillerstraße", 400, 100, 50,
+                        new ColorGroup("Grün", "\u001B[32m"));
+            }
+            else if (i == 15) {
+                board[i] = new Street("Bayernstraße", 1000, 500, 250,
+                        new ColorGroup("Blau", "\u001B[34m"));
+            }
+            else if (i % 10 == 0) {
+                board[i] = new Utility("Wasserwerk Nr. " + i / 10, 100, 50, 50);
             }
             else {
                 board[i] = new AbInKnast("Feld Nr." + i);
@@ -163,18 +173,18 @@ public class Game {
 
         System.out.println("Status vom Spielbrett");
         for (Field f : board) {
-            int playerAmount = 0;
+            int playerAmountOnField = 0;
             for (Player p : players) {
-                if (f == p.getCurrentField() && playerAmount == 0) {
+                if (f == p.getCurrentField() && playerAmountOnField == 0) {
                     System.out.print(f.getName() + " <-- " + p.getName());
-                    playerAmount++;
+                    playerAmountOnField++;
                 }
                 else if (f == p.getCurrentField()) {
                     System.out.print(", " + p.getName());
-                    playerAmount++;
+                    playerAmountOnField++;
                 }
             }
-            if (playerAmount == 0) {
+            if (playerAmountOnField == 0) {
                 System.out.print(f.getName());
             }
             System.out.println();
