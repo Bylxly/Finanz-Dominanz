@@ -9,7 +9,7 @@ public class Street extends Property {
     private boolean hasHotel = false;
     private ColorGroup colorGroup;
 
-    public Street(String name, int price, int rent, int hypothek) {
+    public Street(String name, int price, int rent, int hypothek, ColorGroup colorGroup) {
         super(name, price, rent, hypothek);
         this.colorGroup = colorGroup;
     }
