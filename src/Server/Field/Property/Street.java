@@ -7,7 +7,7 @@ public class Street extends Property {
 
     private int houses;
     private boolean hasHotel = false;
-    private ColorGroup colorGroup;
+    private final ColorGroup colorGroup;
 
     public Street(String name, int price, int rent, int hypothek, ColorGroup colorGroup) {
         super(name, price, rent, hypothek);
