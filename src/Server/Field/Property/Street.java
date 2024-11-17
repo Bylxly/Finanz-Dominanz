@@ -52,4 +52,9 @@ public class Street extends Property {
     public ColorGroup getColorGroup() {
         return colorGroup;
     }
+
+    @Override
+    public String getName() {
+        return colorGroup.getColorCode() + super.getName() + "\u001B[0m";
+    }
 }
