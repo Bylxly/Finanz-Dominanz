@@ -43,7 +43,7 @@ public abstract class Property extends Field {
 
     }
 
-    public void mortageProperty() {
+    public void mortgageProperty() {
 
     }
 
