@@ -6,11 +6,12 @@ import Server.Player;
 public class Street extends Property {
 
     private int houses;
-    private boolean hasHotel = false;
     private final ColorGroup colorGroup;
+    private int housePrice;
 
-    public Street(String name, int price, int rent, int hypothek, ColorGroup colorGroup) {
+    public Street(String name, int price, int housePrice, int rent, int hypothek, ColorGroup colorGroup) {
         super(name, price, rent, hypothek);
+        this.housePrice = housePrice;
         this.colorGroup = colorGroup;
     }
 
@@ -23,30 +24,24 @@ public class Street extends Property {
         return false;
     }
 
-    public void buildHouses(){
-        houses++;
+    public void buyHouses(Player player){
+        if(colorGroup.isComplete() && houses < 5){
+            if(GameUtilities.checkIfEnoughMoney(player, housePrice)){
+                GameUtilities.payBank(player, housePrice);
+                houses++;
+            }
+        }
     }
 
-    public void buildHotel(){
-        hasHotel = true;
-    }
-
-    public void removeHouse(){
+    public void sellHouse(Player player){
         if (houses > 0){
+            GameUtilities.receiveFromBank(player, (housePrice/2));
             houses--;
         }
     }
 
-    public void removeHotel(){
-        hasHotel = false;
-    }
-
     public int getHouses(){
         return houses;
-    }
-
-    public boolean getHasHotel(){
-        return hasHotel;
     }
 
     public ColorGroup getColorGroup() {
