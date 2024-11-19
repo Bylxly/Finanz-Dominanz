@@ -43,11 +43,11 @@ public class Game {
                 board[i] = new AbInKnast("Startfeld");
             }
             else if (i == 5) {
-                board[i] = new Street("Schillerstraße", 400, 100, 50,
+                board[i] = new Street("Schillerstraße", 400, 50, 100, 50,
                         new ColorGroup("Grün", "\u001B[32m"));
             }
             else if (i == 15) {
-                board[i] = new Street("Bayernstraße", 1000, 500, 250,
+                board[i] = new Street("Bayernstraße", 1000, 150, 500, 250,
                         new ColorGroup("Blau", "\u001B[34m"));
             }
             else if (i % 10 == 0) {
