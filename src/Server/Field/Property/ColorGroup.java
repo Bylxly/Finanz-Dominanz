@@ -21,7 +21,6 @@ public class ColorGroup {
     }
 
     public boolean isComplete() {
-
         for (Street street : streets) {
             if (!street.getOwner().equals(streets.get(0).getOwner())) {
                 return false;
