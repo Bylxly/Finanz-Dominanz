@@ -1,9 +1,10 @@
 package Server.Field.Property;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ColorGroup {
+public class ColorGroup implements Serializable {
     private final String colorName;
     private final String colorCode;
     private final List<Street> streets;
