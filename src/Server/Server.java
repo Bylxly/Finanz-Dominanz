@@ -8,7 +8,7 @@ import java.util.List;
 
 public class Server {
 
-    private final int PORT = 18718;
+    private final int PORT = 5555;
 
     private List<Game> games; //TODO: Map
     private int tempPlayerCount = 0;
