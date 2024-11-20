@@ -14,7 +14,6 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
-import java.util.Stack;
 
 public class Game extends Thread implements Serializable {
 
@@ -86,8 +85,10 @@ public class Game extends Thread implements Serializable {
     }
 
     public void movePlayer() {
-        System.out.println("Spieler " + activePlayer.getName() + " ist am Zug");
-        getPlayerInput();
+        activePlayer.sendMessage(String.valueOf(Message.ASK_ROLL));
+        if(activePlayer.recieveMessage() != "ROLL") {
+            return;
+        }
         roll.generate();
 
         // get array position of Player
