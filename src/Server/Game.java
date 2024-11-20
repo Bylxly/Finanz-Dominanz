@@ -8,24 +8,27 @@ import Server.Field.Property.Street;
 import Server.Field.Property.Utility;
 import Server.State.*;
 
+import java.io.Serializable;
+import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-public class Game {
+public class Game extends Thread implements Serializable {
 
-    //Konstanten
+    // Konstanten
     private final int START_MONEY = 2000;
     private final int BOARD_SIZE = 21;
 
-    //Attribute
+    // Attribute
     private List<Player> players;
     private Field[] board;
     private Player activePlayer;
     private Roll roll;
-    private Scanner scanner;
-
     private GameState currentGameState;
+
+    // Für Kommunikation
+    private transient Scanner scanner;
 
     public Game() {
         players = new ArrayList<Player>();
@@ -37,17 +40,23 @@ public class Game {
         currentGameState = null;
     }
 
+    @Override
+    public void run() {
+        printBoard();
+        startGame();
+    }
+
     private void createBoard() {
         for (int i = 0; i < board.length; i++) {
             if (i == 0) {
                 board[i] = new AbInKnast("Startfeld");
             }
             else if (i == 5) {
-                board[i] = new Street("Schillerstraße", 400, 100, 50,
+                board[i] = new Street("Schillerstraße", 400, 50, 100, 50,
                         new ColorGroup("Grün", "\u001B[32m"));
             }
             else if (i == 15) {
-                board[i] = new Street("Bayernstraße", 1000, 500, 250,
+                board[i] = new Street("Bayernstraße", 1000, 150, 500, 250,
                         new ColorGroup("Blau", "\u001B[34m"));
             }
             else if (i % 10 == 0) {
@@ -59,8 +68,8 @@ public class Game {
         }
     }
 
-    public void makePlayer(String name) {
-        Player p = new Player(START_MONEY, name);
+    public void makePlayer(String name, Socket client) {
+        Player p = new Player(START_MONEY, name, client);
         players.add(p);
         if (activePlayer == null) {
             activePlayer = p;
@@ -134,8 +143,12 @@ public class Game {
         }
     }
 
-    // Temporäre Methode für Debug Zwecke
     public void printBoard() {
+        activePlayer.sendMessage(this);
+    }
+
+    // Temporäre Methode für Debug Zwecke
+    /*public void printBoard() {
         System.out.println("Status:");
         System.out.println("Spieleranzahl: " + players.size());
         System.out.println("Felderanzahl: " + board.length);
@@ -193,7 +206,7 @@ public class Game {
         for (int i = 0; i < 5; i++) {
             System.out.println();
         }
-    }
+    }*/
 
     public Roll getRoll() {
         return roll;
@@ -201,5 +214,13 @@ public class Game {
 
     public Player getActivePlayer() {
         return activePlayer;
+    }
+
+    public List<Player> getPlayers() {
+        return players;
+    }
+
+    public Field[] getBoard() {
+        return board;
     }
 }

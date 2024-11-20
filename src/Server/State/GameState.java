@@ -1,6 +1,8 @@
 package Server.State;
 
-public interface GameState {
+import java.io.Serializable;
+
+public interface GameState extends Serializable {
 
     public void execute();
 }

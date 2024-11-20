@@ -2,7 +2,9 @@ package Server.Field;
 
 import Server.Player;
 
-public abstract class Field {
+import java.io.Serializable;
+
+public abstract class Field implements Serializable {
 
     private String name;
 

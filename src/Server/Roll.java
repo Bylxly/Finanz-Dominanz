@@ -1,8 +1,9 @@
 package Server;
 
+import java.io.Serializable;
 import java.util.Random;
 
-public class Roll {
+public class Roll implements Serializable {
 
     private int number1;
     private int number2;
