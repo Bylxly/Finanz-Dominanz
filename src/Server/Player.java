@@ -4,9 +4,7 @@ package Server;
 import Server.Field.Field;
 import Server.Field.Property.Property;
 
-import java.io.IOException;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
+import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +17,8 @@ public class Player implements Serializable {
     private List<Property> properties;
     private transient Socket client;
     private transient ObjectOutputStream objectOutputStream;
+    private transient BufferedWriter bufferedWriter;
+    private transient BufferedReader bufferedReader;
 
     public Player(int money, String name, Socket client) {
         this.money = money;
@@ -27,21 +27,45 @@ public class Player implements Serializable {
         this.client = client;
         try {
             this.objectOutputStream = new ObjectOutputStream(client.getOutputStream()); // Stream initialisieren
+            this.bufferedWriter = new BufferedWriter(new OutputStreamWriter(client.getOutputStream()));
+            this.bufferedReader = new BufferedReader(new InputStreamReader(client.getInputStream()));
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public void sendMessage(Object message) {
+    public void sendObject(Object object) {
         try {
             if (objectOutputStream != null) {
                 objectOutputStream.reset(); // Puffer zurücksetzen
-                objectOutputStream.writeObject(message);
+                objectOutputStream.writeObject(object);
                 objectOutputStream.flush(); // Sicherstellen, dass die Nachricht gesendet wird
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public void sendMessage(String message) {
+        try {
+            if (bufferedWriter != null) {
+                bufferedWriter.write(message);
+                bufferedWriter.flush();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public String recieveMessage() {
+        try {
+            if (bufferedReader != null) {
+                return bufferedReader.readLine();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     public void takeMoney(int amount) {

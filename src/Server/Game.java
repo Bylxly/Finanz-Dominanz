@@ -144,7 +144,7 @@ public class Game extends Thread implements Serializable {
     }
 
     public void printBoard() {
-        activePlayer.sendMessage(this);
+        activePlayer.sendObject(this);
     }
 
     // Temporäre Methode für Debug Zwecke
