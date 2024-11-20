@@ -6,7 +6,7 @@ import processing.core.PImage;
 import java.util.List;
 
 public class Draw {
-    private PGraphics canvas;
+    /*private PGraphics canvas;
     private GameState gameState;
     private List<PImage> assets;
 
@@ -41,5 +41,5 @@ public class Draw {
 
     public void addAsset(PImage asset) {
         assets.add(asset);
-    }
+    }*/
 }
