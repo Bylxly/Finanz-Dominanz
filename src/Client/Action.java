@@ -2,9 +2,51 @@ package Client;
 
 import Server.State.GameState;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.util.Random;
+
 public class Action {
     private int actionId;
     private String description;
+
+    public enum ServerMessage {
+        askRoll {
+            @Override
+            public void execute(Client client) {
+                doRoll(client);
+            }
+        };
+
+        public abstract void execute(Client client);
+
+        public static void doRoll(Client client) {
+            try {
+                System.out.println("Press Enter to roll the dice...");
+                new BufferedReader(new InputStreamReader(System.in)).readLine();
+
+                Random random = new Random();
+                int[] rolls = new int[5];
+                System.out.print("Rolling: ");
+                for (int i = 0; i < rolls.length; i++) {
+                    rolls[i] = random.nextInt(6) + 1;
+                    System.out.print(rolls[i] + (i < rolls.length - 1 ? ", " : ""));
+                }
+                System.out.println();
+
+                // Notify the server
+                PrintWriter writer = client.getWriter();
+                if (writer != null) {
+                    writer.println("doRoll");
+                }
+
+            } catch (IOException e) {
+                System.out.println("Error during dice roll: " + e.getMessage());
+            }
+        }
+    }
 
     public Action(int actionId, String description) {
         this.actionId = actionId;
@@ -27,15 +69,8 @@ public class Action {
         this.description = description;
     }
 
-    public void execute() {
-        System.out.println("Executing action: " + description);
-    }
-
     public boolean allowAction(GameState state) {
-        if (state != null) {
-            return true;
-        }
-        return false;
+        return state != null;
     }
 
     @Override
@@ -43,4 +78,3 @@ public class Action {
         return "Action ID: " + actionId + ", Description: " + description;
     }
 }
-

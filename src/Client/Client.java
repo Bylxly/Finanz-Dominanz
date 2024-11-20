@@ -23,7 +23,6 @@ public class Client {
     private BufferedReader reader;
     private PrintWriter writer;
     private ObjectInputStream objectReader;
-    private ObjectOutputStream objectWriter;
     private Game game;
 
     public Client() {
@@ -209,6 +208,10 @@ public class Client {
 
     public boolean isGameOver() {
         return gameOver;
+    }
+
+    public PrintWriter getWriter() {
+        return writer;
     }
 
     public static void main(String[] args) {
