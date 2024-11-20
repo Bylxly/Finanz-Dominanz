@@ -20,7 +20,7 @@ public class Game extends Thread implements Serializable {
 
     // Konstanten
     private final int START_MONEY = 2000;
-    private final int BONUS = 100;
+    private final int BONUS = 200;
     private final int BOARD_SIZE = 21;
 
     // Attribute
