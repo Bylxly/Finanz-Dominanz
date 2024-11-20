@@ -1,12 +1,13 @@
 package Client;
 
+import Server.Field.Field;
+import Server.Field.Property.Property;
+import Server.Game;
+import Server.Player;
 import Server.State.GameState;
+
+import java.io.*;
 import java.net.Socket;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
-import java.io.IOException;
 
 public class Client {
     private Socket serverSocket;
@@ -21,6 +22,9 @@ public class Client {
     private boolean gameOver;
     private BufferedReader reader;
     private PrintWriter writer;
+    private ObjectInputStream objectReader;
+    private ObjectOutputStream objectWriter;
+    private Game game;
 
     public Client() {
         this.isConnected = false;
@@ -44,7 +48,10 @@ public class Client {
             reader = new BufferedReader(new InputStreamReader(serverSocket.getInputStream()));
             writer = new PrintWriter(new OutputStreamWriter(serverSocket.getOutputStream()), true);
 
+            objectReader = new ObjectInputStream(serverSocket.getInputStream());
+
             new Thread(this::readFromServer).start();
+            new Thread(this::readGameUpdates).start();
 
         } catch (IOException e) {
             System.out.println("Error connecting to the server: " + e.getMessage());
@@ -62,6 +69,17 @@ public class Client {
         }
     }
 
+    private void readGameUpdates() {
+        try {
+            while (isConnected && !serverSocket.isClosed()) {
+                game = (Game) objectReader.readObject();
+                printBoard();
+            }
+        } catch (IOException | ClassNotFoundException e) {
+            System.out.println("Error reading game updates: " + e.getMessage());
+        }
+    }
+
     public void sendAction(Action action) {
         if (isConnected) {
             writer.println(action.toString());
@@ -73,6 +91,7 @@ public class Client {
             if (isConnected) {
                 reader.close();
                 writer.close();
+                objectReader.close();
                 serverSocket.close();
                 isConnected = false;
                 System.out.println("Disconnected from the server.");
@@ -81,7 +100,59 @@ public class Client {
             System.out.println("Error disconnecting: " + e.getMessage());
         }
     }
+    // For testing purpose
+    public void printBoard() {
+        System.out.println("Status:");
+        System.out.println("Spieleranzahl: " + game.getPlayers().size());
+        System.out.println("Felderanzahl: " + game.getBoard().length);
+        System.out.println("nächster Spieler: " + game.getActivePlayer().getName());
+        System.out.println("Augenanzahl vom letzten Wurf: " +
+                game.getRoll().getNumber1() + "+" + game.getRoll().getNumber2() + "=" + game.getRoll().getTotal());
 
+        System.out.println();
+
+        for (Player player : game.getPlayers()) {
+            System.out.println("Status von Spieler " + player.getName());
+            System.out.println("Geld: " + player.getMoney());
+            System.out.print("Felder im Besitz: ");
+            if (player.getProperties().isEmpty()) {
+                System.out.println("keine");
+            } else {
+                for (Property property : player.getProperties()) {
+                    if (player.getProperties().indexOf(property) == 0) {
+                        System.out.print(property.getName());
+                    } else {
+                        System.out.print(", " + property.getName());
+                    }
+                }
+                System.out.println();
+            }
+            System.out.println("Aktuelles Feld: " + player.getCurrentField().getName());
+            System.out.println();
+        }
+
+        System.out.println("Status vom Spielbrett");
+        for (Field f : game.getBoard()) {
+            int playerAmountOnField = 0;
+            for (Player p : game.getPlayers()) {
+                if (f == p.getCurrentField() && playerAmountOnField == 0) {
+                    System.out.print(f.getName() + " <-- " + p.getName());
+                    playerAmountOnField++;
+                } else if (f == p.getCurrentField()) {
+                    System.out.print(", " + p.getName());
+                    playerAmountOnField++;
+                }
+            }
+            if (playerAmountOnField == 0) {
+                System.out.print(f.getName());
+            }
+            System.out.println();
+        }
+
+        System.out.println();
+    }
+
+    // Getter and Setter methods
     public GameState getGameState() {
         return currentGameState;
     }
@@ -140,7 +211,7 @@ public class Client {
         return gameOver;
     }
 
-    public static void main (String[] args){
+    public static void main(String[] args) {
         Client client = new Client();
         client.connectToServer();
     }
