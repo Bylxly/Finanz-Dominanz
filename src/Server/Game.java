@@ -6,6 +6,7 @@ import Server.Field.Property.ColorGroup;
 import Server.Field.Property.Property;
 import Server.Field.Property.Street;
 import Server.Field.Property.Utility;
+import Server.Field.Start;
 import Server.State.*;
 
 import java.io.Serializable;
@@ -13,11 +14,13 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.Stack;
 
 public class Game extends Thread implements Serializable {
 
     // Konstanten
     private final int START_MONEY = 2000;
+    private final int BONUS = 200;
     private final int BOARD_SIZE = 21;
 
     // Attribute
@@ -49,7 +52,7 @@ public class Game extends Thread implements Serializable {
     private void createBoard() {
         for (int i = 0; i < board.length; i++) {
             if (i == 0) {
-                board[i] = new AbInKnast("Startfeld");
+                board[i] = new Start("Startfeld", BONUS);
             }
             else if (i == 5) {
                 board[i] = new Street("Schillerstraße", 400, 50, 100, 50,
@@ -99,6 +102,11 @@ public class Game extends Thread implements Serializable {
         // move player to new field
         int newPos = (pos + roll.getTotal()) % BOARD_SIZE;
         activePlayer.setCurrentField(board[newPos]);
+
+        int timesAroundField = (int) Math.floor((double) (pos + roll.getTotal()) / BOARD_SIZE);
+        if (!(activePlayer.getCurrentField() instanceof Start) && timesAroundField >= 1) {
+            GameUtilities.receiveFromBank(getActivePlayer(), BONUS * timesAroundField);
+        }
     }
 
     public void nextPlayer() {
