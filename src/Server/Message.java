@@ -7,6 +7,7 @@ public class Message implements Serializable {
     private final String message;
 
     public Message(MsgType messageType, String message) {
+        //FERTIG NICHTS MEHR HINZUFÜGEN
         this.messageType = messageType;
         this.message = message;
     }
