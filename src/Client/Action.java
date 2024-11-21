@@ -13,7 +13,7 @@ public class Action {
     private String description;
 
     public enum ServerMessage {
-        askRoll {
+        ASK_ROLL {
             @Override
             public void execute(Client client) {
                 doRoll(client);
@@ -39,7 +39,7 @@ public class Action {
                 // Notify the server
                 PrintWriter writer = client.getWriter();
                 if (writer != null) {
-                    writer.println("doRoll");
+                    writer.println("ROLL");
                 }
 
             } catch (IOException e) {

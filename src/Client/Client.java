@@ -64,7 +64,14 @@ public class Client {
                 if (obj instanceof Game) {
                     updateGame((Game) obj);
                 } else if (obj instanceof Message) {
-                    System.out.println(((Message) obj).toString());
+                    String message = ((Message) obj).getMessage();
+                    System.out.println(message);
+                    try {
+                        Action.ServerMessage serverMessage = Action.ServerMessage.valueOf(message);
+                        serverMessage.execute(this);
+                    } catch (IllegalArgumentException e) {
+                        System.out.println("Unknown server message: " + message);
+                    }
                 }
             }
         } catch (IOException | ClassNotFoundException e) {
