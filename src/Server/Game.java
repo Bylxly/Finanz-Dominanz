@@ -77,6 +77,7 @@ public class Game extends Thread implements Serializable {
             activePlayer = p;
         }
         p.setCurrentField(board[0]);
+        p.sendObject(this);
     }
 
     public void getPlayerInput() {
