@@ -65,24 +65,36 @@ public class Client {
                 if (obj instanceof Game) {
                     updateGame((Game) obj);
                 } else if (obj instanceof Message) {
-                    MsgType message = ((Message) obj).getMessage();
-                    System.out.println(message);
-                    try {
-                        Action.ServerMessage serverMessage = Action.ServerMessage.valueOf(String.valueOf(message));
-                        serverMessage.execute(this);
-                    } catch (IllegalArgumentException e) {
-                        System.out.println("Unknown server message: " + message);
-                    }
+                    processMessage((Message) obj);
+                } else {
+                    System.out.println("Received unknown object type: " + obj.getClass().getName());
                 }
             }
         } catch (IOException | ClassNotFoundException e) {
             System.out.println("Error reading game updates: " + e.getMessage());
-        } catch (Exception e) {
-            System.err.println("Unexpected error: " + e.getMessage());
-            e.printStackTrace();
         }
+    }
 
-}
+    private void processMessage(Message message) {
+        MsgType type = message.getMessageType();
+        String content = message.getMessage();
+
+        switch (type) {
+            case INFO:
+                System.out.println("Server info: " + content);
+                break;
+
+            default:
+                try {
+                    Action.ServerMessage serverMessage = Action.ServerMessage.valueOf(type.name());
+                    serverMessage.execute(this);
+                } catch (IllegalArgumentException e) {
+                    System.out.println("Unknown or unhandled message type: " + type);
+                }
+                break;
+        }
+    }
+
 
     private synchronized void updateGame(Game updatedGame) {
         this.game = updatedGame;
