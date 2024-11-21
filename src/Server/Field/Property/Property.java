@@ -31,10 +31,6 @@ public abstract class Property extends Field {
 
     public abstract void payRent(Player player);
 
-    public void calculateRent() {
-
-    }
-
     public void redeemProperty() {
 
     }

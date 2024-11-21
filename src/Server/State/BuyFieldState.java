@@ -31,7 +31,7 @@ public class BuyFieldState implements GameState {
     }
 
     private boolean askClient() {
-        System.out.println("Willst du dieses Grunstück kaufen?");
+        System.out.println("Willst du dieses Grundstück kaufen?");
         System.out.println(currentProperty.getName());
         System.out.println("Preis: " + currentProperty.getPrice());
         System.out.println("y/n");
