@@ -17,7 +17,7 @@ public class Utility extends Property {
 
     @Override
     public boolean startAction(Player player) {
-        if (GameUtilities.checkIfEnoughMoney(player, getRent(getAnzahlWerkeOwnedByPlayer(getOwner())))) {
+        if (GameUtilities.checkIfEnoughMoney(player, getRent(getAnzahlWerkeOwnedByPlayer(getOwner()) - 1))) {
             payRent(player);
             return true;
         }
