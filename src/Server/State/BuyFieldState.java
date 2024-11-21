@@ -12,12 +12,10 @@ import java.util.Scanner;
 public class BuyFieldState implements GameState {
 
     private final Game game;
-    private final Scanner scanner;
     private Property currentProperty;
 
     public BuyFieldState(Game game) {
         this.game = game;
-        this.scanner = new Scanner(System.in);
         this.currentProperty = (Property) game.getActivePlayer().getCurrentField();
     }
 
@@ -34,7 +32,7 @@ public class BuyFieldState implements GameState {
     }
 
     private boolean askClient() {
-        game.getActivePlayer().sendObject(new Message(MsgType.ASK_BUY, null));
+        game.getActivePlayer().sendObject(new Message(MsgType.ASK_BUY, currentProperty.getName()));
 
         return Objects.equals(game.getActivePlayer().recieveMessage(), "BUY");
     }
