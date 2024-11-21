@@ -4,6 +4,7 @@ import Server.Field.Field;
 import Server.Field.Property.Property;
 import Server.Game;
 import Server.Message;
+import Server.MsgType;
 import Server.Player;
 import Server.State.GameState;
 
@@ -64,10 +65,10 @@ public class Client {
                 if (obj instanceof Game) {
                     updateGame((Game) obj);
                 } else if (obj instanceof Message) {
-                    String message = ((Message) obj).getMessage();
+                    MsgType message = ((Message) obj).getMessage();
                     System.out.println(message);
                     try {
-                        Action.ServerMessage serverMessage = Action.ServerMessage.valueOf(message);
+                        Action.ServerMessage serverMessage = Action.ServerMessage.valueOf(String.valueOf(message));
                         serverMessage.execute(this);
                     } catch (IllegalArgumentException e) {
                         System.out.println("Unknown server message: " + message);

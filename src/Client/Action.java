@@ -18,7 +18,14 @@ public class Action {
             public void execute(Client client) {
                 doRoll(client);
             }
+        },
+        ASK_BUY {
+            @Override
+            public void execute(Client client) {
+                doBuy(client);
+            }
         };
+
 
         public abstract void execute(Client client);
 
@@ -45,6 +52,9 @@ public class Action {
             } catch (IOException e) {
                 System.out.println("Error during dice roll: " + e.getMessage());
             }
+        }
+        public static void doBuy(Client client) {
+
         }
     }
 
