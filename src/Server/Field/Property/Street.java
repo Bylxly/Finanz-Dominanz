@@ -9,7 +9,7 @@ public class Street extends Property {
     private final ColorGroup colorGroup;
     private int housePrice;
 
-    public Street(String name, int price, int housePrice, int rent, int hypothek, ColorGroup colorGroup) {
+    public Street(String name, int price, int housePrice, int[] rent, int hypothek, ColorGroup colorGroup) {
         super(name, price, rent, hypothek);
         this.housePrice = housePrice;
         this.colorGroup = colorGroup;
@@ -17,11 +17,18 @@ public class Street extends Property {
 
     @Override
     public boolean startAction(Player player) {
-        if (GameUtilities.checkIfEnoughMoney(player, getRent())) {
-            super.payRent(player);
+        if (GameUtilities.checkIfEnoughMoney(player, getRent(getHouses()))) {
+            payRent(player);
             return true;
         }
         return false;
+    }
+
+    @Override
+    public void payRent(Player player) {
+        if (getOwner() != null && getOwner() != player) {
+            GameUtilities.transferMoney(player, getOwner(), getRent(getHouses()));
+        }
     }
 
     public void buyHouses(Player player){
