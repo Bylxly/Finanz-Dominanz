@@ -54,15 +54,15 @@ public class Game extends Thread implements Serializable {
                 board[i] = new Start("Startfeld", BONUS);
             }
             else if (i == 5) {
-                board[i] = new Street("Schillerstraße", 400, 50, 100, 50,
+                board[i] = new Street("Schillerstraße", 400, 50, new int[]{100, 150, 200, 250, 300, 400}, 50,
                         new ColorGroup("Grün", "\u001B[32m"));
             }
             else if (i == 15) {
-                board[i] = new Street("Bayernstraße", 1000, 150, 500, 250,
+                board[i] = new Street("Bayernstraße", 1000, 150, new int[]{200, 350, 500, 650, 800, 1000}, 250,
                         new ColorGroup("Blau", "\u001B[34m"));
             }
             else if (i % 10 == 0) {
-                board[i] = new Utility("Wasserwerk Nr. " + i / 10, 100, 50, 50);
+                board[i] = new Utility("Wasserwerk Nr. " + i / 10, 100, new int[]{100}, 50);
             }
             else {
                 board[i] = new AbInKnast("Feld Nr." + i);
