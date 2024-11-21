@@ -8,11 +8,11 @@ public abstract class Property extends Field {
 
     private Player owner;
     private final int price;
-    private final int rent;
+    private final int[] rent;
     private final int hypothek;
     private boolean hasHypothek;
 
-    public Property(String name, int price, int rent, int hypothek) {
+    public Property(String name, int price, int[] rent, int hypothek) {
         super(name);
         owner = null;
         this.price = price;
@@ -29,11 +29,7 @@ public abstract class Property extends Field {
         }
     }
 
-    public void payRent(Player player) {
-        if (owner != null && owner != player) {
-            GameUtilities.transferMoney(player, owner, rent);
-        }
-    }
+    public abstract void payRent(Player player);
 
     public void calculateRent() {
 
@@ -55,8 +51,8 @@ public abstract class Property extends Field {
         return owner != null;
     }
 
-    public int getRent() {
-        return rent;
+    public int getRent(int index) {
+        return rent[index];
     }
 
     public void setOwner(Player owner) {
