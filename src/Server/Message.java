@@ -4,9 +4,7 @@ import java.io.Serializable;
 
 enum MsgTypes implements Serializable {
     ASK_ROLL,
-    DO_ROLL,
-    ASK_BUY,
-    DO_BUY,
+    ASK_BUY
 }
 
 public class Message implements Serializable {
