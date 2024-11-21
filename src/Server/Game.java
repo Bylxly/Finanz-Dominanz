@@ -13,6 +13,7 @@ import java.io.Serializable;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Scanner;
 
 public class Game extends Thread implements Serializable {
@@ -87,7 +88,9 @@ public class Game extends Thread implements Serializable {
 
     public void movePlayer() {
         activePlayer.sendObject(new Message("ASK_ROLL"));
-        if(activePlayer.recieveMessage() != "ROLL") {
+        String msg;
+        System.out.println(msg = activePlayer.recieveMessage());
+        if(!Objects.equals(msg, "ROLL")) {
             return;
         }
         roll.generate();
@@ -154,7 +157,9 @@ public class Game extends Thread implements Serializable {
     }
 
     public void printBoard() {
-        activePlayer.sendObject(this);
+        for (Player player : players) {
+            player.sendObject(this);
+        }
     }
 
     // Temporäre Methode für Debug Zwecke
