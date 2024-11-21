@@ -3,6 +3,7 @@ package Client;
 import Server.Field.Field;
 import Server.Field.Property.Property;
 import Server.Game;
+import Server.Message;
 import Server.Player;
 import Server.State.GameState;
 
@@ -23,7 +24,7 @@ public class Client {
     private BufferedReader reader;
     private PrintWriter writer;
     private ObjectInputStream objectReader;
-    private Game game;
+    private static Game game;
 
     public Client() {
         this.isConnected = false;
@@ -44,12 +45,10 @@ public class Client {
             this.isConnected = true;
             System.out.println("Connected to the server at " + ipAddress + ":" + port);
 
-            reader = new BufferedReader(new InputStreamReader(serverSocket.getInputStream()));
             writer = new PrintWriter(new OutputStreamWriter(serverSocket.getOutputStream()), true);
 
             objectReader = new ObjectInputStream(serverSocket.getInputStream());
 
-            new Thread(this::readFromServer).start();
             new Thread(this::readGameUpdates).start();
 
         } catch (IOException e) {
@@ -57,27 +56,31 @@ public class Client {
         }
     }
 
-    private void readFromServer() {
-        try {
-            String serverMessage;
-            while ((serverMessage = reader.readLine()) != null) {
-                System.out.println("Server: " + serverMessage);
-            }
-        } catch (IOException e) {
-            System.out.println("Error reading from the server: " + e.getMessage());
-        }
-    }
 
     private void readGameUpdates() {
         try {
             while (isConnected && !serverSocket.isClosed()) {
-                game = (Game) objectReader.readObject();
-                printBoard();
+                Object obj = objectReader.readObject();
+                if (obj instanceof Game) {
+                    updateGame((Game) obj);
+                } else if (obj instanceof Message) {
+                    System.out.println(((Message) obj).toString());
+                }
             }
         } catch (IOException | ClassNotFoundException e) {
             System.out.println("Error reading game updates: " + e.getMessage());
+        } catch (Exception e) {
+            System.err.println("Unexpected error: " + e.getMessage());
+            e.printStackTrace();
         }
+
+}
+
+    private synchronized void updateGame(Game updatedGame) {
+        this.game = updatedGame;
+        printBoard();
     }
+
 
     public void sendAction(Action action) {
         if (isConnected) {

@@ -13,7 +13,7 @@ import java.net.Socket;
 public class TestClient {
 
     private static String host = "localhost";
-    private static int port = 18718;
+    private static int port = 5555;
     private static Game game;
 
     public static void main(String[] args) {
