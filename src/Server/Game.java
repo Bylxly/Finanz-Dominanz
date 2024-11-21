@@ -87,7 +87,7 @@ public class Game extends Thread implements Serializable {
     }
 
     public void movePlayer() {
-        activePlayer.sendObject(new Message("ASK_ROLL"));
+        activePlayer.sendObject(new Message(MsgTypes.ASK_ROLL));
         String msg;
         System.out.println(msg = activePlayer.recieveMessage());
         if(!Objects.equals(msg, "ROLL")) {

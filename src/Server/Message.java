@@ -2,14 +2,21 @@ package Server;
 
 import java.io.Serializable;
 
-public class Message implements Serializable {
-    private String message;
+enum MsgTypes implements Serializable {
+    ASK_ROLL,
+    DO_ROLL,
+    ASK_BUY,
+    DO_BUY,
+}
 
-    Message(String message) {
+public class Message implements Serializable {
+    private final MsgTypes message;
+
+    Message(MsgTypes message) {
         this.message = message;
     }
 
-    public String getMessage() {
+    public MsgTypes getMessage() {
         return message;
     }
 }
