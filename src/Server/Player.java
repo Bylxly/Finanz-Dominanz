@@ -17,7 +17,6 @@ public class Player implements Serializable {
     private List<Property> properties;
     private transient Socket client;
     private transient ObjectOutputStream objectOutputStream;
-    private transient BufferedWriter bufferedWriter;
     private transient BufferedReader bufferedReader;
 
     public Player(int money, String name, Socket client) {
@@ -27,7 +26,6 @@ public class Player implements Serializable {
         this.client = client;
         try {
             this.objectOutputStream = new ObjectOutputStream(client.getOutputStream()); // Stream initialisieren
-            this.bufferedWriter = new BufferedWriter(new OutputStreamWriter(client.getOutputStream()));
             this.bufferedReader = new BufferedReader(new InputStreamReader(client.getInputStream()));
         } catch (IOException e) {
             e.printStackTrace();
@@ -40,17 +38,6 @@ public class Player implements Serializable {
                 objectOutputStream.reset(); // Puffer zurücksetzen
                 objectOutputStream.writeObject(object);
                 objectOutputStream.flush(); // Sicherstellen, dass die Nachricht gesendet wird
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void sendMessage(String message) {
-        try {
-            if (bufferedWriter != null) {
-                bufferedWriter.write(message);
-                bufferedWriter.flush();
             }
         } catch (IOException e) {
             e.printStackTrace();
