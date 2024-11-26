@@ -97,7 +97,6 @@ public class Game extends Thread implements Serializable {
     }
 
     public void movePlayer() {
-        do {
             askRoll(activePlayer);
 
             // get array position of Player
@@ -118,7 +117,6 @@ public class Game extends Thread implements Serializable {
             if (!(activePlayer.getCurrentField() instanceof Start) && timesAroundField >= 1) {
                 GameUtilities.receiveFromBank(getActivePlayer(), BONUS * timesAroundField);
             }
-        } while (roll.getPasch());
     }
 
     public void nextPlayer() {
