@@ -154,18 +154,20 @@ public class Game extends Thread implements Serializable {
         activePlayer = players.get(0);
 
         while (true) {
-            currentGameState = new RollDiceState(this);
-            currentGameState.execute();
-            movePlayer();
+            do {
+                currentGameState = new RollDiceState(this);
+                currentGameState.execute();
+                movePlayer();
 
-            if (activePlayer.getCurrentField() instanceof Property
-                && !((Property) activePlayer.getCurrentField()).isOwned()) {
-                    currentGameState = new BuyFieldState(this);
-            }
-            else {
-                currentGameState = new ExecuteFieldState(this);
-            }
-            currentGameState.execute();
+                if (activePlayer.getCurrentField() instanceof Property
+                    && !((Property) activePlayer.getCurrentField()).isOwned()) {
+                        currentGameState = new BuyFieldState(this);
+                }
+                else {
+                    currentGameState = new ExecuteFieldState(this);
+                }
+                currentGameState.execute();
+            } while (roll.getPasch());
 
             activePlayer.sendObject(new Message(MsgType.ASK_NEXT, null));
             String msg = activePlayer.recieveMessage();
