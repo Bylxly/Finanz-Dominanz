@@ -8,7 +8,6 @@ public class Roll implements Serializable {
     private int number1;
     private int number2;
     private int total;
-    private boolean pasch;
     private Random rand = new Random();
 
     public Roll() {
@@ -27,11 +26,10 @@ public class Roll implements Serializable {
 
     public boolean getPasch() {
         if (number1 == number2){
-            pasch = true;
+            return true;
         } else {
-            pasch = false;
+            return false;
         }
-        return pasch;
     }
 
     public int getTotal() {
