@@ -5,6 +5,8 @@ import Server.Player;
 
 public class Knast extends Property {
 
+    private boolean arrested;
+
     public Knast(String name, int price, int[] rent, int hypothek) {
         super(name, price, rent, hypothek);
     }
@@ -16,6 +18,14 @@ public class Knast extends Property {
 
     @Override
     public boolean startAction(Player player) {
-        return true;
+        return isArrested();
+    }
+
+    public void setArrested(boolean arrest) {
+        this.arrested = arrest;
+    }
+
+    public boolean isArrested() {
+        return arrested;
     }
 }
