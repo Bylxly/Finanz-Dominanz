@@ -86,14 +86,24 @@ public class Game extends Thread implements Serializable {
         scanner.nextLine();
     }
 
+    public void askRoll(Player player) {
+        boolean check;
+        do {
+            player.sendObject(new Message(MsgType.ASK_ROLL, null));
+            String msg;
+            System.out.println(msg = player.recieveMessage());
+            check = Objects.equals(msg, "ROLL");
+            if (!check){
+                player.sendObject(new Message(MsgType.INFO, "Reply not allowed"));
+            }
+            else {
+                roll.generate();
+            }
+        } while (!check);
+    }
+
     public void movePlayer() {
-        activePlayer.sendObject(new Message(MsgType.ASK_ROLL, null));
-        String msg;
-        System.out.println(msg = activePlayer.recieveMessage());
-        if(!Objects.equals(msg, "ROLL")) {
-            return;
-        }
-        roll.generate();
+        askRoll(activePlayer);
 
         // get array position of Player
         int pos = 0;
