@@ -27,16 +27,12 @@ public class Game extends Thread implements Serializable {
     private Roll roll;
     private GameState currentGameState;
 
-    // Für Kommunikation
-    private transient Scanner scanner;
-
     public Game() {
         players = new ArrayList<Player>();
         board = new Field[BOARD_SIZE];
         createBoard();
         activePlayer = null;
         roll = new Roll();
-        scanner = new Scanner(System.in);
         currentGameState = null;
     }
 
@@ -84,11 +80,6 @@ public class Game extends Thread implements Serializable {
         }
         p.setCurrentField(board[0]);
         p.sendObject(this);
-    }
-
-    public void getPlayerInput() {
-        scanner.reset();
-        scanner.nextLine();
     }
 
     public void askRoll(Player player) {
