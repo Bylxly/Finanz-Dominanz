@@ -3,18 +3,19 @@ package Server.State;
 import Server.Field.Property.Property;
 import Server.Game;
 import Server.GameUtilities;
+import Server.Message;
+import Server.MsgType;
 
+import java.util.Objects;
 import java.util.Scanner;
 
 public class BuyFieldState implements GameState {
 
     private final Game game;
-    private final Scanner scanner;
     private Property currentProperty;
 
     public BuyFieldState(Game game) {
         this.game = game;
-        this.scanner = new Scanner(System.in);
         this.currentProperty = (Property) game.getActivePlayer().getCurrentField();
     }
 
@@ -25,17 +26,14 @@ public class BuyFieldState implements GameState {
                 currentProperty.buy(game.getActivePlayer());
             }
             else {
-                System.out.println("Du hast nicht genügend Geld!");
+                game.getActivePlayer().sendObject(new Message(MsgType.INFO, "Du hast nicht genügend Geld!"));
             }
         }
     }
 
     private boolean askClient() {
-        System.out.println("Willst du dieses Grundstück kaufen?");
-        System.out.println(currentProperty.getName());
-        System.out.println("Preis: " + currentProperty.getPrice());
-        System.out.println("y/n");
+        game.getActivePlayer().sendObject(new Message(MsgType.ASK_BUY, currentProperty.getName()));
 
-        return scanner.next().equalsIgnoreCase("y");
+        return Objects.equals(game.getActivePlayer().recieveMessage(), "BUY");
     }
 }

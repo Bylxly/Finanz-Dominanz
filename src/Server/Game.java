@@ -11,16 +11,14 @@ import Server.State.*;
 
 import java.io.Serializable;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 public class Game extends Thread implements Serializable {
 
     // Konstanten
     private final int START_MONEY = 2000;
     private final int BONUS = 200;
-    private final int BOARD_SIZE = 21;
+    private final int BOARD_SIZE = 40;
 
     // Attribute
     private List<Player> players;
@@ -29,16 +27,12 @@ public class Game extends Thread implements Serializable {
     private Roll roll;
     private GameState currentGameState;
 
-    // Für Kommunikation
-    private transient Scanner scanner;
-
     public Game() {
         players = new ArrayList<Player>();
         board = new Field[BOARD_SIZE];
         createBoard();
         activePlayer = null;
         roll = new Roll();
-        scanner = new Scanner(System.in);
         currentGameState = null;
     }
 
@@ -61,6 +55,14 @@ public class Game extends Thread implements Serializable {
                 board[i] = new Street("Bayernstraße", 1000, 150, new int[]{200, 350, 500, 650, 800, 1000}, 250,
                         new ColorGroup("Blau", "\u001B[34m"));
             }
+            else if (i == 25) {
+                board[i] = new Street("Hessenstraße", 500, 60, new int[]{120, 180, 230, 290, 350, 450}, 250,
+                        new ColorGroup("Rot", "\u001B[31m"));
+            }
+            else if (i == 35) {
+                board[i] = new Street("Berliner Platz", 200, 25, new int[]{50, 80, 110, 140, 170, 200}, 250,
+                        new ColorGroup("Lila", "\u001B[35m"));
+            }
             else if (i % 10 == 0) {
                 board[i] = new Utility("Wasserwerk Nr. " + i / 10, 100, new int[]{100}, 50);
             }
@@ -80,17 +82,24 @@ public class Game extends Thread implements Serializable {
         p.sendObject(this);
     }
 
-    public void getPlayerInput() {
-        scanner.reset();
-        scanner.nextLine();
+    public void askRoll(Player player) {
+        boolean check;
+        do {
+            player.sendObject(new Message(MsgType.ASK_ROLL, null));
+            String msg;
+            System.out.println(msg = player.recieveMessage());
+            check = Objects.equals(msg, "ROLL");
+            if (!check){
+                player.sendObject(new Message(MsgType.INFO, "Reply not allowed"));
+            }
+            else {
+                roll.generate();
+            }
+        } while (!check);
     }
 
     public void movePlayer() {
-        activePlayer.sendObject(new Message("ASK_ROLL"));
-        if(activePlayer.recieveMessage() != "ROLL") {
-            return;
-        }
-        roll.generate();
+        askRoll(activePlayer);
 
         // get array position of Player
         int pos = 0;
@@ -129,6 +138,22 @@ public class Game extends Thread implements Serializable {
     }
 
     public void startGame() {
+        Map<Player, Integer> rolledResults = new HashMap<>();
+
+        // let player roll and save results in map
+        for (Player player : players) {
+            askRoll(player);
+            int roll_result = roll.getTotal();
+            rolledResults.put(player, roll_result);
+            System.out.println(player.getName() + " hat " + roll_result + " gewürfelt.");
+        }
+
+        // sort players after roll results
+        players.sort((p1, p2) -> rolledResults.get(p2).compareTo(rolledResults.get(p1)));
+
+        // set new active player
+        activePlayer = players.get(0);
+
         while (true) {
             currentGameState = new RollDiceState(this);
             currentGameState.execute();
@@ -154,69 +179,10 @@ public class Game extends Thread implements Serializable {
     }
 
     public void printBoard() {
-        activePlayer.sendObject(this);
-    }
-
-    // Temporäre Methode für Debug Zwecke
-    /*public void printBoard() {
-        System.out.println("Status:");
-        System.out.println("Spieleranzahl: " + players.size());
-        System.out.println("Felderanzahl: " + board.length);
-        System.out.println("nächster Spieler: " + activePlayer.getName());
-        System.out.println("Augenanzahl vom letzten Wurf: " +
-                roll.getNumber1() + "+" + roll.getNumber2() + "=" + roll.getTotal());
-
-        System.out.println();
-        System.out.println();
-
         for (Player player : players) {
-            System.out.println("Status von Spieler " + player.getName());
-            System.out.println("Geld: " + player.getMoney());
-            System.out.print("Felder im Besitz: ");
-            if (player.getProperties().isEmpty()) {
-                System.out.println("keine");
-            }
-            else {
-                for (Property property : player.getProperties()) {
-                    if (player.getProperties().indexOf(property) == 0) {
-                        System.out.print(property.getName());
-                    }
-                    else {
-                        System.out.print(", " + property.getName());
-                    }
-                }
-                System.out.println();
-            }
-            System.out.println("Aktuelles Feld: " + player.getCurrentField().getName());
-            System.out.println();
+            player.sendObject(this);
         }
-
-        System.out.println();
-        System.out.println();
-
-        System.out.println("Status vom Spielbrett");
-        for (Field f : board) {
-            int playerAmountOnField = 0;
-            for (Player p : players) {
-                if (f == p.getCurrentField() && playerAmountOnField == 0) {
-                    System.out.print(f.getName() + " <-- " + p.getName());
-                    playerAmountOnField++;
-                }
-                else if (f == p.getCurrentField()) {
-                    System.out.print(", " + p.getName());
-                    playerAmountOnField++;
-                }
-            }
-            if (playerAmountOnField == 0) {
-                System.out.print(f.getName());
-            }
-            System.out.println();
-        }
-
-        for (int i = 0; i < 5; i++) {
-            System.out.println();
-        }
-    }*/
+    }
 
     public Roll getRoll() {
         return roll;

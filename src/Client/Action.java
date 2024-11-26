@@ -1,5 +1,6 @@
 package Client;
 
+import Server.Message;
 import Server.State.GameState;
 
 import java.io.BufferedReader;
@@ -13,14 +14,23 @@ public class Action {
     private String description;
 
     public enum ServerMessage {
-        askRoll {
+        ASK_ROLL {
             @Override
-            public void execute(Client client) {
+            public void execute(Client client, Message message) {
                 doRoll(client);
             }
-        };
+        },
+        ASK_BUY {
 
-        public abstract void execute(Client client);
+            @Override
+            public void execute(Client client, Message message) {
+                if (message != null && message.message() != null && !message.message().isEmpty()) {
+                    doBuy(client, message.message());
+                }
+            }
+
+
+        };
 
         public static void doRoll(Client client) {
             try {
@@ -39,14 +49,45 @@ public class Action {
                 // Notify the server
                 PrintWriter writer = client.getWriter();
                 if (writer != null) {
-                    writer.println("doRoll");
+                    writer.println("ROLL");
                 }
 
             } catch (IOException e) {
                 System.out.println("Error during dice roll: " + e.getMessage());
             }
         }
+
+        public static void doBuy(Client client, String propertyName) {
+            BufferedReader consoleReader = new BufferedReader(new InputStreamReader(System.in));
+            while (true) {
+                try {
+                    System.out.println("The property " + propertyName + " is available for purchase.");
+                    System.out.println("Do you want to buy this property? (y/n): ");
+                    String response = consoleReader.readLine().trim().toLowerCase();
+
+                    PrintWriter writer = client.getWriter();
+                    if (writer != null) {
+                        if ("y".equals(response)) {
+                            writer.println("BUY");
+                            System.out.println("You chose to buy the property: " + propertyName + ".");
+                            break;
+                        } else if ("n".equals(response)) {
+                            writer.println("DO_AUCTION");
+                            System.out.println("You chose not to buy the property: " + propertyName + ". An auction will start.");
+                            break;
+                        } else {
+                            System.out.println("Invalid input. Please enter 'y' or 'n'.");
+                        }
+                    }
+                } catch (IOException e) {
+                    System.out.println("Error during buy decision: " + e.getMessage());
+                }
+            }
+        }
+
+        public abstract void execute(Client client, Message message);
     }
+
 
     public Action(int actionId, String description) {
         this.actionId = actionId;

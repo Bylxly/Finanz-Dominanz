@@ -2,14 +2,6 @@ package Server;
 
 import java.io.Serializable;
 
-public class Message implements Serializable {
-    private String message;
-
-    Message(String message) {
-        this.message = message;
-    }
-
-    public String getMessage() {
-        return message;
-    }
+public record Message(MsgType messageType, String message) implements Serializable {
+    //FERTIG NICHTS MEHR HINZUFÜGEN
 }
