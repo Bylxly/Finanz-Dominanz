@@ -30,6 +30,12 @@ public class Action {
             }
 
 
+        },
+        ASK_NEXT{
+            @Override
+            public void execute(Client client, Message message) {
+                doNext(client);
+            }
         };
 
         public static void doRoll(Client client) {
@@ -82,6 +88,30 @@ public class Action {
                 } catch (IOException e) {
                     System.out.println("Error during buy decision: " + e.getMessage());
                 }
+            }
+        }
+
+        public void doNext(Client client) {
+            try (BufferedReader consoleReader = new BufferedReader(new InputStreamReader(System.in))) {
+                System.out.println("It's your turn. Choose an action: BUILD, BANKRUPT, END");
+
+                String response = consoleReader.readLine().trim().toUpperCase();
+
+                PrintWriter writer = client.getWriter();
+                if ( writer!= null) {
+
+                switch (response) {
+                    case "BUILD":writer.println("BUILD");
+                        break;
+                    case "BANKRUPT":writer.println("BANKRUPT");
+                        break;
+                    case "END":writer.println("END");
+                        break;
+                    default:
+                        System.out.println("Invalid Input");
+                }}
+            } catch (IOException e) {
+                System.out.println("Error during next action selection: " + e.getMessage());
             }
         }
 
