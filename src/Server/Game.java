@@ -84,18 +84,16 @@ public class Game extends Thread implements Serializable {
 
     public void askRoll(Player player) {
         boolean check;
-        do {
-            player.sendObject(new Message(MsgType.ASK_ROLL, null));
-            String msg;
-            System.out.println(msg = player.recieveMessage());
-            check = Objects.equals(msg, "ROLL");
-            if (!check){
-                player.sendObject(new Message(MsgType.INFO, "Reply not allowed"));
-            }
-            else {
-                roll.generate();
-            }
-        } while (!check);
+        player.sendObject(new Message(MsgType.ASK_ROLL, null));
+        String msg;
+        System.out.println(msg = player.recieveMessage());
+        check = Objects.equals(msg, "ROLL");
+        if (!check){
+            throw new RuntimeException("Reply not allowed");
+        }
+        else {
+            roll.generate();
+        }
     }
 
     public void movePlayer() {
@@ -169,8 +167,14 @@ public class Game extends Thread implements Serializable {
                 currentGameState = new ExecuteFieldState(this);
             }
             currentGameState.execute();
+            activePlayer.sendObject(new Message(MsgType.ASK_NEXT, null));
+            String msg = activePlayer.recieveMessage();
+            switch (msg) {
+                case "BANKRUPT": declareBankruptcy(); break;
+                case "END": currentGameState = new EndTurnState(this); break;
+                default: throw new RuntimeException("Reply not allowed.");
+            }
 
-            currentGameState = new EndTurnState(this);
             currentGameState.execute();
             printBoard();
 
