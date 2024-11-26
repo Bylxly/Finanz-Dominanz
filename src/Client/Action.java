@@ -93,10 +93,18 @@ public class Action {
 
         public void doNext(Client client) {
             try (BufferedReader consoleReader = new BufferedReader(new InputStreamReader(System.in))) {
-                System.out.println("It's your turn. Choose an action: BUILD, BANKRUPT, END");
+                System.out.println("It's your turn. Choose an action: END, BUILD, BANKRUPT");
 
-                String response = consoleReader.readLine().trim().toUpperCase();
+                String input = consoleReader.readLine().trim().toUpperCase();
+                String response = "";
 
+                if (input.equals("build") || input.equals("2") || input.equals("BUILD")) {
+                    response = "BUILD";
+                } else if (input.equals("bankrupt") || input.equals("end me") || input.equals("3") || input.equals("BANKRUPT")) {
+                    response = "BANKRUPT";
+                } else if (input.equals("end") || input.equals("1") || input.equals("endturn") || input.equals("END")) {
+                    response = "END";
+                }
                 PrintWriter writer = client.getWriter();
                 if ( writer!= null) {
 
