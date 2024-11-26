@@ -24,8 +24,8 @@ public class Action {
 
             @Override
             public void execute(Client client, Message message) {
-                if (message != null && message.getMessage() != null && !message.getMessage().isEmpty()) {
-                    doBuy(client, message.getMessage());
+                if (message != null && message.message() != null && !message.message().isEmpty()) {
+                    doBuy(client, message.message());
                 }
             }
 

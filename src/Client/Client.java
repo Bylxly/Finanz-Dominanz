@@ -81,8 +81,8 @@ public class Client {
     }
 
     private void processMessage(Message message) {
-        MsgType type = message.getMessageType();
-        String content = message.getMessage();
+        MsgType type = message.messageType();
+        String content = message.message();
 
         switch (type) {
             case INFO:
