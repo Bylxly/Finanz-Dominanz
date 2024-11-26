@@ -18,7 +18,7 @@ public class Game extends Thread implements Serializable {
     // Konstanten
     private final int START_MONEY = 2000;
     private final int BONUS = 200;
-    private final int BOARD_SIZE = 21;
+    private final int BOARD_SIZE = 40;
 
     // Attribute
     private List<Player> players;
@@ -58,6 +58,14 @@ public class Game extends Thread implements Serializable {
             else if (i == 15) {
                 board[i] = new Street("Bayernstraße", 1000, 150, new int[]{200, 350, 500, 650, 800, 1000}, 250,
                         new ColorGroup("Blau", "\u001B[34m"));
+            }
+            else if (i == 25) {
+                board[i] = new Street("Hessenstraße", 500, 60, new int[]{120, 180, 230, 290, 350, 450}, 250,
+                        new ColorGroup("Rot", "\u001B[31m"));
+            }
+            else if (i == 35) {
+                board[i] = new Street("Berliner Platz", 200, 25, new int[]{50, 80, 110, 140, 170, 200}, 250,
+                        new ColorGroup("Lila", "\u001B[35m"));
             }
             else if (i % 10 == 0) {
                 board[i] = new Utility("Wasserwerk Nr. " + i / 10, 100, new int[]{100}, 50);
