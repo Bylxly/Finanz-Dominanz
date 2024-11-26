@@ -39,15 +39,19 @@ public class Client {
             BufferedReader consoleReader = new BufferedReader(new InputStreamReader(System.in));
             System.out.print("Enter server IP address: ");
             String ipAddress = consoleReader.readLine();
+            if (ipAddress.isEmpty()) {
+                ipAddress = "localhost";
+            }
+
             System.out.print("Enter server port: ");
-            int port = Integer.parseInt(consoleReader.readLine());
+            String portInput = consoleReader.readLine();
+            int port = portInput.isEmpty() ? 5555 : Integer.parseInt(portInput);
 
             serverSocket = new Socket(ipAddress, port);
             this.isConnected = true;
             System.out.println("Connected to the server at " + ipAddress + ":" + port);
 
             writer = new PrintWriter(new OutputStreamWriter(serverSocket.getOutputStream()), true);
-
             objectReader = new ObjectInputStream(serverSocket.getInputStream());
 
             new Thread(this::readGameUpdates).start();
@@ -56,6 +60,7 @@ public class Client {
             System.out.println("Error connecting to the server: " + e.getMessage());
         }
     }
+
 
 
     private void readGameUpdates() {
