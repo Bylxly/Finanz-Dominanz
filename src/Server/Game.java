@@ -11,10 +11,7 @@ import Server.State.*;
 
 import java.io.Serializable;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Scanner;
+import java.util.*;
 
 public class Game extends Thread implements Serializable {
 
@@ -142,6 +139,22 @@ public class Game extends Thread implements Serializable {
     }
 
     public void startGame() {
+        Map<Player, Integer> rolledResults = new HashMap<>();
+
+        // let player roll and save results in map
+        for (Player player : players) {
+            askRoll(player);
+            int roll_result = roll.getTotal();
+            rolledResults.put(player, roll_result);
+            System.out.println(player.getName() + " hat " + roll_result + " gewürfelt.");
+        }
+
+        // sort players after roll results
+        players.sort((p1, p2) -> rolledResults.get(p2).compareTo(rolledResults.get(p1)));
+
+        // set new active player
+        activePlayer = players.get(0);
+
         while (true) {
             currentGameState = new RollDiceState(this);
             currentGameState.execute();
