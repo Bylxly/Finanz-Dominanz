@@ -92,13 +92,14 @@ public class Client {
             default:
                 try {
                     Action.ServerMessage serverMessage = Action.ServerMessage.valueOf(type.name());
-                    serverMessage.execute(this);
+                    serverMessage.execute(this, message);
                 } catch (IllegalArgumentException e) {
                     System.out.println("Unknown or unhandled message type: " + type);
                 }
                 break;
         }
     }
+
 
 
     private synchronized void updateGame(Game updatedGame) {
