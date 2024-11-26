@@ -158,15 +158,18 @@ public class Game extends Thread implements Serializable {
             movePlayer();
 
             if (activePlayer.getCurrentField() instanceof Property
-                    && !((Property) activePlayer.getCurrentField()).isOwned()) {
-                currentGameState = new BuyFieldState(this);
-            } else {
+                && !((Property) activePlayer.getCurrentField()).isOwned()) {
+                    currentGameState = new BuyFieldState(this);
+            }
+            else {
                 currentGameState = new ExecuteFieldState(this);
             }
             currentGameState.execute();
+
             activePlayer.sendObject(new Message(MsgType.ASK_NEXT, null));
             String msg = activePlayer.recieveMessage();
             switch (msg) {
+                case "BUILD": currentGameState = new BuildState(this); break;
                 case "BANKRUPT": declareBankruptcy(); break;
                 case "END": currentGameState = new EndTurnState(this); break;
                 default: throw new RuntimeException("Reply not allowed.");
