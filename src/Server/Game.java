@@ -185,67 +185,6 @@ public class Game extends Thread implements Serializable {
         }
     }
 
-    // Temporäre Methode für Debug Zwecke
-    /*public void printBoard() {
-        System.out.println("Status:");
-        System.out.println("Spieleranzahl: " + players.size());
-        System.out.println("Felderanzahl: " + board.length);
-        System.out.println("nächster Spieler: " + activePlayer.getName());
-        System.out.println("Augenanzahl vom letzten Wurf: " +
-                roll.getNumber1() + "+" + roll.getNumber2() + "=" + roll.getTotal());
-
-        System.out.println();
-        System.out.println();
-
-        for (Player player : players) {
-            System.out.println("Status von Spieler " + player.getName());
-            System.out.println("Geld: " + player.getMoney());
-            System.out.print("Felder im Besitz: ");
-            if (player.getProperties().isEmpty()) {
-                System.out.println("keine");
-            }
-            else {
-                for (Property property : player.getProperties()) {
-                    if (player.getProperties().indexOf(property) == 0) {
-                        System.out.print(property.getName());
-                    }
-                    else {
-                        System.out.print(", " + property.getName());
-                    }
-                }
-                System.out.println();
-            }
-            System.out.println("Aktuelles Feld: " + player.getCurrentField().getName());
-            System.out.println();
-        }
-
-        System.out.println();
-        System.out.println();
-
-        System.out.println("Status vom Spielbrett");
-        for (Field f : board) {
-            int playerAmountOnField = 0;
-            for (Player p : players) {
-                if (f == p.getCurrentField() && playerAmountOnField == 0) {
-                    System.out.print(f.getName() + " <-- " + p.getName());
-                    playerAmountOnField++;
-                }
-                else if (f == p.getCurrentField()) {
-                    System.out.print(", " + p.getName());
-                    playerAmountOnField++;
-                }
-            }
-            if (playerAmountOnField == 0) {
-                System.out.print(f.getName());
-            }
-            System.out.println();
-        }
-
-        for (int i = 0; i < 5; i++) {
-            System.out.println();
-        }
-    }*/
-
     public Roll getRoll() {
         return roll;
     }
