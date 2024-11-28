@@ -167,6 +167,7 @@ public class Game extends Thread implements Serializable {
                     currentGameState = new ExecuteFieldState(this);
                 }
                 currentGameState.execute();
+                printBoard();
             } while (roll.getPasch());
 
             String msg;
