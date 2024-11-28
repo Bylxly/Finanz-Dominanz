@@ -103,7 +103,7 @@ public class Action {
                     response = "BUILD";
                 } else if (input.equals("bankrupt") || input.equals("end me") || input.equals("3") || input.equals("BANKRUPT")) {
                     response = "BANKRUPT";
-                } else if (input.equals("end") || input.equals("1") || input.equals("endturn") || input.equals("END")) {
+                } else if (input.equals("end") || input.equals("1") || input.equals("endturn") || input.equals("END") || input.isEmpty()) {
                     response = "END";
                 }
                 PrintWriter writer = client.getWriter();

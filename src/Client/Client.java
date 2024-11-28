@@ -88,7 +88,6 @@ public class Client {
             case INFO:
                 System.out.println("Server info: " + content);
                 break;
-
             default:
                 try {
                     Action.ServerMessage serverMessage = Action.ServerMessage.valueOf(type.name());
