@@ -95,7 +95,7 @@ public class Action {
             try (BufferedReader consoleReader = new BufferedReader(new InputStreamReader(System.in))) {
                 System.out.println("It's your turn. Choose an action: END, BUILD, BANKRUPT");
 
-                String input = consoleReader.readLine().trim().toUpperCase();
+                String input = consoleReader.readLine().trim();
                 String response = "";
 
                 if (input.equals("build") || input.equals("2") || input.equals("BUILD")) {
