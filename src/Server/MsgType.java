@@ -6,5 +6,6 @@ public enum MsgType implements Serializable {
     ASK_ROLL,
     ASK_BUY,
     ASK_NEXT,
-    INFO
+    INFO,
+    BUILD_SELECT_PROPERTY
 }
