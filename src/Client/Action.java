@@ -91,8 +91,9 @@ public class Action {
             }
         }
 
-        public void doNext(Client client) {
-            try (BufferedReader consoleReader = new BufferedReader(new InputStreamReader(System.in))) {
+        public static void doNext(Client client) {
+            BufferedReader consoleReader = new BufferedReader(new InputStreamReader(System.in));
+            try {
                 System.out.println("It's your turn. Choose an action: END, BUILD, BANKRUPT");
 
                 String input = consoleReader.readLine().trim();
