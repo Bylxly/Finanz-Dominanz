@@ -169,14 +169,25 @@ public class Game extends Thread implements Serializable {
                 currentGameState.execute();
             } while (roll.getPasch());
 
-            activePlayer.sendObject(new Message(MsgType.ASK_NEXT, null));
-            String msg = activePlayer.recieveMessage();
-            switch (msg) {
-                case "BUILD": currentGameState = new BuildState(this); break;
-                case "BANKRUPT": declareBankruptcy(); break;
-                case "END": currentGameState = new EndTurnState(this); break;
-                default: throw new RuntimeException("Reply not allowed.");
-            }
+            String msg;
+            do {
+                activePlayer.sendObject(new Message(MsgType.ASK_NEXT, null));
+                msg = activePlayer.recieveMessage();
+                switch (msg) {
+                    case "BUILD":
+                        currentGameState = new BuildState(this);
+                        currentGameState.execute();
+                        break;
+                    case "BANKRUPT":
+                        declareBankruptcy();
+                        break;
+                    case "END":
+                        break;
+                    default:
+                        throw new RuntimeException("Reply not allowed.");
+                }
+            } while (!msg.equals("END"));
+            currentGameState = new EndTurnState(this);
 
             currentGameState.execute();
             printBoard();
