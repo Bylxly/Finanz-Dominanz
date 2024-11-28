@@ -181,6 +181,7 @@ public class Game extends Thread implements Serializable {
                         break;
                     case "BANKRUPT":
                         declareBankruptcy();
+                        msg = "END";
                         break;
                     case "END":
                         break;
