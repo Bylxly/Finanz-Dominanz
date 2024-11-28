@@ -8,6 +8,8 @@ import Server.MsgType;
 import Server.Player;
 import Server.State.GameState;
 
+import processing.core.PApplet;
+
 import java.io.*;
 import java.net.Socket;
 
@@ -17,8 +19,7 @@ public class Client {
     private boolean isConnected;
     private GameState currentGameState;
     private boolean isTurn;
-    private Draw draw;
-    private UI ui;
+    private Draw draw; // GUI handler
     private int money;
     private int figureID;
     private boolean gameOver;
@@ -32,6 +33,7 @@ public class Client {
         this.isTurn = false;
         this.gameOver = false;
         this.money = 0;
+        this.draw = new Draw(this); // Initialize the GUI with a reference to the client
     }
 
     public void connectToServer() {
@@ -54,14 +56,25 @@ public class Client {
             writer = new PrintWriter(new OutputStreamWriter(serverSocket.getOutputStream()), true);
             objectReader = new ObjectInputStream(serverSocket.getInputStream());
 
+            // Start a thread to handle server communication
             new Thread(this::readGameUpdates).start();
+
+            // Start the GUI
+            startGUI();
 
         } catch (IOException e) {
             System.out.println("Error connecting to the server: " + e.getMessage());
         }
     }
 
-
+    private void startGUI() {
+        // Launch the Processing GUI in a new thread
+        Thread guiThread = new Thread(() -> {
+            String[] processingArgs = {"Monopoly GUI"};
+            PApplet.runSketch(processingArgs, draw);
+        });
+        guiThread.start();
+    }
 
     private void readGameUpdates() {
         try {
@@ -78,6 +91,17 @@ public class Client {
         } catch (IOException | ClassNotFoundException e) {
             System.out.println("Error reading game updates: " + e.getMessage());
         }
+    }
+
+    private synchronized void updateGame(Game updatedGame) {
+        this.game = updatedGame;
+
+        if (draw != null) {
+            draw.updateGameState(updatedGame);
+        }
+
+        // Print the board for console-based feedback
+        printBoard();
     }
 
     private void processMessage(Message message) {
@@ -99,18 +123,26 @@ public class Client {
         }
     }
 
-
-
-    private synchronized void updateGame(Game updatedGame) {
-        this.game = updatedGame;
-        printBoard();
-    }
-
-
     public void sendAction(Action action) {
         if (isConnected) {
             writer.println(action.toString());
         }
+    }
+
+    public int getFieldIndex(Field field) {
+        if (game == null || game.getBoard() == null) {
+            System.out.println("Game or board is not initialized.");
+            return -1;
+        }
+        Field[] board = game.getBoard();
+        for (int i = 0; i < board.length; i++) {
+            if (board[i].equals(field)) {
+                return i;
+            }
+        }
+        // Field not found
+        System.out.println("Field not found on the board: " + field.getName());
+        return -1;
     }
 
     public void disconnect() {
@@ -127,7 +159,8 @@ public class Client {
             System.out.println("Error disconnecting: " + e.getMessage());
         }
     }
-    // For testing purpose
+
+    // For testing purposes: Console-based board representation
     public void printBoard() {
         System.out.println("Status:");
         System.out.println("Spieleranzahl: " + game.getPlayers().size());
