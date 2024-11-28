@@ -31,18 +31,18 @@ public class Street extends Property {
         }
     }
 
-    public void buyHouses(Player player){
+    public void buyHouses(){
         if(colorGroup.isComplete() && houses < 5){
-            if(GameUtilities.checkIfEnoughMoney(player, housePrice)){
-                GameUtilities.payBank(player, housePrice);
+            if(GameUtilities.checkIfEnoughMoney(getOwner(), housePrice)){
+                GameUtilities.payBank(getOwner(), housePrice);
                 houses++;
             }
         }
     }
 
-    public void sellHouse(Player player){
+    public void sellHouse(){
         if (houses > 0){
-            GameUtilities.receiveFromBank(player, (housePrice/2));
+            GameUtilities.receiveFromBank(getOwner(), (housePrice/2));
             houses--;
         }
     }
