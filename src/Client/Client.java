@@ -26,7 +26,7 @@ public class Client {
     private BufferedReader reader;
     private PrintWriter writer;
     private ObjectInputStream objectReader;
-    private static Game game;
+    private Game game;
 
     public Client() {
         this.isConnected = false;
@@ -273,6 +273,10 @@ public class Client {
 
     public PrintWriter getWriter() {
         return writer;
+    }
+
+    public Game getGame() {
+        return game;
     }
 
     public static void main(String[] args) {
