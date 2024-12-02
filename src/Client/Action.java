@@ -36,7 +36,20 @@ public class Action {
             public void execute(Client client, Message message) {
                 doNext(client);
             }
-        };
+        },
+        BUILD_SELECT_PROPERTY{
+            @Override
+            public void execute(Client client, Message message) {
+                doBuild(client);
+            }
+        },
+        DO_AUCTIONS{
+            @Override
+            public void execute(Client client, Message message) {
+                doAuction(client);
+            }
+        }
+        ;
 
         public static void doRoll(Client client) {
             try {
@@ -124,6 +137,12 @@ public class Action {
             }
         }
 
+        public static void doBuild(Client client){
+            BufferedReader consoleReader = new BufferedReader(new InputStreamReader(System.in));
+        }
+        public static void doAuction(Client client, Message message){
+
+        }
         public abstract void execute(Client client, Message message);
     }
 
