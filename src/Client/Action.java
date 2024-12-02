@@ -1,5 +1,7 @@
 package Client;
 
+import Server.Field.Property.Property;
+import Server.Field.Property.Street;
 import Server.Message;
 import Server.State.GameState;
 
@@ -7,6 +9,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 
 public class Action {
@@ -139,10 +143,31 @@ public class Action {
 
         public static void doBuild(Client client){
             BufferedReader consoleReader = new BufferedReader(new InputStreamReader(System.in));
+            System.out.println("You can build on following properties:");
+
+            int index = 1;
+            Map<Integer, Property> sortedProperties = new HashMap<>();
+            for (Property property : client.getGame().getActivePlayer().getProperties()) {
+                if (((Street) property).getColorGroup().isComplete()) {
+                    System.out.println(index + ": " + property.getName());
+                    sortedProperties.put(index, property);
+                }
+            }
+            System.out.print("Choose a property: ");
+            try {
+                int selection = Integer.parseInt(consoleReader.readLine());
+                PrintWriter writer = client.getWriter();
+                writer.println(client.getGame().getActivePlayer().getProperties().indexOf(sortedProperties.get(selection)));
+            }
+            catch (IOException e) {
+                System.out.println("Error during building properties: " + e.getMessage());
+            }
         }
+
         public static void doAuction(Client client, Message message){
 
         }
+
         public abstract void execute(Client client, Message message);
     }
 
