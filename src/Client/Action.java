@@ -46,7 +46,7 @@ public class Action {
         DO_AUCTIONS{
             @Override
             public void execute(Client client, Message message) {
-                doAuction(client);
+                doAuction(client, message);
             }
         }
         ;
