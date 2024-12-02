@@ -21,8 +21,7 @@ public class BuildState implements GameState {
         else {
             game.getActivePlayer().sendObject(new Message(MsgType.BUILD_SELECT_PROPERTY, null));
             int index = Integer.parseInt(game.getActivePlayer().recieveMessage());
-            if (game.getActivePlayer().getProperties().get(index) instanceof Street &&
-                    game.getActivePlayer().recieveMessage() == "true") {
+            if (game.getActivePlayer().getProperties().get(index) instanceof Street) {
                 ((Street) game.getActivePlayer().getProperties().get(index)).buyHouses();
             }
         }
