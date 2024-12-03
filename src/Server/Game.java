@@ -43,31 +43,26 @@ public class Game extends Thread implements Serializable {
     }
 
     private void createBoard() {
+        ColorGroup lila = new ColorGroup("Lila", "\u001B[35m");
+        ColorGroup cyan = new ColorGroup("Cyan", "\u001B[96m");
+
         for (int i = 0; i < board.length; i++) {
-            if (i == 0) {
-                board[i] = new Start("Startfeld", BONUS);
-            }
-            else if (i == 5) {
-                board[i] = new Street("Schillerstraße", 400, 50, new int[]{100, 150, 200, 250, 300, 400}, 50,
-                        new ColorGroup("Grün", "\u001B[32m"));
-            }
-            else if (i == 15) {
-                board[i] = new Street("Bayernstraße", 1000, 150, new int[]{200, 350, 500, 650, 800, 1000}, 250,
-                        new ColorGroup("Blau", "\u001B[34m"));
-            }
-            else if (i == 25) {
-                board[i] = new Street("Hessenstraße", 500, 60, new int[]{120, 180, 230, 290, 350, 450}, 250,
-                        new ColorGroup("Rot", "\u001B[31m"));
-            }
-            else if (i == 35) {
-                board[i] = new Street("Berliner Platz", 200, 25, new int[]{50, 80, 110, 140, 170, 200}, 250,
-                        new ColorGroup("Lila", "\u001B[35m"));
-            }
-            else if (i % 10 == 0) {
-                board[i] = new Utility("Wasserwerk Nr. " + i / 10, 100, new int[]{100}, 50);
-            }
-            else {
-                board[i] = new AbInKnast("Feld Nr." + i);
+            switch (i) {
+                case 0:
+                    board[i] = new Start("Startfeld", BONUS);
+                    break;
+                case 1:
+                    board[i] = new Street("Badstraße", 60, 50, new int[]{2, 10, 30, 90, 160, 250}, 30, lila);
+                    break;
+                case 3:
+                    board[i] = new Street("Turmstraße", 60, 50 , new int[]{4, 20, 60, 180, 320, 450}, 30, lila);
+                    break;
+                case 6:
+                    board[i] = new Street("Chausseestraße", 100, 50, new int[]{6, 30, 90, 270, 400, 550}, 50, cyan);
+                    break;
+                default:
+                    board[i] = new AbInKnast("Feld Nr." + i);
+                    break;
             }
         }
     }
