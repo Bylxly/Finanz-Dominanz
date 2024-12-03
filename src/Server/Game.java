@@ -74,6 +74,7 @@ public class Game extends Thread implements Serializable {
                     break;
                 case 10:
                     board[i] = new Knast("Knast", 1000, new int[]{50}, 500);
+                    break;
                 case 11:
                     board[i] = new Street("Seestraße", 140, 100, new int[]{10, 50, 150, 450, 625, 750}, 70, magenta);
                     break;
@@ -112,6 +113,7 @@ public class Game extends Thread implements Serializable {
                     break;
                 case 30:
                     board[i] = new AbInKnast("Ab in den Knast");
+                    break;
                 case 31:
                     board[i] = new Street("Rathausplatz", 300, 200, new int[]{26, 130, 390, 900, 1100, 1275}, 150, green);
                     break;
