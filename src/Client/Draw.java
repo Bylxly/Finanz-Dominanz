@@ -174,7 +174,7 @@ public class Draw extends PApplet {
 
             // Left column (31 to 39)
             for (int i = 9; i > 0; i--) {
-                fields.add(new GField(0, i * cellSize, cellSize, cellSize, board[30 + i].getUIName()));
+                fields.add(new GField(0, i * cellSize, cellSize, cellSize, board[40 - i].getUIName()));
             }
 
             // Right column (11 to 20)
