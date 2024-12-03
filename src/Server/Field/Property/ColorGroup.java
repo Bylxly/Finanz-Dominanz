@@ -23,7 +23,10 @@ public class ColorGroup implements Serializable {
 
     public boolean isComplete() {
         for (Street street : streets) {
-            if (!street.getOwner().equals(streets.get(0).getOwner())) {
+            if (street.getOwner() == null) {
+                return false;
+            }
+            else if (!street.getOwner().equals(streets.get(0).getOwner())) {
                 return false;
             }
         }
