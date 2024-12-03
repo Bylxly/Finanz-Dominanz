@@ -67,4 +67,8 @@ public class Street extends Property {
         }
         return name.toString();
     }
+
+    public String getUIName() {
+        return super.getName();
+    }
 }
