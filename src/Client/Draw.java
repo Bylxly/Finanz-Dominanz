@@ -6,18 +6,19 @@ import Server.Field.Field;
 import processing.core.PApplet;
 import java.util.ArrayList;
 import java.util.List;
+import Client.Elements.*;
 
 public class Draw extends PApplet {
     private Client client;
     private Game game;
     private int cellSize = 80;
-    private int offsetX = 50;
-    private int offsetY = 50;
 
     private String currentField = "None";
     private String currentPlayer = "Player 1";
 
-    private ArrayList<Field> fields = new ArrayList<>();
+    private ArrayList<GField> fields = new ArrayList<>();
+
+    private GButton btnOption1, btnOption2, btnOption3;
 
     public Draw(Client client) {
         this.client = client;
@@ -33,12 +34,13 @@ public class Draw extends PApplet {
         surface.setTitle("Monopoly Game");
         textSize(14);
         initializeFields();
+        createButtons();
         noLoop(); // Ensures updates happen only when necessary
     }
 
     @Override
     public void draw() {
-        background(34, 139, 34); // Green background for the game board
+        background(34, 139, 34);
 
         if (game == null) {
             displayMessage("Waiting for game state...");
@@ -52,8 +54,22 @@ public class Draw extends PApplet {
 
     public void updateGameState(Game updatedGame) {
         this.game = updatedGame;
-        redraw(); // Force redraw when the game state is updated
+
+        Field[] board = game.getBoard();
+
+        if (fields.size() != board.length) {
+            System.out.println("Mismatch between field count and board size.");
+            return;
+        }
+
+        for (int i = 0; i < fields.size(); i++) {
+            String fieldName = board[i].getName();
+            fields.get(i).setName(fieldName);
+        }
+
+        redraw();
     }
+
 
     private void displayMessage(String message) {
         fill(0);
@@ -62,8 +78,8 @@ public class Draw extends PApplet {
     }
 
     private void drawFields() {
-        for (Field field : fields) {
-            field.draw();
+        for (GField field : fields) {
+            field.draw(this);
         }
     }
 
@@ -74,18 +90,34 @@ public class Draw extends PApplet {
 
         for (int i = 0; i < players.size(); i++) {
             Player player = players.get(i);
-            Server.Field.Field currentField = player.getCurrentField();
+            Field currentField = player.getCurrentField();
             int fieldIndex = client.getFieldIndex(currentField);
 
-            int x = (fieldIndex % 10) * cellSize + offsetX;
-            int y = (fieldIndex / 10) * cellSize + offsetY;
+            int x = 0, y = 0;
+            if (fieldIndex <= 10) {
+                // Top row
+                x = fieldIndex * cellSize;
+                y = 0;
+            } else if (fieldIndex <= 20) {
+                // Right column
+                x = 10 * cellSize;
+                y = (fieldIndex - 10) * cellSize;
+            } else if (fieldIndex <= 30) {
+                // Bottom row
+                x = (30 - fieldIndex) * cellSize;
+                y = 10 * cellSize;
+            } else if (fieldIndex <= 39) {
+                // Left column
+                x = 0;
+                y = (40 - fieldIndex) * cellSize;
+            }
 
             fill(255);
             ellipse(x + cellSize / 2.0f, y + cellSize / 2.0f, 20, 20);
 
             fill(0);
             textAlign(CENTER, CENTER);
-            text(i + 1, x + cellSize / 2.0f, y + cellSize / 2.0f); // Player number
+            text(i + 1, x + cellSize / 2.0f, y + cellSize / 2.0f);
         }
     }
 
@@ -99,38 +131,64 @@ public class Draw extends PApplet {
         text("Field: " + currentField, 960, 540);
     }
 
-    private void drawButtons() {
-        fill(200);
-        rect(950, 620, 200, 30, 5); // Option 1 button
-        rect(950, 660, 200, 30, 5); // Option 2 button
-        rect(950, 700, 200, 30, 5); // Option 3 button
+    private void createButtons() {
+        btnOption1 = new GButton(950, 620, 200, 30, "Option 1", color(200), color(255), true);
+        btnOption2 = new GButton(950, 660, 200, 30, "Option 2", color(200), color(255), true);
+        btnOption3 = new GButton(950, 700, 200, 30, "Option 3", color(200), color(255), true);
+    }
 
-        fill(0);
-        textAlign(CENTER, CENTER);
-        text("Option 1", 1050, 635);
-        text("Option 2", 1050, 675);
-        text("Option 3", 1050, 715);
+    private void drawButtons() {
+        btnOption1.draw(this);
+        btnOption2.draw(this);
+        btnOption3.draw(this);
+        loop();
     }
 
     private void initializeFields() {
         float boardSize = height;
         float cellSize = height / 11.0f;
 
-        for (int i = 0; i < 11; i++) {
-            fields.add(new Field(i * cellSize, 0, cellSize, cellSize, "Street " + i)); // Top row
-            fields.add(new Field(i * cellSize, height - cellSize, cellSize, cellSize, "Street " + (30 - i))); // Bottom row
-        }
+        if (game == null || game.getBoard() == null) {
+            System.out.println("Placeholder names.");
+            // Initialize with placeholder names
+            for (int i = 0; i < 11; i++) {
+                fields.add(new GField(i * cellSize, 0, cellSize, cellSize, "Street " + i)); // Top row
+                fields.add(new GField(i * cellSize, height - cellSize, cellSize, cellSize, "Street " + (30 - i))); // Bottom row
+            }
+            for (int i = 1; i < 10; i++) {
+                fields.add(new GField(0, i * cellSize, cellSize, cellSize, "Street " + (40 - i))); // Left column
+                fields.add(new GField(width - cellSize - (boardSize / 2), i * cellSize, cellSize, cellSize, "Street " + (10 + i))); // Right column
+            }
+        } else {
+            Field[] board = game.getBoard();
 
-        for (int i = 1; i < 10; i++) {
-            fields.add(new Field(0, i * cellSize, cellSize, cellSize, "Street " + (40 - i))); // Left column
-            fields.add(new Field(width - cellSize - (boardSize / 2), i * cellSize, cellSize, cellSize, "Street " + (10 + i))); // Right column
+            // Top row (0 to 10)
+            for (int i = 0; i < 11; i++) {
+                fields.add(new GField(i * cellSize, 0, cellSize, cellSize, board[i].getUIName()));
+            }
+
+            // Bottom row (21 to 30)
+            for (int i = 10; i >= 0; i--) {
+                fields.add(new GField(i * cellSize, height - cellSize, cellSize, cellSize, board[20 + (10 - i)].getUIName()));
+            }
+
+            // Left column (31 to 39)
+            for (int i = 9; i > 0; i--) {
+                fields.add(new GField(0, i * cellSize, cellSize, cellSize, board[30 + i].getUIName()));
+            }
+
+            // Right column (11 to 20)
+            for (int i = 1; i < 10; i++) {
+                fields.add(new GField(width - cellSize - (boardSize / 2), i * cellSize, cellSize, cellSize, board[10 + i].getUIName()));
+            }
         }
     }
 
+
     @Override
     public void mousePressed() {
-        for (Field field : fields) {
-            if (field.isClicked()) {
+        for (GField field : fields) {
+            if (field.isClicked(this)) {
                 currentField = field.getName();
                 println("Clicked on: " + currentField);
                 redraw(); // Ensure changes are reflected
@@ -138,14 +196,12 @@ public class Draw extends PApplet {
         }
 
         // Handle button clicks
-        if (mouseX > 950 && mouseX < 1150) {
-            if (mouseY > 620 && mouseY < 650) {
-                handleOption1();
-            } else if (mouseY > 660 && mouseY < 690) {
-                handleOption2();
-            } else if (mouseY > 700 && mouseY < 730) {
-                handleOption3();
-            }
+        if (btnOption1.isClicked(this)) {
+            handleOption1();
+        } else if (btnOption2.isClicked(this)) {
+            handleOption2();
+        } else if (btnOption3.isClicked(this)) {
+            handleOption3();
         }
     }
 
@@ -159,40 +215,5 @@ public class Draw extends PApplet {
 
     private void handleOption3() {
         println("Option 3 selected for field: " + currentField);
-    }
-
-    // Inner Field class
-    private class Field {
-        float x, y, width, height;
-        String label;
-
-        Field(float x, float y, float width, float height, String label) {
-            this.x = x;
-            this.y = y;
-            this.width = width;
-            this.height = height;
-            this.label = label;
-        }
-
-        void draw() {
-            fill(isMouseOver() ? color(200, 255, 200) : color(255, 223, 186));
-            stroke(0);
-            rect(x, y, width, height);
-            fill(0);
-            textAlign(CENTER, CENTER);
-            text(label, x + width / 2, y + height / 2);
-        }
-
-        boolean isMouseOver() {
-            return mouseX > x && mouseX < x + width && mouseY > y && mouseY < y + height;
-        }
-
-        boolean isClicked() {
-            return isMouseOver() && mousePressed;
-        }
-
-        String getName() {
-            return label;
-        }
     }
 }
