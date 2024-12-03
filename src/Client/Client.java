@@ -33,7 +33,7 @@ public class Client {
         this.isTurn = false;
         this.gameOver = false;
         this.money = 0;
-        this.draw = new Draw(this); // Initialize the GUI with a reference to the client
+        this.draw = new Draw(this);
     }
 
     public void connectToServer() {
@@ -56,10 +56,8 @@ public class Client {
             writer = new PrintWriter(new OutputStreamWriter(serverSocket.getOutputStream()), true);
             objectReader = new ObjectInputStream(serverSocket.getInputStream());
 
-            // Start a thread to handle server communication
             new Thread(this::readGameUpdates).start();
 
-            // Start the GUI
             startGUI();
 
         } catch (IOException e) {
@@ -68,7 +66,6 @@ public class Client {
     }
 
     private void startGUI() {
-        // Launch the Processing GUI in a new thread
         Thread guiThread = new Thread(() -> {
             String[] processingArgs = {"Monopoly GUI"};
             PApplet.runSketch(processingArgs, draw);
@@ -100,7 +97,6 @@ public class Client {
             draw.updateGameState(updatedGame);
         }
 
-        // Print the board for console-based feedback
         printBoard();
     }
 
