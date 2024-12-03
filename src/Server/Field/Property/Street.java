@@ -57,6 +57,14 @@ public class Street extends Property {
 
     @Override
     public String getName() {
-        return colorGroup.getColorCode() + super.getName() + "\u001B[0m";
+        StringBuilder name;
+        name = new StringBuilder(colorGroup.getColorCode() + super.getName() + "\u001B[0m" + " ");
+        if (getHouses() == 5) {
+            name.append("\uD83C\uDFE8");
+        }
+        else {
+            name.append("\uD83C\uDFE0 ".repeat(Math.max(0, getHouses())));
+        }
+        return name.toString();
     }
 }
