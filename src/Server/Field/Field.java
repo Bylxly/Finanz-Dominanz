@@ -17,4 +17,8 @@ public abstract class Field implements Serializable {
     public String getName() {
         return name;
     }
+
+    public String getUIName() {
+        return name;
+    }
 }
