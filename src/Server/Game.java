@@ -9,9 +9,11 @@ import Server.Field.Property.Utility;
 import Server.Field.Start;
 import Server.State.*;
 
+import java.awt.*;
 import java.io.Serializable;
 import java.net.Socket;
 import java.util.*;
+import java.util.List;
 
 public class Game extends Thread implements Serializable {
 
@@ -43,8 +45,14 @@ public class Game extends Thread implements Serializable {
     }
 
     private void createBoard() {
-        ColorGroup lila = new ColorGroup("Lila", "\u001B[35m");
+        ColorGroup purple = new ColorGroup("purple", "\u001B[35m");
         ColorGroup cyan = new ColorGroup("Cyan", "\u001B[96m");
+        ColorGroup magenta = new ColorGroup("Magenta", "\u001B[95m");
+        ColorGroup orange = new ColorGroup("Orange", "\u001B[33m");
+        ColorGroup red = new ColorGroup("Red", "\u001B[31m");
+        ColorGroup yellow = new ColorGroup("Yellow", "\u001B[93m");
+        ColorGroup green = new ColorGroup("Green", "\u001B[32m");
+        ColorGroup blue = new ColorGroup("Blue", "\u001B[34m");
 
         for (int i = 0; i < board.length; i++) {
             switch (i) {
@@ -52,13 +60,70 @@ public class Game extends Thread implements Serializable {
                     board[i] = new Start("Startfeld", BONUS);
                     break;
                 case 1:
-                    board[i] = new Street("Badstraße", 60, 50, new int[]{2, 10, 30, 90, 160, 250}, 30, lila);
+                    board[i] = new Street("Badstraße", 60, 50, new int[]{2, 10, 30, 90, 160, 250}, 30, purple);
                     break;
                 case 3:
-                    board[i] = new Street("Turmstraße", 60, 50 , new int[]{4, 20, 60, 180, 320, 450}, 30, lila);
+                    board[i] = new Street("Turmstraße", 60, 50 , new int[]{4, 20, 60, 180, 320, 450}, 30, purple);
                     break;
                 case 6:
                     board[i] = new Street("Chausseestraße", 100, 50, new int[]{6, 30, 90, 270, 400, 550}, 50, cyan);
+                    break;
+                case 8:
+                    board[i] = new Street("Elisenstraße", 100, 50, new int[]{6, 30, 90, 270, 400, 550}, 50, cyan);
+                    break;
+                case 9:
+                    board[i] = new Street("Poststraße", 120, 50, new int[]{8, 40, 100, 300, 450, 600}, 60, cyan);
+                    break;
+                case 11:
+                    board[i] = new Street("Seestraße", 140, 100, new int[]{10, 50, 150, 450, 625, 750}, 70, magenta);
+                    break;
+                case 13:
+                    board[i] = new Street("Hafenstraße", 140, 100, new int[]{10, 50, 150, 450, 625, 750}, 70, magenta);
+                    break;
+                case 14:
+                    board[i] = new Street("Neue Straße", 160, 100, new int[]{12, 60, 180, 500, 700, 900}, 80, magenta);
+                    break;
+                case 16:
+                    board[i] = new Street("Münchner Straße", 180, 100, new int[]{14, 70, 200, 550, 750, 950}, 90, orange);
+                    break;
+                case 18:
+                    board[i] = new Street("Wiener Straße", 180, 100, new int[]{14, 70, 200, 550, 750, 950}, 90, orange);
+                    break;
+                case 19:
+                    board[i] = new Street("Berliner Straße", 200, 100, new int[]{16, 80, 220, 600, 800, 1000}, 100, orange);
+                    break;
+                case 21:
+                    board[i] = new Street("Theaterstraße", 220, 150, new int[]{18, 90, 250, 700, 875, 1050}, 110, red);
+                    break;
+                case 23:
+                    board[i] = new Street("Museumstraße", 220, 150, new int[]{18, 90, 250, 700, 875, 1050}, 110, red);
+                    break;
+                case 24:
+                    board[i] = new Street("Obernplatz", 240, 150, new int[]{20, 100, 300, 750, 925, 1100}, 120, red);
+                    break;
+                case 26:
+                    board[i] = new Street("Lessingstraße", 260, 150, new int[]{22, 110, 330, 800, 975, 1150}, 130, yellow);
+                    break;
+                case 27:
+                    board[i] = new Street("Schillerstraße", 260, 150, new int[]{22, 110, 330, 800, 975, 1150}, 130, yellow);
+                    break;
+                case 29:
+                    board[i] = new Street("Goethestraße", 280, 150, new int[]{24, 120, 360, 850, 1025, 1200}, 140, yellow);
+                    break;
+                case 31:
+                    board[i] = new Street("Rathausplatz", 300, 200, new int[]{26, 130, 390, 900, 1100, 1275}, 150, green);
+                    break;
+                case 32:
+                    board[i] = new Street("Hauptstraße", 300, 200, new int[]{26, 130, 390, 900, 1100, 1275}, 150, green);
+                    break;
+                case 34:
+                    board[i] = new Street("Bahnhofstraße", 320, 200, new int[]{28, 150, 450, 1000, 1200, 1400}, 160, green);
+                    break;
+                case 37:
+                    board[i] = new Street("Parkstraße", 350, 200, new int[]{35, 175, 500, 1100, 1300, 1500}, 175, blue);
+                    break;
+                case 39:
+                    board[i] = new Street("Schlossallee", 400, 200, new int[]{50, 200, 600, 1400, 1700, 2000}, 200, blue);
                     break;
                 default:
                     board[i] = new AbInKnast("Feld Nr." + i);
