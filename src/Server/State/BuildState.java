@@ -23,6 +23,7 @@ public class BuildState implements GameState {
             int index = Integer.parseInt(game.getActivePlayer().recieveMessage());
             if (game.getActivePlayer().getProperties().get(index) instanceof Street) {
                 ((Street) game.getActivePlayer().getProperties().get(index)).buyHouses();
+                game.getActivePlayer().sendObject(game);
             }
         }
     }
