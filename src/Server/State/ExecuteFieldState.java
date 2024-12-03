@@ -1,6 +1,11 @@
 package Server.State;
 
+import Server.Field.AbInKnast;
+import Server.Field.Property.Knast;
 import Server.Game;
+import Server.GameUtilities;
+import Server.Message;
+import Server.MsgType;
 
 public class ExecuteFieldState implements GameState {
 
@@ -12,10 +17,44 @@ public class ExecuteFieldState implements GameState {
 
     @Override
     public void execute() {
-        if (!game.getActivePlayer().getCurrentField().startAction(game.getActivePlayer())) {
+        if (game.getActivePlayer().isArrested()) {
+            executeKnast();
+        }
+        else if (game.getActivePlayer().getCurrentField() instanceof AbInKnast) {
+            game.getActivePlayer().getCurrentField().startAction(game.getActivePlayer());
+            game.movePlayerToKnast(game.getActivePlayer());
+        }
+        else if (!game.getActivePlayer().getCurrentField().startAction(game.getActivePlayer())) {
             game.printBoard();
             System.out.println("Der Spieler " + game.getActivePlayer().getName() + " ist bankrott.");
             game.declareBankruptcy();
         }
+    }
+
+    public void executeKnast() {
+        game.getActivePlayer().sendObject(new Message(MsgType.ASK_KNAST, null));
+        String msg = game.getActivePlayer().recieveMessage();
+
+        if (msg == "ROLL" &&
+                ((Knast) game.getActivePlayer().getCurrentField()).getRollAmount(game.getActivePlayer()) < 3) {
+            game.askRoll(game.getActivePlayer());
+            if (game.getRoll().getPasch()) {
+                game.getActivePlayer().setArrested(false);
+            }
+            else {
+                return;
+            }
+        }
+        else {
+            if (((Knast) game.getActivePlayer().getCurrentField()).getRollAmount(game.getActivePlayer()) >= 3) {
+                game.getActivePlayer().sendObject(new Message(MsgType.INFO,
+                        "Sie haben bereits 3 mal gewürfelt und müssen jetzt zahlen"));
+            }
+            ((Knast) game.getActivePlayer().getCurrentField()).payRent(game.getActivePlayer());
+            game.getActivePlayer().setArrested(false);
+        }
+
+        // Roll after getting free
+        game.askRoll(game.getActivePlayer());
     }
 }

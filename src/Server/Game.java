@@ -1,11 +1,9 @@
 package Server;
 
 import Server.Field.AbInKnast;
+import Server.Field.DummyField;
 import Server.Field.Field;
-import Server.Field.Property.ColorGroup;
-import Server.Field.Property.Property;
-import Server.Field.Property.Street;
-import Server.Field.Property.Utility;
+import Server.Field.Property.*;
 import Server.Field.Start;
 import Server.State.*;
 
@@ -74,6 +72,8 @@ public class Game extends Thread implements Serializable {
                 case 9:
                     board[i] = new Street("Poststraße", 120, 50, new int[]{8, 40, 100, 300, 450, 600}, 60, cyan);
                     break;
+                case 10:
+                    board[i] = new Knast("Knast", 1000, new int[]{50}, 500);
                 case 11:
                     board[i] = new Street("Seestraße", 140, 100, new int[]{10, 50, 150, 450, 625, 750}, 70, magenta);
                     break;
@@ -110,6 +110,8 @@ public class Game extends Thread implements Serializable {
                 case 29:
                     board[i] = new Street("Goethestraße", 280, 150, new int[]{24, 120, 360, 850, 1025, 1200}, 140, yellow);
                     break;
+                case 30:
+                    board[i] = new AbInKnast("Ab in den Knast");
                 case 31:
                     board[i] = new Street("Rathausplatz", 300, 200, new int[]{26, 130, 390, 900, 1100, 1275}, 150, green);
                     break;
@@ -126,7 +128,7 @@ public class Game extends Thread implements Serializable {
                     board[i] = new Street("Schlossallee", 400, 200, new int[]{50, 200, 600, 1400, 1700, 2000}, 200, blue);
                     break;
                 default:
-                    board[i] = new AbInKnast("Feld Nr." + i);
+                    board[i] = new DummyField("Feld Nr." + i);
                     break;
             }
         }
@@ -261,9 +263,18 @@ public class Game extends Thread implements Serializable {
         }
     }
 
+
     public void printBoard() {
         for (Player player : players) {
             player.sendObject(this);
+        }
+    }
+
+    public void movePlayerToKnast(Player player) {
+        for (Field f : board) {
+            if (f instanceof Knast) {
+                player.setCurrentField(f);
+            }
         }
     }
 

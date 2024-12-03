@@ -15,6 +15,7 @@ public class Player implements Serializable {
     private final String name;
     private Field currentField;
     private List<Property> properties;
+    private boolean arrested;
     private transient Socket client;
     private transient ObjectOutputStream objectOutputStream;
     private transient BufferedReader bufferedReader;
@@ -38,6 +39,7 @@ public class Player implements Serializable {
                 objectOutputStream.reset(); // Puffer zurücksetzen
                 objectOutputStream.writeObject(object);
                 objectOutputStream.flush(); // Sicherstellen, dass die Nachricht gesendet wird
+                System.out.println(object.toString());
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -93,5 +95,13 @@ public class Player implements Serializable {
 
     public Socket getClient() {
         return client;
+    }
+
+    public boolean isArrested() {
+        return arrested;
+    }
+
+    public void setArrested(boolean arrested) {
+        this.arrested = arrested;
     }
 }
