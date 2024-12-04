@@ -23,6 +23,7 @@ public class ExecuteFieldState implements GameState {
         else if (game.getActivePlayer().getCurrentField() instanceof AbInKnast) {
             game.getActivePlayer().getCurrentField().startAction(game.getActivePlayer());
             game.movePlayerToKnast(game.getActivePlayer());
+            game.getActivePlayer().sendObject(new Message(MsgType.INFO, "Du musst in den Knast gehen!"));
         }
         else if (!game.getActivePlayer().getCurrentField().startAction(game.getActivePlayer())) {
             game.printBoard();
@@ -38,6 +39,7 @@ public class ExecuteFieldState implements GameState {
         if (msg == "ROLL" &&
                 ((Knast) game.getActivePlayer().getCurrentField()).getRollAmount(game.getActivePlayer()) < 3) {
             game.askRoll(game.getActivePlayer());
+            ((Knast) game.getActivePlayer().getCurrentField()).incrementRollAmount(game.getActivePlayer());
             if (game.getRoll().getPasch()) {
                 game.getActivePlayer().setArrested(false);
             }
@@ -54,6 +56,7 @@ public class ExecuteFieldState implements GameState {
             game.getActivePlayer().setArrested(false);
         }
 
+        game.getActivePlayer().sendObject(new Message(MsgType.INFO, "Du bist wieder ein freier Mensch"));
         // Roll after getting free
         game.askRoll(game.getActivePlayer());
     }
