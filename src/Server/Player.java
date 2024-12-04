@@ -39,7 +39,13 @@ public class Player implements Serializable {
                 objectOutputStream.reset(); // Puffer zurücksetzen
                 objectOutputStream.writeObject(object);
                 objectOutputStream.flush(); // Sicherstellen, dass die Nachricht gesendet wird
-                System.out.println(object.toString());
+                if (object instanceof Message) {
+                    System.out.println(object);
+                }
+                else {
+                    System.out.println("Game was sent to " + name);
+                }
+
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -49,7 +55,9 @@ public class Player implements Serializable {
     public String recieveMessage() {
         try {
             if (bufferedReader != null) {
-                return bufferedReader.readLine();
+                String message = bufferedReader.readLine();
+                System.out.println(message);
+                return message;
             }
         } catch (IOException e) {
             e.printStackTrace();
