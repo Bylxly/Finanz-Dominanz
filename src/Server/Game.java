@@ -149,8 +149,7 @@ public class Game extends Thread implements Serializable {
     public void askRoll(Player player) {
         boolean check;
         player.sendObject(new Message(MsgType.ASK_ROLL, null));
-        String msg;
-        System.out.println(msg = player.recieveMessage());
+        String msg = player.recieveMessage();
         check = Objects.equals(msg, "ROLL");
         if (!check){
             throw new RuntimeException("Reply not allowed");
