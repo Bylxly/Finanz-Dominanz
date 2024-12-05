@@ -13,6 +13,7 @@ import processing.core.PApplet;
 import java.io.*;
 import java.net.Socket;
 
+
 public class Client {
     private Socket serverSocket;
     private int playerID;
@@ -59,10 +60,15 @@ public class Client {
             new Thread(this::readGameUpdates).start();
 
             startGUI();
+            canRollThroughGUI();
 
         } catch (IOException e) {
             System.out.println("Error connecting to the server: " + e.getMessage());
         }
+    }
+
+    public boolean canRollThroughGUI() {
+        return true;
     }
 
     private void startGUI() {
