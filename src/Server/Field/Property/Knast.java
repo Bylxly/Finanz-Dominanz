@@ -50,4 +50,8 @@ public class Knast extends Property {
     public void incrementRollAmount(Player player) {
         rollAmount.put(player, getRollAmount(player) + 1);
     }
+
+    public void removeRollAmount(Player player) {
+        rollAmount.remove(player);
+    }
 }
