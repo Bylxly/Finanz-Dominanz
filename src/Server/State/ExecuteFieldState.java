@@ -47,6 +47,7 @@ public class ExecuteFieldState implements GameState {
                 game.getActivePlayer().setArrested(false);
             }
             else {
+                game.getActivePlayer().sendObject(new Message(MsgType.INFO, "Du hast keinen Pasch gewürfelt"));
                 return;
             }
         }
