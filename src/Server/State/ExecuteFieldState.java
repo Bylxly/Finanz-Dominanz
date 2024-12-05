@@ -7,6 +7,8 @@ import Server.GameUtilities;
 import Server.Message;
 import Server.MsgType;
 
+import java.util.Objects;
+
 public class ExecuteFieldState implements GameState {
 
     private Game game;
@@ -36,7 +38,7 @@ public class ExecuteFieldState implements GameState {
         game.getActivePlayer().sendObject(new Message(MsgType.ASK_KNAST, null));
         String msg = game.getActivePlayer().recieveMessage();
 
-        if (msg == "ROLL" &&
+        if (Objects.equals(msg, "ROLL") &&
                 ((Knast) game.getActivePlayer().getCurrentField()).getRollAmount(game.getActivePlayer()) < 3) {
             game.askRoll(game.getActivePlayer());
             ((Knast) game.getActivePlayer().getCurrentField()).incrementRollAmount(game.getActivePlayer());
