@@ -45,6 +45,7 @@ public class ExecuteFieldState implements GameState {
             ((Knast) game.getActivePlayer().getCurrentField()).incrementRollAmount(game.getActivePlayer());
             if (game.getRoll().getPasch()) {
                 game.getActivePlayer().setArrested(false);
+                System.out.println("Pasch: " + game.getRoll().getPasch());
             }
             else {
                 game.getActivePlayer().sendObject(new Message(MsgType.INFO, "Du hast keinen Pasch gewürfelt"));
