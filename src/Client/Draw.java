@@ -132,9 +132,9 @@ public class Draw extends PApplet {
     }
 
     private void createButtons() {
-        btnOption1 = new GButton(950, 620, 200, 30, "Option 1", color(200), color(255), true);
-        btnOption2 = new GButton(950, 660, 200, 30, "Option 2", color(200), color(255), true);
-        btnOption3 = new GButton(950, 700, 200, 30, "Option 3", color(200), color(255), true);
+        btnOption1 = new GButton(950, 620, 200, 30, "Option 1", color(200), color(255), true, true);
+        btnOption2 = new GButton(950, 660, 200, 30, "Option 2", color(200), color(255), true, true);
+        btnOption3 = new GButton(950, 700, 200, 30, "Option 3", color(200), color(255), true, true);
     }
 
     private void drawButtons() {
