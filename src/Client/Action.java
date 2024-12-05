@@ -14,58 +14,79 @@ import java.util.*;
 public class Action {
     private int actionId;
     private String description;
+    public static boolean rollTriggered = false;
+    private static String currentAction = "";
 
     public enum ServerMessage {
         ASK_ROLL {
             @Override
             public void execute(Client client, Message message) {
-                doRoll(client);
+                doRollWithConsole(client);
             }
         },
         ASK_BUY {
-
             @Override
             public void execute(Client client, Message message) {
                 if (message != null && message.message() != null && !message.message().isEmpty()) {
                     doBuy(client, message.message());
                 }
             }
-
-
         },
-        ASK_NEXT{
+        ASK_NEXT {
             @Override
             public void execute(Client client, Message message) {
                 doNext(client);
             }
         },
-        BUILD_SELECT_PROPERTY{
+        BUILD_SELECT_PROPERTY {
             @Override
             public void execute(Client client, Message message) {
                 doBuild(client);
             }
         },
-        DO_AUCTIONS{
+        DO_AUCTIONS {
             @Override
             public void execute(Client client, Message message) {
                 doAuction(client, message);
             }
-        }
-        ;
+        };
 
-        public static void doRoll(Client client) {
-            try {
-                System.out.println("Press Enter to roll the dice...");
-                new BufferedReader(new InputStreamReader(System.in)).readLine();
-
-                Random random = new Random();
-                int[] rolls = new int[5];
-                System.out.print("Rolling: ");
-                for (int i = 0; i < rolls.length; i++) {
-                    rolls[i] = random.nextInt(6) + 1;
-                    System.out.print(rolls[i] + (i < rolls.length - 1 ? ", " : ""));
+        public static void doRollWithConsole(Client client) {
+            synchronized (ServerMessage.class) {
+                if (!currentAction.isEmpty()) {
+                    System.out.println("An action is already in progress: " + currentAction);
+                    return;
                 }
-                System.out.println();
+                setCurrentAction("ROLL");
+            }
+
+            new Thread(() -> {
+                try {
+                    System.out.println("Press Enter to roll the dice...");
+                    new BufferedReader(new InputStreamReader(System.in)).readLine();
+                    doRoll(client);
+                } catch (IOException e) {
+                    System.out.println("Error during console input: " + e.getMessage());
+                }
+            }).start();
+        }
+
+        public static synchronized void doRoll(Client client) {
+            if (!"ROLL".equals(getCurrentAction())) {
+                System.out.println("Cannot roll, current action is: " + getCurrentAction());
+                return;
+            }
+
+            if (rollTriggered) {
+                System.out.println("Roll already in progress.");
+                return;
+            }
+
+            rollTriggered = true;
+            try {
+                Random random = new Random();
+                int rollResult = random.nextInt(6) + 1;
+                System.out.println("You rolled a " + rollResult);
 
                 // Notify the server
                 PrintWriter writer = client.getWriter();
@@ -73,116 +94,115 @@ public class Action {
                     writer.println("ROLL");
                 }
 
-            } catch (IOException e) {
-                System.out.println("Error during dice roll: " + e.getMessage());
+            } catch (Exception e) {
+                System.out.println("Error during roll: " + e.getMessage());
+            } finally {
+                rollTriggered = false;
+                setCurrentAction("");
             }
         }
 
-        public static void doBuy(Client client, String propertyName) {
-            BufferedReader consoleReader = new BufferedReader(new InputStreamReader(System.in));
-            while (true) {
-                try {
-                    System.out.println("The property " + propertyName + " is available for purchase.");
-                    System.out.println("Do you want to buy this property? (y/n): ");
-                    String response = consoleReader.readLine().trim().toLowerCase();
 
-                    PrintWriter writer = client.getWriter();
-                    if (writer != null) {
-                        if ("y".equals(response)) {
-                            writer.println("BUY");
-                            System.out.println("You chose to buy the property: " + propertyName + ".");
-                            break;
-                        } else if ("n".equals(response)) {
-                            writer.println("DO_AUCTION");
-                            System.out.println("You chose not to buy the property: " + propertyName + ". An auction will start.");
-                            break;
-                        } else {
-                            System.out.println("Invalid input. Please enter 'y' or 'n'.");
-                        }
+
+        public static void doBuy(Client client, String propertyName) {
+            setCurrentAction("BUY");
+            BufferedReader consoleReader = new BufferedReader(new InputStreamReader(System.in));
+            try {
+                System.out.println("The property " + propertyName + " is available for purchase.");
+                System.out.print("Do you want to buy this property? (y/n): ");
+                String response = consoleReader.readLine().trim().toLowerCase();
+
+                PrintWriter writer = client.getWriter();
+                if (writer != null) {
+                    if ("y".equals(response)) {
+                        writer.println("BUY");
+                        System.out.println("You chose to buy the property: " + propertyName);
+                    } else if ("n".equals(response)) {
+                        writer.println("DO_AUCTION");
+                        System.out.println("You chose not to buy the property: " + propertyName + ". An auction will start.");
+                    } else {
+                        System.out.println("Invalid input. Please enter 'y' or 'n'.");
                     }
-                } catch (IOException e) {
-                    System.out.println("Error during buy decision: " + e.getMessage());
                 }
+            } catch (IOException e) {
+                System.out.println("Error during buy decision: " + e.getMessage());
+            } finally {
+                setCurrentAction("");
             }
         }
 
         public static void doNext(Client client) {
+            setCurrentAction("END");
             BufferedReader consoleReader = new BufferedReader(new InputStreamReader(System.in));
             try {
                 System.out.println("It's your turn. Choose an action: END, BUILD, BANKRUPT");
-
                 String input = consoleReader.readLine().trim();
                 String response = "";
 
-                if (input.equals("build") || input.equals("2") || input.equals("BUILD")) {
+                if ("build".equalsIgnoreCase(input)) {
                     response = "BUILD";
-                } else if (input.equals("bankrupt") || input.equals("end me") || input.equals("3") || input.equals("BANKRUPT")) {
+                } else if ("bankrupt".equalsIgnoreCase(input)) {
                     response = "BANKRUPT";
-                } else if (input.equals("end") || input.equals("1") || input.equals("endturn") || input.equals("END") || input.isEmpty()) {
+                } else if ("end".equalsIgnoreCase(input) || input.isEmpty()) {
                     response = "END";
                 }
-                PrintWriter writer = client.getWriter();
-                if ( writer!= null) {
 
-                switch (response) {
-                    case "BUILD":writer.println("BUILD");
-                        break;
-                    case "BANKRUPT":writer.println("BANKRUPT");
-                        break;
-                    case "END":writer.println("END");
-                        break;
-                    default:
-                        System.out.println("Invalid Input");
-                }}
+                PrintWriter writer = client.getWriter();
+                if (writer != null) {
+                    writer.println(response);
+                }
             } catch (IOException e) {
                 System.out.println("Error during next action selection: " + e.getMessage());
+            } finally {
+                setCurrentAction("");
             }
         }
 
-        public static void doBuild(Client client){
+        public static void doBuild(Client client) {
+            setCurrentAction("BUILD");
             BufferedReader consoleReader = new BufferedReader(new InputStreamReader(System.in));
             List<Street> streets = new ArrayList<>();
             for (Property property : client.getGame().getActivePlayer().getProperties()) {
-                if (property instanceof Street && ((Street) property).getHouses() < 5
-                        && ((Street) property).getColorGroup().isComplete()) {
-                    streets.add((Street) property);
+                if (property instanceof Street street && street.getHouses() < 5 && street.getColorGroup().isComplete()) {
+                    streets.add(street);
                 }
             }
 
             if (!streets.isEmpty()) {
-                System.out.println("You can build on following properties:");
-
+                System.out.println("You can build on the following properties:");
                 int index = 1;
-                Map<Integer, Property> sortedProperties = new HashMap<>();
+                Map<Integer, Property> propertyMap = new HashMap<>();
                 for (Street street : streets) {
-                    if (street.getColorGroup().isComplete()) {
-                        System.out.println(index + ": " + street.getName());
-                        sortedProperties.put(index, street);
-                    }
+                    System.out.println(index + ": " + street.getName());
+                    propertyMap.put(index, street);
+                    index++;
                 }
 
                 System.out.print("Choose a property: ");
                 try {
                     int selection = Integer.parseInt(consoleReader.readLine());
                     PrintWriter writer = client.getWriter();
-                    writer.println(client.getGame().getActivePlayer().getProperties().indexOf(sortedProperties.get(selection)));
+                    if (writer != null) {
+                        writer.println(client.getGame().getActivePlayer().getProperties().indexOf(propertyMap.get(selection)));
+                    }
                 } catch (IOException e) {
-                    System.out.println("Error during building properties: " + e.getMessage());
+                    System.out.println("Error during building: " + e.getMessage());
                 }
-            }
-            else {
-                System.out.println("You don't own any properties where you can build on");
+            } else {
+                System.out.println("No properties available for building.");
                 doNext(client);
             }
+            setCurrentAction("");
         }
 
-        public static void doAuction(Client client, Message message){
-
+        public static void doAuction(Client client, Message message) {
+            setCurrentAction("AUCTION");
+            // Implement auction logic here
+            setCurrentAction("");
         }
 
         public abstract void execute(Client client, Message message);
     }
-
 
     public Action(int actionId, String description) {
         this.actionId = actionId;
@@ -212,5 +232,14 @@ public class Action {
     @Override
     public String toString() {
         return "Action ID: " + actionId + ", Description: " + description;
+    }
+
+    // currentAction Management
+    public static synchronized void setCurrentAction(String action) {
+        currentAction = action;
+    }
+
+    public static synchronized String getCurrentAction() {
+        return currentAction;
     }
 }

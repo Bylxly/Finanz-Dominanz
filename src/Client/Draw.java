@@ -18,7 +18,9 @@ public class Draw extends PApplet {
 
     private ArrayList<GField> fields = new ArrayList<>();
 
-    private GButton btnOption1, btnOption2, btnOption3;
+    private GButton btnOption1, btnOption2, btnOption3, btnRoll; // Roll Button hinzufügen
+
+    private boolean playerCanRoll = false; // Spieler kann würfeln (Steuerung)
 
     public Draw(Client client) {
         this.client = client;
@@ -63,13 +65,12 @@ public class Draw extends PApplet {
         }
 
         for (int i = 0; i < fields.size(); i++) {
-            String fieldName = board[i].getName();
+            String fieldName = board[i].getUIName();
             fields.get(i).setName(fieldName);
         }
 
         redraw();
     }
-
 
     private void displayMessage(String message) {
         fill(0);
@@ -132,15 +133,19 @@ public class Draw extends PApplet {
     }
 
     private void createButtons() {
-        btnOption1 = new GButton(950, 620, 200, 30, "Option 1", color(200), color(255), true);
-        btnOption2 = new GButton(950, 660, 200, 30, "Option 2", color(200), color(255), true);
-        btnOption3 = new GButton(950, 700, 200, 30, "Option 3", color(200), color(255), true);
+        btnOption1 = new GButton(950, 620, 200, 30, "Option 1", color(200), color(255), true, true);
+        btnOption2 = new GButton(950, 660, 200, 30, "Option 2", color(200), color(255), true, true);
+        btnOption3 = new GButton(950, 700, 200, 30, "Option 3", color(200), color(255), true, true);
+
+        // Roll Button
+        btnRoll = new GButton(950, 760, 200, 30, "Roll Dice", color(200), color(255), true, true);
     }
 
     private void drawButtons() {
         btnOption1.draw(this);
         btnOption2.draw(this);
         btnOption3.draw(this);
+        btnRoll.draw(this); // Roll Button zeichnen
         loop();
     }
 
@@ -184,7 +189,6 @@ public class Draw extends PApplet {
         }
     }
 
-
     @Override
     public void mousePressed() {
         for (GField field : fields) {
@@ -202,6 +206,8 @@ public class Draw extends PApplet {
             handleOption2();
         } else if (btnOption3.isClicked(this)) {
             handleOption3();
+        } else if (btnRoll.isClicked(this)) { // Roll Button geklickt
+            handleRoll();
         }
     }
 
@@ -216,4 +222,21 @@ public class Draw extends PApplet {
     private void handleOption3() {
         println("Option 3 selected for field: " + currentField);
     }
+
+    private void handleRoll() {
+        println("Rolling dice for player: " + currentPlayer);
+        Action.setCurrentAction("ROLL");
+
+        new Thread(() -> {
+            Action.ServerMessage.doRoll(client);
+            synchronized (this) {
+                currentField = client.getGame().getActivePlayer().getCurrentField().getUIName();
+                redraw();
+                Action.setCurrentAction(""); // Reset action after roll
+            }
+        }).start();
+    }
+
+
+
 }
