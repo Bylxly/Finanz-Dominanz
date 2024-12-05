@@ -21,7 +21,7 @@ public class Action {
         ASK_ROLL {
             @Override
             public void execute(Client client, Message message) {
-                doRollWithConsole(client);
+                doRoll(client);
             }
         },
         ASK_BUY {
@@ -51,26 +51,6 @@ public class Action {
             }
         };
 
-        public static void doRollWithConsole(Client client) {
-            synchronized (ServerMessage.class) {
-                if (!currentAction.isEmpty()) {
-                    System.out.println("An action is already in progress: " + currentAction);
-                    return;
-                }
-                setCurrentAction("ROLL");
-            }
-
-            new Thread(() -> {
-                try {
-                    System.out.println("Press Enter to roll the dice...");
-                    new BufferedReader(new InputStreamReader(System.in)).readLine();
-                    doRoll(client);
-                } catch (IOException e) {
-                    System.out.println("Error during console input: " + e.getMessage());
-                }
-            }).start();
-        }
-
         public static synchronized void doRoll(Client client) {
             if (!"ROLL".equals(getCurrentAction())) {
                 System.out.println("Cannot roll, current action is: " + getCurrentAction());
@@ -84,16 +64,10 @@ public class Action {
 
             rollTriggered = true;
             try {
-                Random random = new Random();
-                int rollResult = random.nextInt(6) + 1;
-                System.out.println("You rolled a " + rollResult);
-
-                // Notify the server
                 PrintWriter writer = client.getWriter();
                 if (writer != null) {
                     writer.println("ROLL");
                 }
-
             } catch (Exception e) {
                 System.out.println("Error during roll: " + e.getMessage());
             } finally {
@@ -101,6 +75,7 @@ public class Action {
                 setCurrentAction("");
             }
         }
+
 
 
 

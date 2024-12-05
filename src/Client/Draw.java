@@ -226,16 +226,12 @@ public class Draw extends PApplet {
     private void handleRoll() {
         println("Rolling dice for player: " + currentPlayer);
         Action.setCurrentAction("ROLL");
-
-        new Thread(() -> {
-            Action.ServerMessage.doRoll(client);
-            synchronized (this) {
-                currentField = client.getGame().getActivePlayer().getCurrentField().getUIName();
-                redraw();
-                Action.setCurrentAction(""); // Reset action after roll
-            }
-        }).start();
+        Action.ServerMessage.doRoll(client);
+        currentField = client.getGame().getActivePlayer().getCurrentField().getUIName();
+        redraw();
+        Action.setCurrentAction("");
     }
+
 
 
 
