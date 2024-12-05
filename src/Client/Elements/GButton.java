@@ -6,9 +6,9 @@ public class GButton {
     float x, y, width, height;
     String label;
     int colorDefault, colorHover;
-    boolean mouseOverEffect;
+    boolean mouseOverEffect, isActive;
 
-    public GButton(float x, float y, float width, float height, String label, int colorDefault, int colorHover, boolean mouseOverEffect) {
+    public GButton(float x, float y, float width, float height, String label, int colorDefault, int colorHover, boolean mouseOverEffect, boolean isActive) {
         this.x = x;
         this.y = y;
         this.width = width;
@@ -17,9 +17,12 @@ public class GButton {
         this.colorDefault = colorDefault;
         this.colorHover = colorHover;
         this.mouseOverEffect = mouseOverEffect;
+        this.isActive = isActive;
     }
 
     public void draw(PApplet app) {
+        if (!isActive) return;
+
         app.fill(isMouseOver(app) && mouseOverEffect ? colorHover : colorDefault);
         app.rect(x, y, width, height, 5);
 
@@ -29,11 +32,15 @@ public class GButton {
     }
 
     boolean isMouseOver(PApplet app) {
+        if (!isActive) return false;
         return app.mouseX > x && app.mouseX < x + width && app.mouseY > y && app.mouseY < y + height;
     }
 
     public boolean isClicked(PApplet app) {
         return isMouseOver(app) && app.mousePressed;
     }
-}
 
+    public void setActive(boolean active) {
+        this.isActive = active;
+    }
+}
