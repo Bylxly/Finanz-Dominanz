@@ -119,7 +119,7 @@ public class Action {
             try {
                 if (((Knast) client.getGame().getActivePlayer().getCurrentField()).getRollAmount(client.getGame().getActivePlayer()) < 3) {
                     System.out.println("What do you want to do? ROLL or PAY");
-                    if (consoleReader.readLine().equals("ROLL")) {
+                    if (consoleReader.readLine().equalsIgnoreCase("ROLL")) {
                         client.getWriter().println("ROLL");
                     }
                     else {
