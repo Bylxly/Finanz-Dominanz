@@ -296,4 +296,12 @@ public class Game extends Thread implements Serializable {
     public Field[] getBoard() {
         return board;
     }
+
+    public void setCurrentGameState(GameState currentGameState) {
+        this.currentGameState = currentGameState;
+    }
+
+    public GameState getCurrentGameState() {
+        return currentGameState;
+    }
 }
