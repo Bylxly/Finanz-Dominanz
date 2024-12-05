@@ -143,7 +143,8 @@ public class Action {
             BufferedReader consoleReader = new BufferedReader(new InputStreamReader(System.in));
             List<Street> streets = new ArrayList<>();
             for (Property property : client.getGame().getActivePlayer().getProperties()) {
-                if (property instanceof Street && ((Street) property).getHouses() < 5) {
+                if (property instanceof Street && ((Street) property).getHouses() < 5
+                        && ((Street) property).getColorGroup().isComplete()) {
                     streets.add((Street) property);
                 }
             }

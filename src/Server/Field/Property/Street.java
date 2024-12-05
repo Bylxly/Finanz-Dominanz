@@ -13,6 +13,7 @@ public class Street extends Property {
         super(name, price, rent, hypothek);
         this.housePrice = housePrice;
         this.colorGroup = colorGroup;
+        colorGroup.addStreet(this);
     }
 
     @Override
