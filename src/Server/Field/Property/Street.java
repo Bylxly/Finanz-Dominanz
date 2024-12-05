@@ -69,4 +69,7 @@ public class Street extends Property {
         return name.toString();
     }
 
+    public int getHousePrice() {
+        return housePrice;
+    }
 }

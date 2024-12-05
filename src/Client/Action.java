@@ -187,7 +187,7 @@ public class Action {
                 Map<Integer, Property> sortedProperties = new HashMap<>();
                 for (Street street : streets) {
                     if (street.getColorGroup().isComplete()) {
-                        System.out.println(index + ": " + street.getName());
+                        System.out.println(index + ": " + street.getName() + " Kosten: " + street.getHousePrice());
                         sortedProperties.put(index, street);
                         index++;
                     }
