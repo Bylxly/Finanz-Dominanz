@@ -7,6 +7,8 @@ import Server.GameUtilities;
 import Server.Message;
 import Server.MsgType;
 
+import java.util.Objects;
+
 public class ExecuteFieldState implements GameState {
 
     private Game game;
@@ -23,6 +25,7 @@ public class ExecuteFieldState implements GameState {
         else if (game.getActivePlayer().getCurrentField() instanceof AbInKnast) {
             game.getActivePlayer().getCurrentField().startAction(game.getActivePlayer());
             game.movePlayerToKnast(game.getActivePlayer());
+            ((Knast) game.getActivePlayer().getCurrentField()).addRollAmount(game.getActivePlayer(), 0);
             game.getActivePlayer().sendObject(new Message(MsgType.INFO, "Du musst in den Knast gehen!"));
         }
         else if (!game.getActivePlayer().getCurrentField().startAction(game.getActivePlayer())) {
@@ -36,14 +39,16 @@ public class ExecuteFieldState implements GameState {
         game.getActivePlayer().sendObject(new Message(MsgType.ASK_KNAST, null));
         String msg = game.getActivePlayer().recieveMessage();
 
-        if (msg == "ROLL" &&
+        if (Objects.equals(msg, "ROLL") &&
                 ((Knast) game.getActivePlayer().getCurrentField()).getRollAmount(game.getActivePlayer()) < 3) {
             game.askRoll(game.getActivePlayer());
             ((Knast) game.getActivePlayer().getCurrentField()).incrementRollAmount(game.getActivePlayer());
             if (game.getRoll().getPasch()) {
                 game.getActivePlayer().setArrested(false);
+                System.out.println("Pasch: " + game.getRoll().getPasch());
             }
             else {
+                game.getActivePlayer().sendObject(new Message(MsgType.INFO, "Du hast keinen Pasch gewürfelt"));
                 return;
             }
         }

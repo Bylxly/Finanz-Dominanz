@@ -14,60 +14,50 @@ import java.util.*;
 public class Action {
     private int actionId;
     private String description;
-    private static boolean rollTriggered = false;
 
     public enum ServerMessage {
         ASK_ROLL {
             @Override
             public void execute(Client client, Message message) {
-                doRollC(client);
+                doRoll(client);
             }
         },
         ASK_BUY {
+
             @Override
             public void execute(Client client, Message message) {
                 if (message != null && message.message() != null && !message.message().isEmpty()) {
                     doBuy(client, message.message());
                 }
             }
+
+
         },
-        ASK_NEXT {
+        ASK_NEXT{
             @Override
             public void execute(Client client, Message message) {
                 doNext(client);
             }
         },
-        BUILD_SELECT_PROPERTY {
+        BUILD_SELECT_PROPERTY{
             @Override
             public void execute(Client client, Message message) {
                 doBuild(client);
             }
         },
-        DO_AUCTIONS {
+        DO_AUCTIONS{
             @Override
             public void execute(Client client, Message message) {
                 doAuction(client, message);
             }
-        };
-
-        // Methode für Konsoleneingabe-Thread
-        public static void doRollC(Client client) {
-            new Thread(() -> {
-                try {
-                    System.out.println("Press Enter to roll the dice...");
-                    new BufferedReader(new InputStreamReader(System.in)).readLine();
-                    doRoll(client); // Aufruf der Roll-Methode
-                } catch (IOException e) {
-                    System.out.println("Error during console input: " + e.getMessage());
-                }
-            }).start();
         }
+        ;
 
         public static void doRoll(Client client) {
-            if (rollTriggered) return;
-            rollTriggered = true;
-
             try {
+                System.out.println("Press Enter to roll the dice...");
+                new BufferedReader(new InputStreamReader(System.in)).readLine();
+
                 Random random = new Random();
                 int[] rolls = new int[5];
                 System.out.print("Rolling: ");
@@ -77,13 +67,14 @@ public class Action {
                 }
                 System.out.println();
 
-                // Server benachrichtigen
+                // Notify the server
                 PrintWriter writer = client.getWriter();
                 if (writer != null) {
                     writer.println("ROLL");
                 }
-            } finally {
-                rollTriggered = false; // Zurücksetzen für zukünftige Würfe
+
+            } catch (IOException e) {
+                System.out.println("Error during dice roll: " + e.getMessage());
             }
         }
 
@@ -123,28 +114,32 @@ public class Action {
                 String input = consoleReader.readLine().trim();
                 String response = "";
 
-                if (input.equalsIgnoreCase("build") || input.equals("2")) {
+                if (input.equals("build") || input.equals("2") || input.equals("BUILD")) {
                     response = "BUILD";
-                } else if (input.equalsIgnoreCase("bankrupt") || input.equals("3")) {
+                } else if (input.equals("bankrupt") || input.equals("end me") || input.equals("3") || input.equals("BANKRUPT")) {
                     response = "BANKRUPT";
-                } else if (input.equalsIgnoreCase("end") || input.equals("1") || input.isEmpty()) {
+                } else if (input.equals("end") || input.equals("1") || input.equals("endturn") || input.equals("END") || input.isEmpty()) {
                     response = "END";
                 }
                 PrintWriter writer = client.getWriter();
-                if (writer != null) {
-                    switch (response) {
-                        case "BUILD": writer.println("BUILD"); break;
-                        case "BANKRUPT": writer.println("BANKRUPT"); break;
-                        case "END": writer.println("END"); break;
-                        default: System.out.println("Invalid Input");
-                    }
-                }
+                if ( writer!= null) {
+
+                switch (response) {
+                    case "BUILD":writer.println("BUILD");
+                        break;
+                    case "BANKRUPT":writer.println("BANKRUPT");
+                        break;
+                    case "END":writer.println("END");
+                        break;
+                    default:
+                        System.out.println("Invalid Input");
+                }}
             } catch (IOException e) {
                 System.out.println("Error during next action selection: " + e.getMessage());
             }
         }
 
-        public static void doBuild(Client client) {
+        public static void doBuild(Client client){
             BufferedReader consoleReader = new BufferedReader(new InputStreamReader(System.in));
             List<Street> streets = new ArrayList<>();
             for (Property property : client.getGame().getActivePlayer().getProperties()) {
@@ -156,6 +151,7 @@ public class Action {
 
             if (!streets.isEmpty()) {
                 System.out.println("You can build on following properties:");
+
                 int index = 1;
                 Map<Integer, Property> sortedProperties = new HashMap<>();
                 for (Street street : streets) {
@@ -173,18 +169,20 @@ public class Action {
                 } catch (IOException e) {
                     System.out.println("Error during building properties: " + e.getMessage());
                 }
-            } else {
-                System.out.println("You don't own any properties where you can build on.");
+            }
+            else {
+                System.out.println("You don't own any properties where you can build on");
                 doNext(client);
             }
         }
 
-        public static void doAuction(Client client, Message message) {
-            // TODO: Implement auction logic
+        public static void doAuction(Client client, Message message){
+
         }
 
         public abstract void execute(Client client, Message message);
     }
+
 
     public Action(int actionId, String description) {
         this.actionId = actionId;

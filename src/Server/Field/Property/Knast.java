@@ -21,13 +21,16 @@ public class Knast extends Property {
 
     @Override
     public void payRent(Player player) {
-        if (getOwner() != null && getOwner() != player) {
-            if (player.isArrested()) {
+        if (player.isArrested()) {
+            if (getOwner() != null && getOwner() != player) {
                 GameUtilities.transferMoney(player, getOwner(), getRent(0));
             }
             else {
-                player.sendObject(new Message(MsgType.INFO, "Sie sind nur zu Besuch im Gefängnis!"));
+                GameUtilities.payBank(player, getRent(0));
             }
+        }
+        else {
+            player.sendObject(new Message(MsgType.INFO, "Sie sind nur zu Besuch im Gefängnis!"));
         }
     }
 

@@ -1,5 +1,6 @@
 package Server.State;
 
+import Server.Field.Property.Knast;
 import Server.Field.Property.Property;
 import Server.Game;
 import Server.GameUtilities;
@@ -28,6 +29,10 @@ public class BuyFieldState implements GameState {
             else {
                 game.getActivePlayer().sendObject(new Message(MsgType.INFO, "Du hast nicht genügend Geld!"));
             }
+        }
+        else if (currentProperty instanceof Knast) {
+            game.setCurrentGameState(new ExecuteFieldState(game));
+            game.getCurrentGameState().execute();
         }
     }
 

@@ -220,7 +220,9 @@ public class Game extends Thread implements Serializable {
             do {
                 currentGameState = new RollDiceState(this);
                 currentGameState.execute();
-                movePlayer();
+                if (!activePlayer.isArrested()) {
+                    movePlayer();
+                }
 
                 if (activePlayer.getCurrentField() instanceof Property
                     && !((Property) activePlayer.getCurrentField()).isOwned()) {
@@ -293,5 +295,13 @@ public class Game extends Thread implements Serializable {
 
     public Field[] getBoard() {
         return board;
+    }
+
+    public void setCurrentGameState(GameState currentGameState) {
+        this.currentGameState = currentGameState;
+    }
+
+    public GameState getCurrentGameState() {
+        return currentGameState;
     }
 }
