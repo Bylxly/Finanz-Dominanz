@@ -22,6 +22,7 @@ public class BuyFieldState implements GameState {
 
     @Override
     public void execute() {
+        game.printBoard();
         if (askClient()) {
             if (GameUtilities.checkIfEnoughMoney(game.getActivePlayer(), currentProperty.getPrice())) {
                 currentProperty.buy(game.getActivePlayer());
