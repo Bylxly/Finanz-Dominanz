@@ -1,5 +1,6 @@
 package Client;
 
+import Server.Field.Property.Knast;
 import Server.Field.Property.Property;
 import Server.Field.Property.Street;
 import Server.Message;
@@ -32,6 +33,12 @@ public class Action {
             }
 
 
+        },
+        ASK_KNAST {
+            @Override
+            public void execute(Client client, Message message) {
+                doKnast(client);
+            }
         },
         ASK_NEXT{
             @Override
@@ -104,6 +111,30 @@ public class Action {
                     System.out.println("Error during buy decision: " + e.getMessage());
                 }
             }
+        }
+
+        public static void doKnast(Client client) {
+            BufferedReader consoleReader = new BufferedReader(new InputStreamReader(System.in));
+            System.out.println("You are in the Knast!");
+            try {
+                if (((Knast) client.getGame().getActivePlayer().getCurrentField()).getRollAmount(client.getGame().getActivePlayer()) < 3) {
+                    System.out.println("What do you want to do? ROLL or PAY");
+                    if (consoleReader.readLine().equals("ROLL")) {
+                        client.getWriter().println("ROLL");
+                    }
+                    else {
+                        client.getWriter().println("PAY");
+                    }
+                }
+                else {
+                    System.out.println("You've already rolled three times, you now can only buy yourself a way out");
+                    consoleReader.readLine();
+                    client.getWriter().println("PAY");
+                }
+            } catch (IOException e) {
+                System.out.println("Error during knast decision: " + e.getMessage());
+            }
+
         }
 
         public static void doNext(Client client) {
