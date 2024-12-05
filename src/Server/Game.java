@@ -239,7 +239,7 @@ public class Game extends Thread implements Serializable {
                 }
                 currentGameState.execute();
                 printBoard();
-            } while (roll.getPasch());
+            } while (roll.getPasch() && !activePlayer.isArrested());
 
             String msg;
             do {
