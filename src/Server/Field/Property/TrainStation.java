@@ -11,8 +11,8 @@ public class TrainStation extends Property {
         super(name, price, rent, hypothek);
     }
 
-    public int getAnzahlBahnhöfe(Player p) {
-        for(Property property : p.getProperties()){
+    public int getAnzahlBahnhöfe() {
+        for(Property property : getOwner().getProperties()){
             if(property instanceof TrainStation){
                 anzahlDerBesitzendenBahnhöfeEinesSpielers++;
             }
@@ -23,13 +23,13 @@ public class TrainStation extends Property {
     @Override
     public void payRent(Player p) {
         if (getOwner() != null && getOwner() != p) {
-            GameUtilities.transferMoney(p, getOwner(), getRent(getAnzahlBahnhöfe(getOwner())));
+            GameUtilities.transferMoney(p, getOwner(), getRent(getAnzahlBahnhöfe()));
         }
     }
 
     @Override
     public boolean startAction(Player p) {
-        if (GameUtilities.checkIfEnoughMoney(p, getRent(getAnzahlBahnhöfe(getOwner())))) {
+        if (GameUtilities.checkIfEnoughMoney(p, getRent(getAnzahlBahnhöfe()))) {
             payRent(p);
             return true;
         }
