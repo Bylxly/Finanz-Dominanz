@@ -18,9 +18,9 @@ public class Draw extends PApplet {
 
     private ArrayList<GField> fields = new ArrayList<>();
 
-    private GButton btnOption1, btnOption2, btnOption3, btnRoll; // Roll Button hinzufügen
+    private GButton btnOption1, btnOption2, btnOption3, btnRoll;
 
-    private boolean playerCanRoll = false; // Spieler kann würfeln (Steuerung)
+    private boolean fieldsInitialized = false;
 
     public Draw(Client client) {
         this.client = client;
@@ -37,7 +37,7 @@ public class Draw extends PApplet {
         textSize(14);
         initializeFields();
         createButtons();
-        noLoop(); // Ensures updates happen only when necessary
+        noLoop();
     }
 
     @Override
@@ -47,18 +47,21 @@ public class Draw extends PApplet {
         if (game == null) {
             displayMessage("Waiting for game state...");
         } else {
-            drawFields();      // Draw the game board fields
-            drawPlayers();     // Draw player positions
-            drawInfoPanel();   // Draw the info panel
-            drawButtons();     // Draw action buttons
+            drawFields();
+            drawPlayers();
+            drawInfoPanel();
+            drawButtons();
         }
     }
 
     public void updateGameState(Game updatedGame) {
         this.game = updatedGame;
 
-        Field[] board = game.getBoard();
+        if (!fieldsInitialized) {
+            initializeFields();
+        }
 
+        Field[] board = game.getBoard();
         if (fields.size() != board.length) {
             System.out.println("Mismatch between field count and board size.");
             return;
@@ -105,12 +108,12 @@ public class Draw extends PApplet {
                 y = (fieldIndex - 10) * cellSize;
             } else if (fieldIndex <= 30) {
                 // Bottom row
-                x = (30 - fieldIndex) * cellSize;
+                x = (fieldIndex - 21) * cellSize;
                 y = 10 * cellSize;
             } else if (fieldIndex <= 39) {
                 // Left column
                 x = 0;
-                y = (40 - fieldIndex) * cellSize;
+                y = (fieldIndex - 30) * cellSize;
             }
 
             fill(255);
@@ -136,8 +139,6 @@ public class Draw extends PApplet {
         btnOption1 = new GButton(950, 620, 200, 30, "Option 1", color(200), color(255), true, true);
         btnOption2 = new GButton(950, 660, 200, 30, "Option 2", color(200), color(255), true, true);
         btnOption3 = new GButton(950, 700, 200, 30, "Option 3", color(200), color(255), true, true);
-
-        // Roll Button
         btnRoll = new GButton(950, 760, 200, 30, "Roll Dice", color(200), color(255), true, true);
     }
 
@@ -145,48 +146,41 @@ public class Draw extends PApplet {
         btnOption1.draw(this);
         btnOption2.draw(this);
         btnOption3.draw(this);
-        btnRoll.draw(this); // Roll Button zeichnen
+        btnRoll.draw(this);
         loop();
     }
 
     private void initializeFields() {
-        float boardSize = height;
+        if (fieldsInitialized) return;
+
         float cellSize = height / 11.0f;
 
         if (game == null || game.getBoard() == null) {
             System.out.println("Placeholder names.");
-            // Initialize with placeholder names
             for (int i = 0; i < 11; i++) {
-                fields.add(new GField(i * cellSize, 0, cellSize, cellSize, "Street " + i)); // Top row
-                fields.add(new GField(i * cellSize, height - cellSize, cellSize, cellSize, "Street " + (30 - i))); // Bottom row
+                fields.add(new GField(i * cellSize, 0, cellSize, cellSize, "Street " + i));
+                fields.add(new GField(i * cellSize, height - cellSize, cellSize, cellSize, "Street " + (30 - i)));
             }
             for (int i = 1; i < 10; i++) {
-                fields.add(new GField(0, i * cellSize, cellSize, cellSize, "Street " + (40 - i))); // Left column
-                fields.add(new GField(width - cellSize - (boardSize / 2), i * cellSize, cellSize, cellSize, "Street " + (10 + i))); // Right column
+                fields.add(new GField(0, i * cellSize, cellSize, cellSize, "Street " + (40 - i)));
+                fields.add(new GField(width - cellSize, i * cellSize, cellSize, cellSize, "Street " + (10 + i)));
             }
         } else {
             Field[] board = game.getBoard();
-
-            // Top row (0 to 10)
-            for (int i = 0; i < 11; i++) {
+            for (int i = 0; i <= 10; i++) {
                 fields.add(new GField(i * cellSize, 0, cellSize, cellSize, board[i].getUIName()));
             }
-
-            // Bottom row (21 to 30)
-            for (int i = 10; i >= 0; i--) {
-                fields.add(new GField(i * cellSize, height - cellSize, cellSize, cellSize, board[20 + (10 - i)].getUIName()));
+            for (int i = 11; i <= 20; i++) {
+                fields.add(new GField(10 * cellSize, (i - 10) * cellSize, cellSize, cellSize, board[i].getUIName()));
             }
-
-            // Left column (31 to 39)
-            for (int i = 9; i > 0; i--) {
-                fields.add(new GField(0, i * cellSize, cellSize, cellSize, board[40 - i].getUIName()));
+            for (int i = 30; i >= 21; i--) {
+                fields.add(new GField((i - 21) * cellSize, 10 * cellSize, cellSize, cellSize, board[i].getUIName()));
             }
-
-            // Right column (11 to 20)
-            for (int i = 1; i < 10; i++) {
-                fields.add(new GField(width - cellSize - (boardSize / 2), i * cellSize, cellSize, cellSize, board[10 + i].getUIName()));
+            for (int i = 39; i >= 31; i--) {
+                fields.add(new GField(0, (i - 30) * cellSize, cellSize, cellSize, board[i].getUIName()));
             }
         }
+        fieldsInitialized = true;
     }
 
     @Override
@@ -195,18 +189,17 @@ public class Draw extends PApplet {
             if (field.isClicked(this)) {
                 currentField = field.getName();
                 println("Clicked on: " + currentField);
-                redraw(); // Ensure changes are reflected
+                redraw();
             }
         }
 
-        // Handle button clicks
-        if (btnOption1.isClicked(this)) {
+        if (btnOption1.isClicked (this)) {
             handleOption1();
         } else if (btnOption2.isClicked(this)) {
             handleOption2();
         } else if (btnOption3.isClicked(this)) {
             handleOption3();
-        } else if (btnRoll.isClicked(this)) { // Roll Button geklickt
+        } else if (btnRoll.isClicked(this)) {
             handleRoll();
         }
     }
@@ -225,9 +218,6 @@ public class Draw extends PApplet {
 
     private void handleRoll() {
         println("Rolling dice for player: " + currentPlayer);
-
-        // `doRoll` Methode des ServerMessage-Enums aufrufen
         Action.ServerMessage.doRoll(client);
     }
-
 }
