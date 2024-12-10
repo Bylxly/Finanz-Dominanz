@@ -25,7 +25,7 @@ public class Knast extends Property {
             if (getOwner() != null && getOwner() != player) {
                 GameUtilities.transferMoney(player, getOwner(), getRent(0));
             }
-            else {
+            else if (getOwner() != player) {
                 GameUtilities.payBank(player, getRent(0));
             }
         }
