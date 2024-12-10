@@ -63,6 +63,9 @@ public class Game extends Thread implements Serializable {
                 case 3:
                     board[i] = new Street("Turmstraße", 60, 50 , new int[]{4, 20, 60, 180, 320, 450}, 30, purple);
                     break;
+                case 5:
+                    board[i] = new TrainStation("Südbahnhof", 200, new int[]{25, 50, 100, 200}, 100);
+                    break;
                 case 6:
                     board[i] = new Street("Chausseestraße", 100, 50, new int[]{6, 30, 90, 270, 400, 550}, 50, cyan);
                     break;
@@ -87,6 +90,9 @@ public class Game extends Thread implements Serializable {
                 case 14:
                     board[i] = new Street("Neue Straße", 160, 100, new int[]{12, 60, 180, 500, 700, 900}, 80, magenta);
                     break;
+                case 15:
+                    board[i] = new TrainStation("Westbahnhof", 200, new int[]{25, 50, 100, 200}, 100);
+                    break;
                 case 16:
                     board[i] = new Street("Münchner Straße", 180, 100, new int[]{14, 70, 200, 550, 750, 950}, 90, orange);
                     break;
@@ -104,6 +110,9 @@ public class Game extends Thread implements Serializable {
                     break;
                 case 24:
                     board[i] = new Street("Opernplatz", 240, 150, new int[]{20, 100, 300, 750, 925, 1100}, 120, red);
+                    break;
+                case 25:
+                    board[i] = new TrainStation("Nordbahnhof", 200, new int[]{25, 50, 100, 200}, 100);
                     break;
                 case 26:
                     board[i] = new Street("Lessingstraße", 260, 150, new int[]{22, 110, 330, 800, 975, 1150}, 130, yellow);
@@ -128,6 +137,9 @@ public class Game extends Thread implements Serializable {
                     break;
                 case 34:
                     board[i] = new Street("Bahnhofstraße", 320, 200, new int[]{28, 150, 450, 1000, 1200, 1400}, 160, green);
+                    break;
+                case 35:
+                    board[i] = new TrainStation("Hauptbahnhof", 200, new int[]{25, 50, 100, 200}, 100);
                     break;
                 case 37:
                     board[i] = new Street("Parkstraße", 350, 200, new int[]{35, 175, 500, 1100, 1300, 1500}, 175, blue);
@@ -223,7 +235,13 @@ public class Game extends Thread implements Serializable {
         activePlayer = players.get(0);
 
         while (true) {
+            int paschAnzahl = 0;
             do {
+                if (paschAnzahl == 3){
+                    activePlayer.setArrested(true);
+                    movePlayerToKnast(activePlayer);
+                    break;
+                }
                 currentGameState = new RollDiceState(this);
                 currentGameState.execute();
                 if (!activePlayer.isArrested()) {
@@ -239,6 +257,7 @@ public class Game extends Thread implements Serializable {
                 }
                 currentGameState.execute();
                 printBoard();
+                ++paschAnzahl;
             } while (roll.getPasch() && !activePlayer.isArrested());
 
             String msg;
