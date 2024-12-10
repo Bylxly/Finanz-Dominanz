@@ -37,7 +37,7 @@ public class Draw extends PApplet {
         textSize(14);
         initializeFields();
         createButtons();
-        noLoop(); // Ensures updates happen only when necessary
+        noLoop();
     }
 
     @Override
