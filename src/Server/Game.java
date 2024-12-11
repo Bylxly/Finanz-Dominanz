@@ -257,6 +257,9 @@ public class Game extends Thread implements Serializable {
                 }
                 currentGameState.execute();
                 printBoard();
+
+                //TODO: dont increment paschAnzahl when player just got out of Knast,
+                // or he will go to jail again after just 2 doubles
                 ++paschAnzahl;
             } while (roll.getPasch() && !activePlayer.isArrested());
 
