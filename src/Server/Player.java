@@ -40,7 +40,7 @@ public class Player implements Serializable {
                 objectOutputStream.writeObject(object);
                 objectOutputStream.flush(); // Sicherstellen, dass die Nachricht gesendet wird
                 if (object instanceof Message) {
-                    System.out.println(object);
+                    System.out.println("Sent to " + name + " :" + object);
                 }
                 else {
                     System.out.println("Game was sent to " + name);
