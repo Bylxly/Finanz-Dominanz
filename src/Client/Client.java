@@ -271,6 +271,10 @@ public class Client {
         return writer;
     }
 
+    public ObjectInputStream getObjectReader() {
+        return objectReader;
+    }
+
     public Game getGame() {
         return game;
     }
