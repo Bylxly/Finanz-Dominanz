@@ -29,6 +29,15 @@ public abstract class Property extends Field {
         }
     }
 
+    // Buy for auctions
+    public void buy(Player player, int amount) {
+        if (owner == null) {
+            GameUtilities.payBank(player, amount);
+            owner = player;
+            player.addProperty(this);
+        }
+    }
+
     public abstract void payRent(Player player);
 
     public void redeemProperty() {
