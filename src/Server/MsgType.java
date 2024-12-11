@@ -10,5 +10,6 @@ public enum MsgType implements Serializable {
     INFO,
     BUILD_SELECT_PROPERTY,
     DO_AUCTION,
-    NEW_BID
+    NEW_BID,
+    END_AUCTION
 }
