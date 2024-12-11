@@ -35,8 +35,9 @@ public class Knast extends Property {
     }
 
     @Override
-    public boolean startAction(Player p) {
-        return false;
+    public boolean startAction(Player player) {
+        player.sendObject(new Message(MsgType.INFO, "Sie sind nur zu Besuch im Gefängnis!"));
+        return true;
     }
 
     public int getRollAmount(Player player) {
