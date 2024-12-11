@@ -38,6 +38,11 @@ public class BuyFieldState implements GameState {
             game.setCurrentGameState(new ExecuteFieldState(game));
             game.getCurrentGameState().execute();
         }
+        else {
+            game.setCurrentGameState(new AuctionState(game));
+            game.getCurrentGameState().execute();
+
+        }
     }
 
     private boolean askClient() {
