@@ -173,6 +173,7 @@ public class Action {
 
         public static void doBuild(Client client){
             BufferedReader consoleReader = new BufferedReader(new InputStreamReader(System.in));
+            //Check on which properties the player can build
             List<Street> streets = new ArrayList<>();
             for (Property property : client.getGame().getActivePlayer().getProperties()) {
                 if (property instanceof Street && ((Street) property).getHouses() < 5
@@ -181,6 +182,7 @@ public class Action {
                 }
             }
 
+            //Print dialogue to player
             if (!streets.isEmpty()) {
                 System.out.println("You can build on following properties:");
 
@@ -194,6 +196,7 @@ public class Action {
                     }
                 }
 
+                //Player selects property
                 System.out.print("Choose a property: ");
                 try {
                     int selection = Integer.parseInt(consoleReader.readLine());
