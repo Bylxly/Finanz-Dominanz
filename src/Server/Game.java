@@ -8,6 +8,9 @@ import Server.Field.Start;
 import Server.State.*;
 
 import java.awt.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.net.Socket;
 import java.util.*;
@@ -21,7 +24,7 @@ public class Game extends Thread implements Serializable {
     private final int BOARD_SIZE = 40;
 
     // Attribute
-    private List<Player> players;
+    private volatile List<Player> players;
     private Field[] board;
     private Player activePlayer;
     private Roll roll;
@@ -38,8 +41,13 @@ public class Game extends Thread implements Serializable {
 
     @Override
     public void run() {
-        printBoard();
-        startGame();
+        //TODO: LobbyState
+        while (true) {
+            if (players.size() >= 2) {
+                printBoard();
+                startGame();
+            }
+        }
     }
 
     private void createBoard() {
@@ -154,8 +162,8 @@ public class Game extends Thread implements Serializable {
         }
     }
 
-    public void makePlayer(String name, Socket client) {
-        Player p = new Player(START_MONEY, name, client);
+    public void makePlayer(String name, Socket client, ObjectOutputStream out, BufferedReader in) {
+        Player p = new Player(START_MONEY, name, client, out, in);
         players.add(p);
         if (activePlayer == null) {
             activePlayer = p;

@@ -3,6 +3,7 @@ package Server;
 import java.io.Serializable;
 
 public enum MsgType implements Serializable {
+    ASK_SERVER,
     ASK_ROLL,
     ASK_BUY,
     ASK_NEXT,
@@ -10,5 +11,6 @@ public enum MsgType implements Serializable {
     INFO,
     BUILD_SELECT_PROPERTY,
     DO_AUCTION,
-    NEW_BID
+    NEW_BID,
+    END_AUCTION
 }

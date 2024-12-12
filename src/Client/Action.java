@@ -4,19 +4,26 @@ import Server.Field.Property.Knast;
 import Server.Field.Property.Property;
 import Server.Field.Property.Street;
 import Server.Message;
+import Server.MsgType;
+import Server.State.AuctionState;
 import Server.State.GameState;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.*;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class Action {
     private int actionId;
     private String description;
 
     public enum ServerMessage {
+        ASK_SERVER {
+            @Override
+            public void execute(Client client, Message message) {
+                doServer(client, message);
+            }
+        },
         ASK_ROLL {
             @Override
             public void execute(Client client, Message message) {
@@ -52,13 +59,43 @@ public class Action {
                 doBuild(client);
             }
         },
-        DO_AUCTIONS{
+        DO_AUCTION{
             @Override
             public void execute(Client client, Message message) {
                 doAuction(client, message);
             }
         }
         ;
+
+        public static void doServer(Client client, Message message) {
+            BufferedReader consoleReader = new BufferedReader(new InputStreamReader(System.in));
+            // Create or join a game
+            try {
+                String msgClient;
+                System.out.println("Would you like to CREATE or JOIN a game?");
+                msgClient = consoleReader.readLine();
+                if (msgClient.equalsIgnoreCase("CREATE")) {
+                    client.getWriter().println("CREATE");
+                }
+                //Temp for quick join
+                else if (msgClient.isEmpty()) {
+                    client.getWriter().println("CREATE_CUSTOM");
+                }
+                else if (msgClient.equalsIgnoreCase("JOIN") || msgClient.equalsIgnoreCase("j")) {
+                    System.out.print("Enter code of the game: ");
+                    msgClient = consoleReader.readLine();
+                    //Temp for quick join
+                    if (msgClient.isEmpty()) {
+                        client.getWriter().println("ABCDEF");
+                    }
+                    else {
+                        client.getWriter().println(msgClient);
+                    }
+                }
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
 
         public static void doRoll(Client client) {
             try {
@@ -172,6 +209,7 @@ public class Action {
 
         public static void doBuild(Client client){
             BufferedReader consoleReader = new BufferedReader(new InputStreamReader(System.in));
+            //Check on which properties the player can build
             List<Street> streets = new ArrayList<>();
             for (Property property : client.getGame().getActivePlayer().getProperties()) {
                 if (property instanceof Street && ((Street) property).getHouses() < 5
@@ -180,6 +218,7 @@ public class Action {
                 }
             }
 
+            //Print dialogue to player
             if (!streets.isEmpty()) {
                 System.out.println("You can build on following properties:");
 
@@ -193,6 +232,7 @@ public class Action {
                     }
                 }
 
+                //Player selects property
                 System.out.print("Choose a property: ");
                 try {
                     int selection = Integer.parseInt(consoleReader.readLine());
@@ -208,8 +248,70 @@ public class Action {
             }
         }
 
-        public static void doAuction(Client client, Message message){
 
+        public static void doAuction(Client client, Message message) {
+            BufferedReader consoleReader = new BufferedReader(new InputStreamReader(System.in));
+            PrintWriter writer = client.getWriter();
+            System.out.println(client.getGame().getActivePlayer().getCurrentField().getName() + " will now be auctioned!");
+            System.out.println("You can either write the amount you want to pay or 'QUIT' to quit the auction");
+
+            AtomicBoolean auctionEnded = new AtomicBoolean(false);
+            AtomicInteger lastBid = new AtomicInteger(0); // Local storage for the latest bid
+
+            Thread printBid = new Thread(() -> {
+                try {
+                    ObjectInputStream objectReader = client.getObjectReader();
+                    while (!auctionEnded.get()) {
+                        Message msg = (Message) objectReader.readObject();
+                        if (msg.messageType() == MsgType.NEW_BID) {
+                            int newBid = Integer.parseInt(msg.message());
+                            lastBid.set(newBid);
+                            System.out.println("New Bid: " + newBid);
+                        } else if (msg.messageType() == MsgType.END_AUCTION) {
+                            writer.println("QUIT_AUCTION");
+                            System.out.println(msg.message());
+                            System.out.println("Press ENTER to continue");
+                            auctionEnded.set(true);
+                        }
+                    }
+                } catch (IOException | ClassNotFoundException e) {
+                    System.out.println("Error in auction thread: " + e.getMessage());
+                }
+            });
+
+            try {
+                printBid.start();
+                while (!auctionEnded.get()) {
+
+                    String userInput = consoleReader.readLine();
+
+                    if (auctionEnded.get()) break; // Double-check flag in case of race condition
+
+                    if (userInput.equalsIgnoreCase("QUIT")) {
+                        writer.println("QUIT_AUCTION");
+                        System.out.println("You left the auction.");
+                        break;
+                    }
+
+                    try {
+                        int bid = Integer.parseInt(userInput);
+                        if (bid > lastBid.get()) { // Compare with the locally stored last bid
+                            writer.println(bid);
+                        } else {
+                            System.out.println("Your bid is lower than the current bid.");
+                        }
+                    } catch (NumberFormatException e) {
+                        System.out.println("Invalid input. Please enter a valid number or 'QUIT'.");
+                    }
+                }
+                auctionEnded.set(true); // Ensure thread ends
+                printBid.join();
+            } catch (IOException e) {
+                System.out.println("Error during auction decision: " + e.getMessage());
+            } catch (InterruptedException e) {
+                System.out.println("Auction interrupted: " + e.getMessage());
+                Thread.currentThread().interrupt();
+            }
         }
 
         public abstract void execute(Client client, Message message);

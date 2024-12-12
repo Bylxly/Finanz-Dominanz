@@ -32,8 +32,16 @@ public class BuyFieldState implements GameState {
             }
         }
         else if (currentProperty instanceof Knast) {
+            game.setCurrentGameState(new AuctionState(game));
+            game.getCurrentGameState().execute();
+
             game.setCurrentGameState(new ExecuteFieldState(game));
             game.getCurrentGameState().execute();
+        }
+        else {
+            game.setCurrentGameState(new AuctionState(game));
+            game.getCurrentGameState().execute();
+
         }
     }
 
