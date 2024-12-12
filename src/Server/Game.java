@@ -41,8 +41,13 @@ public class Game extends Thread implements Serializable {
 
     @Override
     public void run() {
-        printBoard();
-        startGame();
+        //TODO: LobbyState
+        while (true) {
+            if (players.size() >= 2) {
+                printBoard();
+                startGame();
+            }
+        }
     }
 
     private void createBoard() {
