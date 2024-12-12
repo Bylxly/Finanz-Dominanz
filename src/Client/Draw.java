@@ -1,5 +1,6 @@
 package Client;
 
+import Server.Field.Property.Property;
 import Server.Game;
 import Server.Player;
 import Server.Field.Field;
@@ -18,6 +19,7 @@ public class Draw extends PApplet {
 
     private ArrayList<GField> fields = new ArrayList<>();
     private ArrayList<GButton> buttons = new ArrayList<>();
+    private GPanel infoPanel; // New GPanel for displaying info
 
     public Draw(Client client) {
         this.client = client;
@@ -35,6 +37,7 @@ public class Draw extends PApplet {
         textSize(14);
         initializeFields();
         createButtons();
+        createInfoPanel(); // Initialize the info panel
         noLoop();
     }
 
@@ -45,11 +48,16 @@ public class Draw extends PApplet {
         if (game == null) {
             displayMessage("Waiting for game state...");
         } else {
-            drawFields();      // Draw the game board fields
-            drawPlayers();     // Draw player positions
-            drawInfoPanel();   // Draw the info panel
-            drawButtons();     // Draw action buttons
+            drawFields();
+            drawPlayers();
+            infoPanel.display(); // Display the info panel
+            drawButtons();
         }
+    }
+
+    private void createInfoPanel() {
+        infoPanel = new GPanel(this, 900, 50, 220, 300, color(255));
+        updateInfoPanel();
     }
 
     public void updateGameState(Game updatedGame) {
@@ -68,7 +76,46 @@ public class Draw extends PApplet {
             fields.get(i).setName(fieldName);
         }
 
+        updateInfoPanel();
         redraw();
+    }
+
+    private void updateInfoPanel() {
+        if (game != null) {
+            currentPlayer = game.getActivePlayer().getName();
+            currentField = game.getActivePlayer().getCurrentField().getName();
+            Player activePlayer = game.getActivePlayer();
+
+            StringBuilder ownedFields = new StringBuilder("Owned Fields:\n");
+            if (activePlayer.getProperties().isEmpty()) {
+                ownedFields.append("None");
+            } else {
+                for (Property property : activePlayer.getProperties()) {
+                    ownedFields.append(property.getName()).append("\n");
+                }
+            }
+
+            // Clear previous text
+            infoPanel.clearText();
+
+            // Add game status information to the panel
+            infoPanel.addText("Status:", color(0), true, false);
+            infoPanel.addText("Number of Players: " + game.getPlayers().size(), color(0), false, false);
+            infoPanel.addText("Number of Fields: " + game.getBoard().length, color(0), false, false);
+            infoPanel.addText("Next Player: " + currentPlayer, color(0), false, false);
+            infoPanel.addText("Last Roll: " + game.getRoll().getNumber1() + " + " + game.getRoll().getNumber2() + " = " + game.getRoll().getTotal(), color(0), false, false);
+            infoPanel.addText("", color(0), false, false);
+            infoPanel.addText("Player Status:", color(0), true, false);
+
+            for (Player player : game.getPlayers()) {
+                infoPanel.addText("Status of Player " + player.getName(), color(0), true, false);
+                infoPanel.addText("Money: " + player.getMoney(), color(0), false, false);
+                infoPanel.addText("Owned Fields: " + (player.getProperties().isEmpty() ? "None" : String.join(", ", player.getProperties().stream().map(Property::getUIName).toArray(String[]::new))), color(0), false, false);
+                infoPanel.addText("Current Field: " + player.getCurrentField().getName(), color(0), false, false);
+                infoPanel.addText("", color(0), false, false);
+            }
+            infoPanel.addText("", color(0), false, false);
+        }
     }
 
     private void displayMessage(String message) {
@@ -81,16 +128,6 @@ public class Draw extends PApplet {
         for (GField field : fields) {
             field.draw(this);
         }
-    }
-
-    private void drawInfoPanel() {
-        fill(255);
-        rect(950, 500, 220, 100, 10);
-
-        fill(0);
-        textAlign(LEFT, TOP);
-        text("Current Turn: " +  client.getGame().getActivePlayer(), 960, 510);
-        text("Field: " + currentField, 960, 540);
     }
 
     private void createButtons() {
@@ -145,22 +182,18 @@ public class Draw extends PApplet {
 
         Field[] board = game.getBoard();
 
-        // Top row (0 to 10)
         for (int i = 0; i < 11; i++) {
             fields.add(new GField(i * cellSize, 0, cellSize, cellSize, board[i].getUIName()));
         }
 
-        // Right column (11 to 20)
         for (int i = 1; i < 10; i++) {
             fields.add(new GField(width - cellSize - (boardSize / 2), i * cellSize, cellSize, cellSize, board[10 + i].getUIName()));
         }
 
-        // Bottom row (21 to 30)
         for (int i = 10; i >= 0; i--) {
             fields.add(new GField(i * cellSize, height - cellSize, cellSize, cellSize, board[20 + (10 - i)].getUIName()));
         }
 
-        // Left column (31 to 39)
         for (int i = 9; i > 0; i--) {
             fields.add(new GField(0, i * cellSize, cellSize, cellSize, board[40 - i].getUIName()));
         }
@@ -175,7 +208,6 @@ public class Draw extends PApplet {
             Player player = players.get(i);
             Field currentField = player.getCurrentField();
             int fieldIndex = client.getFieldIndex(currentField);
-
 
             GField field = fields.get(fieldIndex);
             float x = field.getX();
