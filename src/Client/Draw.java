@@ -14,7 +14,7 @@ public class Draw extends PApplet {
     private int cellSize = 80;
 
     private String currentField = "None";
-    private String currentPlayer = "Player 1";
+    private String currentPlayer = "";
 
     private ArrayList<GField> fields = new ArrayList<>();
     private ArrayList<GButton> buttons = new ArrayList<>();
@@ -83,51 +83,13 @@ public class Draw extends PApplet {
         }
     }
 
-    private void drawPlayers() {
-        if (game == null) return;
-
-        List<Player> players = game.getPlayers();
-
-        for (int i = 0; i < players.size(); i++) {
-            Player player = players.get(i);
-            Field currentField = player.getCurrentField();
-            int fieldIndex = client.getFieldIndex(currentField);
-
-            int x = 0, y = 0;
-            if (fieldIndex <= 10) {
-                // Top row
-                x = fieldIndex * cellSize;
-                y = 0;
-            } else if (fieldIndex <= 20) {
-                // Right column
-                x = 10 * cellSize;
-                y = (fieldIndex - 10) * cellSize;
-            } else if (fieldIndex <= 30) {
-                // Bottom row
-                x = (30 - fieldIndex) * cellSize;
-                y = 10 * cellSize;
-            } else if (fieldIndex <= 39) {
-                // Left column
-                x = 0;
-                y = (40 - fieldIndex) * cellSize;
-            }
-
-            fill(255);
-            ellipse(x + cellSize / 2.0f, y + cellSize / 2.0f, 20, 20);
-
-            fill(0);
-            textAlign(CENTER, CENTER);
-            text(i + 1, x + cellSize / 2.0f, y + cellSize / 2.0f);
-        }
-    }
-
     private void drawInfoPanel() {
         fill(255);
         rect(950, 500, 220, 100, 10);
 
         fill(0);
         textAlign(LEFT, TOP);
-        text("Current Turn: " + currentPlayer, 960, 510);
+        text("Current Turn: " +  client.getGame().getActivePlayer(), 960, 510);
         text("Field: " + currentField, 960, 540);
     }
 
@@ -149,6 +111,15 @@ public class Draw extends PApplet {
 
         buttons.add(new GButton("btnBuyN", 950, 660, 200, 30, "Buy No", color(200), color(255), true, false)
                 .setAction(HandleAction.ActionType.BUY_N::action));
+
+        buttons.add(new GButton("btnNextEND", 950, 620, 200, 30, "End Turn", color(200), color(255), true, false)
+                .setAction(HandleAction.ActionType.END::action));
+
+        buttons.add(new GButton("btnNextBUILD", 950, 660, 200, 30, "Build", color(200), color(255), true, false)
+                .setAction(HandleAction.ActionType.BUILD::action));
+
+        buttons.add(new GButton("btnNextBANKRUPT", 950, 700, 200, 30, "Bankrupt", color(200), color(255), true, false)
+                .setAction(HandleAction.ActionType.BANKRUPT::action));
     }
 
     private void drawButtons() {
@@ -195,6 +166,29 @@ public class Draw extends PApplet {
         }
     }
 
+    private void drawPlayers() {
+        if (game == null) return;
+
+        List<Player> players = game.getPlayers();
+
+        for (int i = 0; i < players.size(); i++) {
+            Player player = players.get(i);
+            Field currentField = player.getCurrentField();
+            int fieldIndex = client.getFieldIndex(currentField);
+
+
+            GField field = fields.get(fieldIndex);
+            float x = field.getX();
+            float y = field.getY();
+
+            fill(255);
+            ellipse(x + cellSize / 2.0f, y + cellSize / 2.0f, 20, 20);
+
+            fill(0);
+            textAlign(CENTER, CENTER);
+            text(i + 1, x + cellSize / 2.0f, y + cellSize / 2.0f);
+        }
+    }
     @Override
     public void mousePressed() {
         for (GButton button : buttons) {
