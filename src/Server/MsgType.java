@@ -3,6 +3,7 @@ package Server;
 import java.io.Serializable;
 
 public enum MsgType implements Serializable {
+    ASK_SERVER,
     ASK_ROLL,
     ASK_BUY,
     ASK_NEXT,
