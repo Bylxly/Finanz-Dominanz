@@ -1,5 +1,6 @@
 package Client.Elements;
 
+import Client.HandleAction;
 import processing.core.PApplet;
 
 public class GButton {
@@ -46,8 +47,9 @@ public class GButton {
         this.isActive = active;
     }
 
-    public void setAction(Runnable action) {
+    public GButton setAction(Runnable action) {
         this.action = action;
+        return this;
     }
 
     public void performAction() {

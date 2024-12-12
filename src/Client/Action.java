@@ -70,7 +70,6 @@ public class Action {
                 System.out.println("Error during roll: " + e.getMessage());
             } finally {
                 rollTriggered = false;
-                client.getDraw().rollButtonClicked = false;
                 setCurrentAction("");
             }
         }
