@@ -41,35 +41,41 @@ public class Server {
             while (true) {
                 Socket clientSocket = serverSocket.accept();
 
-                ObjectOutputStream objectOut = new ObjectOutputStream(clientSocket.getOutputStream());
-                BufferedReader clientIn = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+                new Thread(() -> {
+                    try {
+                        ObjectOutputStream objectOut = new ObjectOutputStream(clientSocket.getOutputStream());
+                        BufferedReader clientIn = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 
 
-                objectOut.writeObject((new Message(MsgType.ASK_SERVER, null)));
-                String clientMsg = clientIn.readLine();
+                        objectOut.writeObject((new Message(MsgType.ASK_SERVER, null)));
+                        String clientMsg = clientIn.readLine();
 
-                if (clientMsg.equals("CREATE")) {
-                    String gameCode = createGame();
-                    objectOut.writeObject(new Message(MsgType.INFO, "Your game code is: " + gameCode));
-                    gameMap.get(gameCode).start();
-                    joinGame(clientSocket, gameCode, objectOut, clientIn);
-                }
-                // Temp also for quick join
-                else if (clientMsg.equals("CREATE_CUSTOM")) {
-                    String gameCode = createGame("ABCDEF");
-                    objectOut.writeObject(new Message(MsgType.INFO, "Your game code is: " + gameCode));
-                    gameMap.get(gameCode).start();
-                    joinGame(clientSocket, gameCode, objectOut, clientIn);
-                }
-                else {
-                    if (!gameMap.containsKey(clientMsg)) {
-                        objectOut.writeObject(new Message(MsgType.INFO, "Game not found"));
+                        if (clientMsg.equals("CREATE")) {
+                            String gameCode = createGame();
+                            objectOut.writeObject(new Message(MsgType.INFO, "Your game code is: " + gameCode));
+                            gameMap.get(gameCode).start();
+                            joinGame(clientSocket, gameCode, objectOut, clientIn);
+                        }
+                        // Temp also for quick join
+                        else if (clientMsg.equals("CREATE_CUSTOM")) {
+                            String gameCode = createGame("ABCDEF");
+                            objectOut.writeObject(new Message(MsgType.INFO, "Your game code is: " + gameCode));
+                            gameMap.get(gameCode).start();
+                            joinGame(clientSocket, gameCode, objectOut, clientIn);
+                        }
+                        else {
+                            if (!gameMap.containsKey(clientMsg)) {
+                                objectOut.writeObject(new Message(MsgType.INFO, "Game not found"));
+                            }
+                            else {
+                                objectOut.writeObject(new Message(MsgType.INFO, "Successfully connected"));
+                                joinGame(clientSocket, clientMsg, objectOut, clientIn);
+                            }
+                        }
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
                     }
-                    else {
-                        objectOut.writeObject(new Message(MsgType.INFO, "Successfully connected"));
-                        joinGame(clientSocket, clientMsg, objectOut, clientIn);
-                    }
-                }
+                }).start();
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
