@@ -61,8 +61,11 @@ public class ExecuteFieldState implements GameState {
             game.getActivePlayer().setArrested(false);
         }
 
+        ((Knast) game.getActivePlayer().getCurrentField()).removeRollAmount(game.getActivePlayer());
         game.getActivePlayer().sendObject(new Message(MsgType.INFO, "Du bist wieder ein freier Mensch"));
         // Roll after getting free
-        game.askRoll(game.getActivePlayer());
+        game.setCurrentGameState(new RollDiceState(game));
+        game.getCurrentGameState().execute();
+        game.movePlayer();
     }
 }

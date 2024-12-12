@@ -20,17 +20,13 @@ public class Player implements Serializable {
     private transient ObjectOutputStream objectOutputStream;
     private transient BufferedReader bufferedReader;
 
-    public Player(int money, String name, Socket client) {
+    public Player(int money, String name, Socket client, ObjectOutputStream objectOutputStream, BufferedReader bufferedReader) {
         this.money = money;
         this.name = name;
         properties = new ArrayList<>();
         this.client = client;
-        try {
-            this.objectOutputStream = new ObjectOutputStream(client.getOutputStream()); // Stream initialisieren
-            this.bufferedReader = new BufferedReader(new InputStreamReader(client.getInputStream()));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        this.objectOutputStream = objectOutputStream;
+        this.bufferedReader = bufferedReader;
     }
 
     public void sendObject(Object object) {
@@ -40,7 +36,7 @@ public class Player implements Serializable {
                 objectOutputStream.writeObject(object);
                 objectOutputStream.flush(); // Sicherstellen, dass die Nachricht gesendet wird
                 if (object instanceof Message) {
-                    System.out.println(object);
+                    System.out.println("Sent to " + name + " :" + object);
                 }
                 else {
                     System.out.println("Game was sent to " + name);

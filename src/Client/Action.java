@@ -1,15 +1,17 @@
 package Client;
 
+import Server.Field.Property.Knast;
 import Server.Field.Property.Property;
 import Server.Field.Property.Street;
 import Server.Message;
+import Server.MsgType;
+import Server.State.AuctionState;
 import Server.State.GameState;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.*;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class Action {
     private int actionId;
@@ -18,6 +20,12 @@ public class Action {
     private static String currentAction = "";
 
     public enum ServerMessage {
+        ASK_SERVER {
+            @Override
+            public void execute(Client client, Message message) {
+                doServer(client, message);
+            }
+        },
         ASK_ROLL {
             @Override
             public void execute(Client client, Message message) {
@@ -26,6 +34,7 @@ public class Action {
             }
         },
         ASK_BUY {
+
             @Override
             public void execute(Client client, Message message) {
                 if (message != null && message.message() != null && !message.message().isEmpty()) {
@@ -47,20 +56,45 @@ public class Action {
                 doBuild(client);
             }
         },
-        DO_AUCTIONS {
+        DO_AUCTION{
             @Override
             public void execute(Client client, Message message) {
                 doAuction(client, message);
             }
-        };
+        }
+        ;
 
-        public static synchronized void doRoll(Client client) {
-            if (rollTriggered) {
-                System.out.println("Roll already in progress.");
-                return;
+        public static void doServer(Client client, Message message) {
+            BufferedReader consoleReader = new BufferedReader(new InputStreamReader(System.in));
+            // Create or join a game
+            try {
+                String msgClient;
+                System.out.println("Would you like to CREATE or JOIN a game?");
+                msgClient = consoleReader.readLine();
+                if (msgClient.equalsIgnoreCase("CREATE")) {
+                    client.getWriter().println("CREATE");
+                }
+                //Temp for quick join
+                else if (msgClient.isEmpty()) {
+                    client.getWriter().println("CREATE_CUSTOM");
+                }
+                else if (msgClient.equalsIgnoreCase("JOIN") || msgClient.equalsIgnoreCase("j")) {
+                    System.out.print("Enter code of the game: ");
+                    msgClient = consoleReader.readLine();
+                    //Temp for quick join
+                    if (msgClient.isEmpty()) {
+                        client.getWriter().println("ABCDEF");
+                    }
+                    else {
+                        client.getWriter().println(msgClient);
+                    }
+                }
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
+        }
 
-            rollTriggered = true;
+        public static void doRoll(Client client) {
             try {
                 PrintWriter writer = client.getWriter();
                 if (writer != null) {
@@ -138,6 +172,30 @@ public class Action {
             }
         }
 
+        public static void doKnast(Client client) {
+            BufferedReader consoleReader = new BufferedReader(new InputStreamReader(System.in));
+            System.out.println("You are in the Knast!");
+            try {
+                if (((Knast) client.getGame().getActivePlayer().getCurrentField()).getRollAmount(client.getGame().getActivePlayer()) < 3) {
+                    System.out.println("What do you want to do? ROLL or PAY");
+                    if (consoleReader.readLine().equalsIgnoreCase("ROLL")) {
+                        client.getWriter().println("ROLL");
+                    }
+                    else {
+                        client.getWriter().println("PAY");
+                    }
+                }
+                else {
+                    System.out.println("You've already rolled three times, you now can only buy yourself a way out");
+                    consoleReader.readLine();
+                    client.getWriter().println("PAY");
+                }
+            } catch (IOException e) {
+                System.out.println("Error during knast decision: " + e.getMessage());
+            }
+
+        }
+
         public static void doNext(Client client) {
             setCurrentAction("END");
             BufferedReader consoleReader = new BufferedReader(new InputStreamReader(System.in));
@@ -168,6 +226,7 @@ public class Action {
         public static void doBuild(Client client) {
             setCurrentAction("BUILD");
             BufferedReader consoleReader = new BufferedReader(new InputStreamReader(System.in));
+            //Check on which properties the player can build
             List<Street> streets = new ArrayList<>();
             for (Property property : client.getGame().getActivePlayer().getProperties()) {
                 if (property instanceof Street street && street.getHouses() < 5 && street.getColorGroup().isComplete()) {
@@ -175,16 +234,20 @@ public class Action {
                 }
             }
 
+            //Print dialogue to player
             if (!streets.isEmpty()) {
                 System.out.println("You can build on the following properties:");
                 int index = 1;
                 Map<Integer, Property> propertyMap = new HashMap<>();
                 for (Street street : streets) {
-                    System.out.println(index + ": " + street.getName());
-                    propertyMap.put(index, street);
-                    index++;
+                    if (street.getColorGroup().isComplete()) {
+                        System.out.println(index + ": " + street.getName() + " Kosten: " + street.getHousePrice());
+                        sortedProperties.put(index, street);
+                        index++;
+                    }
                 }
 
+                //Player selects property
                 System.out.print("Choose a property: ");
                 try {
                     int selection = Integer.parseInt(consoleReader.readLine());
@@ -202,10 +265,70 @@ public class Action {
             setCurrentAction("");
         }
 
+
         public static void doAuction(Client client, Message message) {
-            setCurrentAction("AUCTION");
-            // Implement auction logic here
-            setCurrentAction("");
+            BufferedReader consoleReader = new BufferedReader(new InputStreamReader(System.in));
+            PrintWriter writer = client.getWriter();
+            System.out.println(client.getGame().getActivePlayer().getCurrentField().getName() + " will now be auctioned!");
+            System.out.println("You can either write the amount you want to pay or 'QUIT' to quit the auction");
+
+            AtomicBoolean auctionEnded = new AtomicBoolean(false);
+            AtomicInteger lastBid = new AtomicInteger(0); // Local storage for the latest bid
+
+            Thread printBid = new Thread(() -> {
+                try {
+                    ObjectInputStream objectReader = client.getObjectReader();
+                    while (!auctionEnded.get()) {
+                        Message msg = (Message) objectReader.readObject();
+                        if (msg.messageType() == MsgType.NEW_BID) {
+                            int newBid = Integer.parseInt(msg.message());
+                            lastBid.set(newBid);
+                            System.out.println("New Bid: " + newBid);
+                        } else if (msg.messageType() == MsgType.END_AUCTION) {
+                            writer.println("QUIT_AUCTION");
+                            System.out.println(msg.message());
+                            System.out.println("Press ENTER to continue");
+                            auctionEnded.set(true);
+                        }
+                    }
+                } catch (IOException | ClassNotFoundException e) {
+                    System.out.println("Error in auction thread: " + e.getMessage());
+                }
+            });
+
+            try {
+                printBid.start();
+                while (!auctionEnded.get()) {
+
+                    String userInput = consoleReader.readLine();
+
+                    if (auctionEnded.get()) break; // Double-check flag in case of race condition
+
+                    if (userInput.equalsIgnoreCase("QUIT")) {
+                        writer.println("QUIT_AUCTION");
+                        System.out.println("You left the auction.");
+                        break;
+                    }
+
+                    try {
+                        int bid = Integer.parseInt(userInput);
+                        if (bid > lastBid.get()) { // Compare with the locally stored last bid
+                            writer.println(bid);
+                        } else {
+                            System.out.println("Your bid is lower than the current bid.");
+                        }
+                    } catch (NumberFormatException e) {
+                        System.out.println("Invalid input. Please enter a valid number or 'QUIT'.");
+                    }
+                }
+                auctionEnded.set(true); // Ensure thread ends
+                printBid.join();
+            } catch (IOException e) {
+                System.out.println("Error during auction decision: " + e.getMessage());
+            } catch (InterruptedException e) {
+                System.out.println("Auction interrupted: " + e.getMessage());
+                Thread.currentThread().interrupt();
+            }
         }
 
         public abstract void execute(Client client, Message message);

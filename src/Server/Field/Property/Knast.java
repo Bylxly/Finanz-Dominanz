@@ -25,7 +25,7 @@ public class Knast extends Property {
             if (getOwner() != null && getOwner() != player) {
                 GameUtilities.transferMoney(player, getOwner(), getRent(0));
             }
-            else {
+            else if (getOwner() != player) {
                 GameUtilities.payBank(player, getRent(0));
             }
         }
@@ -35,8 +35,9 @@ public class Knast extends Property {
     }
 
     @Override
-    public boolean startAction(Player p) {
-        return false;
+    public boolean startAction(Player player) {
+        player.sendObject(new Message(MsgType.INFO, "Sie sind nur zu Besuch im Gefängnis!"));
+        return true;
     }
 
     public int getRollAmount(Player player) {
@@ -49,5 +50,9 @@ public class Knast extends Property {
 
     public void incrementRollAmount(Player player) {
         rollAmount.put(player, getRollAmount(player) + 1);
+    }
+
+    public void removeRollAmount(Player player) {
+        rollAmount.remove(player);
     }
 }

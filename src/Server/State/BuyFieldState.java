@@ -22,6 +22,7 @@ public class BuyFieldState implements GameState {
 
     @Override
     public void execute() {
+        game.printBoard();
         if (askClient()) {
             if (GameUtilities.checkIfEnoughMoney(game.getActivePlayer(), currentProperty.getPrice())) {
                 currentProperty.buy(game.getActivePlayer());
@@ -31,8 +32,16 @@ public class BuyFieldState implements GameState {
             }
         }
         else if (currentProperty instanceof Knast) {
+            game.setCurrentGameState(new AuctionState(game));
+            game.getCurrentGameState().execute();
+
             game.setCurrentGameState(new ExecuteFieldState(game));
             game.getCurrentGameState().execute();
+        }
+        else {
+            game.setCurrentGameState(new AuctionState(game));
+            game.getCurrentGameState().execute();
+
         }
     }
 
