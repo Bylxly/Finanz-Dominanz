@@ -244,6 +244,18 @@ public class Game extends Thread implements Serializable {
                 }
                 currentGameState = new RollDiceState(this);
                 currentGameState.execute();
+
+                // Spieler ist im Knast und versucht, herauszukommen
+                if (activePlayer.isArrested()) {
+                    if (roll.getPasch()) {
+                        activePlayer.setArrested(false); // Spieler kommt aus dem Knast frei
+                        paschAnzahl = 0; // Zurücksetzen des Paschzählers
+                    } else {
+                        // Wenn kein Pasch gewürfelt wird, beendet der Spieler den Zug
+                        break;
+                    }
+                }
+
                 if (!activePlayer.isArrested()) {
                     movePlayer();
                 }
@@ -257,7 +269,12 @@ public class Game extends Thread implements Serializable {
                 }
                 currentGameState.execute();
                 printBoard();
-                ++paschAnzahl;
+
+                if (roll.getPasch()) {
+                    ++paschAnzahl;
+                } else {
+                    paschAnzahl = 0; // Paschzähler zurücksetzen, wenn kein Pasch gewürfelt wird
+                }
             } while (roll.getPasch() && !activePlayer.isArrested());
 
             String msg;
