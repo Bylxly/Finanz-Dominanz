@@ -14,7 +14,6 @@ public class Server {
     private final int PORT = 5555;
 
     private HashMap<String, Game> gameMap;
-    private int tempPlayerCount = 0;
 
 
     public Server() {
@@ -33,8 +32,8 @@ public class Server {
         return lobbyCode;
     }
 
-    public void joinGame(Socket client, String code, ObjectOutputStream out, BufferedReader in) {
-        gameMap.get(code).makePlayer("Player " + ++tempPlayerCount, client, out, in);
+    public synchronized void joinGame(Socket client, String code, ObjectOutputStream out, BufferedReader in) {
+        gameMap.get(code).makePlayer("Player " + (gameMap.get(code).getPlayers().size() + 1), client, out, in);
     }
 
     public void startServer() {
