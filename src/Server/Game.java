@@ -24,7 +24,7 @@ public class Game extends Thread implements Serializable {
     private final int BOARD_SIZE = 40;
 
     // Attribute
-    private List<Player> players;
+    private volatile List<Player> players;
     private Field[] board;
     private Player activePlayer;
     private Roll roll;
