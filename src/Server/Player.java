@@ -20,17 +20,13 @@ public class Player implements Serializable {
     private transient ObjectOutputStream objectOutputStream;
     private transient BufferedReader bufferedReader;
 
-    public Player(int money, String name, Socket client) {
+    public Player(int money, String name, Socket client, ObjectOutputStream objectOutputStream, BufferedReader bufferedReader) {
         this.money = money;
         this.name = name;
         properties = new ArrayList<>();
         this.client = client;
-        try {
-            this.objectOutputStream = new ObjectOutputStream(client.getOutputStream()); // Stream initialisieren
-            this.bufferedReader = new BufferedReader(new InputStreamReader(client.getInputStream()));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        this.objectOutputStream = objectOutputStream;
+        this.bufferedReader = bufferedReader;
     }
 
     public void sendObject(Object object) {
