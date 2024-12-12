@@ -17,10 +17,10 @@ public class Draw extends PApplet {
     private String currentPlayer = "Player 1";
 
     private ArrayList<GField> fields = new ArrayList<>();
+    private ArrayList<GButton> buttons = new ArrayList<>();
 
-    private GButton btnOption1, btnOption2, btnOption3, btnRoll; // Roll Button hinzufügen
-
-    private boolean playerCanRoll = false; // Spieler kann würfeln (Steuerung)
+    private GButton btnOption1, btnOption2, btnOption3, btnRoll, btnBuyY, btnBuyN;
+    boolean rollButtonClicked = false;
 
     public Draw(Client client) {
         this.client = client;
@@ -61,6 +61,7 @@ public class Draw extends PApplet {
 
         if (fields.size() != board.length) {
             System.out.println("Mismatch between field count and board size.");
+            System.out.println(board.length);
             return;
         }
 
@@ -133,38 +134,57 @@ public class Draw extends PApplet {
     }
 
     private void createButtons() {
-        btnOption1 = new GButton(950, 620, 200, 30, "Option 1", color(200), color(255), true, true);
-        btnOption2 = new GButton(950, 660, 200, 30, "Option 2", color(200), color(255), true, true);
-        btnOption3 = new GButton(950, 700, 200, 30, "Option 3", color(200), color(255), true, true);
+        btnOption1 = new GButton("btnOption1",950, 700, 200, 30, "Option 1", color(200), color(255), true, false);
+        btnOption1.setAction(this::handleOption1);
 
-        // Roll Button
-        btnRoll = new GButton(950, 760, 200, 30, "Roll Dice", color(200), color(255), true, true);
+        btnOption2 = new GButton("btnOption2",950, 740, 200, 30, "Option 2", color(200), color(255), true, false);
+        btnOption2.setAction(this::handleOption2);
+
+        btnOption3 = new GButton("btnOption3",950, 780, 200, 30, "Option 3", color(200), color(255), true, false);
+        btnOption3.setAction(this::handleOption3);
+
+        btnBuyY = new GButton("btnBuyY",950, 620, 200, 30, "Buy Yes", color(200), color(255), true, false);
+        btnBuyY.setAction(this::handleBuyY);
+
+        btnBuyN = new GButton("btnBuyN", 950, 660, 200, 30, "Buy No", color(200), color(255), true, false);
+        btnBuyN.setAction(this::handleBuyN);
+
+        btnRoll = new GButton("btnRoll", 950, 670, 200, 90, "Roll Dice", color(200), color(255), true, false);
+        btnRoll.setAction(this::handleRoll);
+        // Add buttons to the list
+        buttons.add(btnOption1);
+        buttons.add(btnOption2);
+        buttons.add(btnOption3);
+        buttons.add(btnBuyY);
+        buttons.add(btnBuyN);
+        buttons.add(btnRoll);
     }
 
     private void drawButtons() {
         btnOption1.draw(this);
         btnOption2.draw(this);
         btnOption3.draw(this);
-        btnRoll.draw(this); // Roll Button zeichnen
+        btnBuyY.draw(this);
+        btnBuyN.draw(this);
+        btnRoll.draw(this);
         loop();
+    }
+
+    public void setButtonActive(String name, boolean active) {
+        for (GButton button : buttons) {
+            if (button.getName().equals(name)) {
+                button.setActive(active);
+                return;
+            }
+        }
+        System.out.println("Button not found: " + name);
     }
 
     private void initializeFields() {
         float boardSize = height;
         float cellSize = height / 11.0f;
 
-        if (game == null || game.getBoard() == null) {
-            System.out.println("Placeholder names.");
-            // Initialize with placeholder names
-            for (int i = 0; i < 11; i++) {
-                fields.add(new GField(i * cellSize, 0, cellSize, cellSize, "Street " + i)); // Top row
-                fields.add(new GField(i * cellSize, height - cellSize, cellSize, cellSize, "Street " + (30 - i))); // Bottom row
-            }
-            for (int i = 1; i < 10; i++) {
-                fields.add(new GField(0, i * cellSize, cellSize, cellSize, "Street " + (40 - i))); // Left column
-                fields.add(new GField(width - cellSize - (boardSize / 2), i * cellSize, cellSize, cellSize, "Street " + (10 + i))); // Right column
-            }
-        } else {
+
             Field[] board = game.getBoard();
 
             // Top row (0 to 10)
@@ -172,6 +192,10 @@ public class Draw extends PApplet {
                 fields.add(new GField(i * cellSize, 0, cellSize, cellSize, board[i].getUIName()));
             }
 
+            // Right column (11 to 20)
+            for (int i = 1; i < 10; i++) {
+                fields.add(new GField(width - cellSize - (boardSize / 2), i * cellSize, cellSize, cellSize, board[10 + i].getUIName()));
+            }
             // Bottom row (21 to 30)
             for (int i = 10; i >= 0; i--) {
                 fields.add(new GField(i * cellSize, height - cellSize, cellSize, cellSize, board[20 + (10 - i)].getUIName()));
@@ -182,32 +206,16 @@ public class Draw extends PApplet {
                 fields.add(new GField(0, i * cellSize, cellSize, cellSize, board[40 - i].getUIName()));
             }
 
-            // Right column (11 to 20)
-            for (int i = 1; i < 10; i++) {
-                fields.add(new GField(width - cellSize - (boardSize / 2), i * cellSize, cellSize, cellSize, board[10 + i].getUIName()));
-            }
-        }
+
+
     }
 
     @Override
     public void mousePressed() {
-        for (GField field : fields) {
-            if (field.isClicked(this)) {
-                currentField = field.getName();
-                println("Clicked on: " + currentField);
-                redraw(); // Ensure changes are reflected
+        for (GButton button : buttons) {
+            if (button.isClicked(this)) {
+                button.performAction();
             }
-        }
-
-        // Handle button clicks
-        if (btnOption1.isClicked(this)) {
-            handleOption1();
-        } else if (btnOption2.isClicked(this)) {
-            handleOption2();
-        } else if (btnOption3.isClicked(this)) {
-            handleOption3();
-        } else if (btnRoll.isClicked(this)) { // Roll Button geklickt
-            handleRoll();
         }
     }
 
@@ -225,9 +233,20 @@ public class Draw extends PApplet {
 
     private void handleRoll() {
         println("Rolling dice for player: " + currentPlayer);
+        Action.ServerMessage.doRollGUI(client);
+        rollButtonClicked = true;
+        setButtonActive("btnRoll",false);
+    }
 
-        // `doRoll` Methode des ServerMessage-Enums aufrufen
-        Action.ServerMessage.doRoll(client);
+    private void handleBuyY() {
+        Action.ServerMessage.doBuyGUI(client, true);
+        setButtonActive("btnBuyY",false);
+        setButtonActive("btnBuyN",false);
+    }
+    private void handleBuyN() {
+        Action.ServerMessage.doBuyGUI(client, false);
+        setButtonActive("btnBuyY",false);
+        setButtonActive("btnBuyN",false);
     }
 
 }

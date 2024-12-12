@@ -4,11 +4,13 @@ import processing.core.PApplet;
 
 public class GButton {
     float x, y, width, height;
-    String label;
+    String label, name;
     int colorDefault, colorHover;
     boolean mouseOverEffect, isActive;
+    private Runnable action;
 
-    public GButton(float x, float y, float width, float height, String label, int colorDefault, int colorHover, boolean mouseOverEffect, boolean isActive) {
+    public GButton(String name, float x, float y, float width, float height, String label, int colorDefault, int colorHover, boolean mouseOverEffect, boolean isActive) {
+        this.name = name;
         this.x = x;
         this.y = y;
         this.width = width;
@@ -42,5 +44,19 @@ public class GButton {
 
     public void setActive(boolean active) {
         this.isActive = active;
+    }
+
+    public void setAction(Runnable action) {
+        this.action = action;
+    }
+
+    public void performAction() {
+        if (action != null) {
+            action.run();
+        }
+    }
+
+    public String getName() {
+        return name;
     }
 }

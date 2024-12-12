@@ -21,14 +21,17 @@ public class Action {
         ASK_ROLL {
             @Override
             public void execute(Client client, Message message) {
-                doRoll(client);
+                //doRoll(client);
+                client.getDraw().setButtonActive("btnRoll",true);
             }
         },
         ASK_BUY {
             @Override
             public void execute(Client client, Message message) {
                 if (message != null && message.message() != null && !message.message().isEmpty()) {
-                    doBuy(client, message.message());
+                    //doBuy(client, message.message());
+                    client.getDraw().setButtonActive("btnBuyY",true);
+                    client.getDraw().setButtonActive("btnBuyN",true);
                 }
             }
         },
@@ -52,11 +55,6 @@ public class Action {
         };
 
         public static synchronized void doRoll(Client client) {
-            if (!"ROLL".equals(getCurrentAction())) {
-                System.out.println("Cannot roll, current action is: " + getCurrentAction());
-                return;
-            }
-
             if (rollTriggered) {
                 System.out.println("Roll already in progress.");
                 return;
@@ -72,12 +70,47 @@ public class Action {
                 System.out.println("Error during roll: " + e.getMessage());
             } finally {
                 rollTriggered = false;
+                client.getDraw().rollButtonClicked = false;
                 setCurrentAction("");
             }
         }
 
+        public static synchronized void doRollGUI(Client client) {
+            if (rollTriggered) {
+                System.out.println("Roll already in progress.");
+                return;
+            }
 
+            rollTriggered = true;
+            try {
+                PrintWriter writer = client.getWriter();
+                if (writer != null) {
+                    writer.println("ROLL");
+                    System.out.println("ROLL command sent to server.");
+                }
+            } catch (Exception e) {
+                System.out.println("Error during roll: " + e.getMessage());
+            } finally {
+                rollTriggered = false;
+                setCurrentAction("");
+            }
+        }
 
+        public static synchronized void doBuyGUI(Client client, boolean buy) {
+            setCurrentAction("BUY");
+            try {
+                PrintWriter writer = client.getWriter();
+                if (writer != null) {
+                    if (buy) {
+                        writer.println("BUY");
+                    } else {
+                        writer.println("DO_AUCTION");
+                    }
+                }
+            } finally {
+                setCurrentAction("");
+            }
+        }
 
         public static void doBuy(Client client, String propertyName) {
             setCurrentAction("BUY");
@@ -110,13 +143,13 @@ public class Action {
             setCurrentAction("END");
             BufferedReader consoleReader = new BufferedReader(new InputStreamReader(System.in));
             try {
-                System.out.println("It's your turn. Choose an action: END, BUILD, BANKRUPT");
+                System.out.println("Choose an action: END, BUILD, BANKRUPT, or just press Enter to END.");
                 String input = consoleReader.readLine().trim();
                 String response = "";
 
-                if ("build".equalsIgnoreCase(input)) {
+                if ("build".equalsIgnoreCase(input) || "2".equalsIgnoreCase(input)) {
                     response = "BUILD";
-                } else if ("bankrupt".equalsIgnoreCase(input)) {
+                } else if ("bankrupt".equalsIgnoreCase(input) || "end me".equalsIgnoreCase(input) || "3".equalsIgnoreCase(input)) {
                     response = "BANKRUPT";
                 } else if ("end".equalsIgnoreCase(input) || input.isEmpty()) {
                     response = "END";
