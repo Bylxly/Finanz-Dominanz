@@ -94,6 +94,8 @@ public class Action {
                 }
             } catch (IOException e) {
                 throw new RuntimeException(e);
+            } finally {
+                client.startGUI();
             }
         }
 
@@ -268,7 +270,7 @@ public class Action {
                 for (Street street : streets) {
                     if (street.getColorGroup().isComplete()) {
                         System.out.println(index + ": " + street.getName() + " Kosten: " + street.getHousePrice());
-                        sortedProperties.put(index, street);
+                        propertyMap.put(index, street);
                         index++;
                     }
                 }

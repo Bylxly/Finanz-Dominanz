@@ -30,6 +30,14 @@ public class Draw extends PApplet {
     public void settings() {
         size(1200, 800);
     }
+    /*
+    public void settings() {
+        size(1920, 1080);
+    }*/
+    /*
+    public void settings() {
+        size(2736, 1824);
+    }*/
 
     @Override
     public void setup() {
@@ -56,7 +64,7 @@ public class Draw extends PApplet {
     }
 
     private void createInfoPanel() {
-        infoPanel = new GPanel(this, 900, 50, 220, 300, color(255));
+        infoPanel = new GPanel(this, 900, 20, 220, 500, color(255));
         updateInfoPanel();
     }
 
@@ -111,7 +119,7 @@ public class Draw extends PApplet {
                 infoPanel.addText("Status of Player " + player.getName(), color(0), true, false);
                 infoPanel.addText("Money: " + player.getMoney(), color(0), false, false);
                 infoPanel.addText("Owned Fields: " + (player.getProperties().isEmpty() ? "None" : String.join(", ", player.getProperties().stream().map(Property::getUIName).toArray(String[]::new))), color(0), false, false);
-                infoPanel.addText("Current Field: " + player.getCurrentField().getName(), color(0), false, false);
+                infoPanel.addText("Current Field: " + player.getCurrentField().getUIName(), color(0), false, false);
                 infoPanel.addText("", color(0), false, false);
             }
             infoPanel.addText("", color(0), false, false);

@@ -51,7 +51,7 @@ public class GPanel {
 
         float textY = y + 20; // Starting Y position for text
         for (TextItem item : textItems) {
-            item.display(x + 10, textY);
+            item.display(x + (width/2), textY);
             textY += item.getHeight() + 5; // Move down for the next item
         }
     }

@@ -59,8 +59,6 @@ public class Client {
 
             new Thread(this::readGameUpdates).start();
 
-            startGUI();
-            canRollThroughGUI();
 
         } catch (IOException e) {
             System.out.println("Error connecting to the server: " + e.getMessage());
@@ -71,7 +69,7 @@ public class Client {
         return true;
     }
 
-    private void startGUI() {
+    public void startGUI() {
         Thread guiThread = new Thread(() -> {
             String[] processingArgs = {"Monopoly GUI"};
             PApplet.runSketch(processingArgs, draw);
