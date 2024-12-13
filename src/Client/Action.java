@@ -47,7 +47,10 @@ public class Action {
         ASK_NEXT {
             @Override
             public void execute(Client client, Message message) {
-                doNext(client);
+                //doNext(client);
+                client.getDraw().setButtonActive("btnNextEND", true);
+                client.getDraw().setButtonActive("btnNextBUILD", true);
+                client.getDraw().setButtonActive("btnNextBANKRUPT", true);
             }
         },
         BUILD_SELECT_PROPERTY {
@@ -218,6 +221,29 @@ public class Action {
                 }
             } catch (IOException e) {
                 System.out.println("Error during next action selection: " + e.getMessage());
+            } finally {
+                setCurrentAction("");
+            }
+        }
+
+        public static void doNextGUI(Client client, String option) {
+            setCurrentAction("END");
+            try {
+                PrintWriter writer = client.getWriter();
+                if (writer != null) {
+                    String response = "";
+
+                    if ("BUILD".equals(option) ) {
+                        response = "BUILD";
+                    } else if ("BANKRUPT".equals(option)) {
+                        response = "BANKRUPT";
+                    } else if ("END".equals(option)) {
+                        response = "END";
+                    }
+
+                    writer.println(response);
+                    System.out.println("Sent action to server: " + response);
+                }
             } finally {
                 setCurrentAction("");
             }

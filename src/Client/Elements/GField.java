@@ -40,4 +40,12 @@ public class GField {
     public void setName(String newName) {
         this.label = newName;
     }
+
+    public float getX() {
+        return x;
+    }
+
+    public float getY() {
+        return y;
+    }
 }
