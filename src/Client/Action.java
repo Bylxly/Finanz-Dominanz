@@ -18,6 +18,7 @@ public class Action {
     private String description;
     public static boolean rollTriggered = false;
     private static String currentAction = "";
+    private static boolean debug = false;
 
     public enum ServerMessage {
         ASK_SERVER {
@@ -29,8 +30,8 @@ public class Action {
         ASK_ROLL {
             @Override
             public void execute(Client client, Message message) {
-                //doRoll(client);
-                client.getDraw().setButtonActive("btnRoll",true);
+                if (debug){doRoll(client);} else {
+                client.getDraw().setButtonActive("btnRoll",true);}
             }
         },
         ASK_BUY {
@@ -38,19 +39,19 @@ public class Action {
             @Override
             public void execute(Client client, Message message) {
                 if (message != null && message.message() != null && !message.message().isEmpty()) {
-                    //doBuy(client, message.message());
+                    if (debug){ doBuy(client, message.message());}else{
                     client.getDraw().setButtonActive("btnBuyY",true);
-                    client.getDraw().setButtonActive("btnBuyN",true);
+                    client.getDraw().setButtonActive("btnBuyN",true);}
                 }
             }
         },
         ASK_NEXT {
             @Override
             public void execute(Client client, Message message) {
-                //doNext(client);
+                if (debug){ doNext(client);} else{
                 client.getDraw().setButtonActive("btnNextEND", true);
                 client.getDraw().setButtonActive("btnNextBUILD", true);
-                client.getDraw().setButtonActive("btnNextBANKRUPT", true);
+                client.getDraw().setButtonActive("btnNextBANKRUPT", true);}
             }
         },
         BUILD_SELECT_PROPERTY {
