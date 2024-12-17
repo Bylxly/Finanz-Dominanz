@@ -12,6 +12,7 @@ import Client.Elements.*;
 public class Draw extends PApplet {
     private Client client;
     private Game game;
+    private MainMenu mainmenu;
     private int cellSize = 80;
 
     private String currentField = "None";
@@ -43,6 +44,7 @@ public class Draw extends PApplet {
     public void setup() {
         surface.setTitle("Monopoly Game");
         textSize(14);
+        mainmenu = new MainMenu();
         initializeFields();
         createButtons();
         createInfoPanel(); // Initialize the info panel
