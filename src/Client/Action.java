@@ -1,11 +1,8 @@
 package Client;
 
 import Server.Field.Property.Knast;
-import Server.Field.Property.Property;
-import Server.Field.Property.Street;
 import Server.Message;
 import Server.MsgType;
-import Server.State.AuctionState;
 import Server.State.GameState;
 
 import java.io.*;
@@ -53,10 +50,10 @@ public class Action {
                 doNext(client);
             }
         },
-        BUILD_SELECT_PROPERTY{
+        SELECT_PROPERTY{
             @Override
             public void execute(Client client, Message message) {
-                doBuild(client);
+                doSelect(client);
             }
         },
         DO_AUCTION{
@@ -207,46 +204,77 @@ public class Action {
             }
         }
 
-        public static void doBuild(Client client){
+        public static void doSelect(Client client) {
             BufferedReader consoleReader = new BufferedReader(new InputStreamReader(System.in));
-            //Check on which properties the player can build
-            List<Street> streets = new ArrayList<>();
-            for (Property property : client.getGame().getActivePlayer().getProperties()) {
-                if (property instanceof Street && ((Street) property).getHouses() < 5
-                        && ((Street) property).getColorGroup().isComplete()) {
-                    streets.add((Street) property);
-                }
-            }
+            ObjectInputStream objectReader = client.getObjectReader();
 
-            //Print dialogue to player
-            if (!streets.isEmpty()) {
-                System.out.println("You can build on following properties:");
+            try {
+                Object o = objectReader.readObject();
+                if (o instanceof List<?>) {
+                    //TODO: Check warning
+                    List<String> message = (List<String>) o;
 
-                int index = 1;
-                Map<Integer, Property> sortedProperties = new HashMap<>();
-                for (Street street : streets) {
-                    if (street.getColorGroup().isComplete()) {
-                        System.out.println(index + ": " + street.getName() + " Kosten: " + street.getHousePrice());
-                        sortedProperties.put(index, street);
-                        index++;
+                    for (String s : message) {
+                        System.out.println(s);
                     }
-                }
 
-                //Player selects property
-                System.out.print("Choose a property: ");
-                try {
+                    System.out.print("Choose a property: ");
                     int selection = Integer.parseInt(consoleReader.readLine());
                     PrintWriter writer = client.getWriter();
-                    writer.println(client.getGame().getActivePlayer().getProperties().indexOf(sortedProperties.get(selection)));
-                } catch (IOException e) {
-                    System.out.println("Error during building properties: " + e.getMessage());
+                    writer.println(selection);
                 }
+                else if (o instanceof Message) {
+                    System.out.println(((Message) o).message());
+                }
+            } catch (ClassNotFoundException | IOException e) {
+                throw new RuntimeException(e);
             }
-            else {
-                System.out.println("You don't own any properties where you can build on");
-                doNext(client);
-            }
+
         }
+
+        //old
+//        public static void doBuild(Client client){
+//            BufferedReader consoleReader = new BufferedReader(new InputStreamReader(System.in));
+//            //Check on which properties the player can build
+//
+//            //same as in buildstate
+//            List<Street> streets = new ArrayList<>();
+//            for (Property property : client.getGame().getActivePlayer().getProperties()) {
+//                if (property instanceof Street && ((Street) property).getHouses() < 5
+//                        && ((Street) property).getColorGroup().isComplete()) {
+//                    streets.add((Street) property);
+//                }
+//            }
+//
+//            //Print dialogue to player
+//            if (!streets.isEmpty()) {
+//                System.out.println("You can build on following properties:");
+//
+//                int index = 1;
+//                Map<Integer, Property> sortedProperties = new HashMap<>();
+//                for (Street street : streets) {
+//                    if (street.getColorGroup().isComplete()) {
+//                        System.out.println(index + ": " + street.getName() + " Kosten: " + street.getHousePrice());
+//                        sortedProperties.put(index, street);
+//                        index++;
+//                    }
+//                }
+//
+//                //Player selects property
+//                System.out.print("Choose a property: ");
+//                try {
+//                    int selection = Integer.parseInt(consoleReader.readLine());
+//                    PrintWriter writer = client.getWriter();
+//                    writer.println(client.getGame().getActivePlayer().getProperties().indexOf(sortedProperties.get(selection)));
+//                } catch (IOException e) {
+//                    System.out.println("Error during building properties: " + e.getMessage());
+//                }
+//            }
+//            else {
+//                System.out.println("You don't own any properties where you can build on");
+//                doNext(client);
+//            }
+//        }
 
 
         public static void doAuction(Client client, Message message) {
