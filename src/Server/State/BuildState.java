@@ -7,7 +7,9 @@ import Server.Message;
 import Server.MsgType;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class BuildState implements GameState {
 
@@ -19,22 +21,32 @@ public class BuildState implements GameState {
 
     @Override
     public void execute() {
-        List<Street> streets = new ArrayList<>();
+        int mapIndex = 1;
+        Map<Integer, Street> buildableStreets = new HashMap<>();
         for (Property property : game.getActivePlayer().getProperties()) {
             if (property instanceof Street && ((Street) property).getHouses() < 5
                     && ((Street) property).getColorGroup().isComplete()) {
-                streets.add((Street) property);
+                buildableStreets.put(mapIndex++, (Street) property);
             }
         }
 
-        if (streets.isEmpty()) {
-            game.getActivePlayer().sendObject(new Message(MsgType.INFO, "Du besitzt keine Grundstücke!"));
+        game.getActivePlayer().sendObject(new Message(MsgType.SELECT_PROPERTY, null));
+        if (buildableStreets.isEmpty()) {
+            game.getActivePlayer().sendObject(new Message(MsgType.INFO, "You don't own any properties where you can build on"));
         }
         else {
-            game.getActivePlayer().sendObject(new Message(MsgType.BUILD_SELECT_PROPERTY, null));
+            List<String> message = new ArrayList<>();
+            message.add("You can build on following properties:");
+            for (Integer index : buildableStreets.keySet()) {
+                message.add(index + ": " + buildableStreets.get(index).getName() +
+                        " Kosten: " + buildableStreets.get(index).getHousePrice());
+            }
+            game.getActivePlayer().sendObject(message);
+
             int index = Integer.parseInt(game.getActivePlayer().recieveMessage());
-            if (game.getActivePlayer().getProperties().get(index) instanceof Street) {
-                ((Street) game.getActivePlayer().getProperties().get(index)).buyHouses();
+            Street streetToBuildOn = buildableStreets.get(index);
+            if (game.getActivePlayer().getProperties().contains(streetToBuildOn)) {
+                streetToBuildOn.buyHouses();
                 game.getActivePlayer().sendObject(game);
             }
         }
