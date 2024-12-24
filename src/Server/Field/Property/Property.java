@@ -45,7 +45,8 @@ public abstract class Property extends Field {
     }
 
     public void mortgageProperty() {
-
+        GameUtilities.receiveFromBank(owner, hypothek);
+        this.hasHypothek = true;
     }
 
     public int getPrice() {
@@ -66,5 +67,13 @@ public abstract class Property extends Field {
 
     public Player getOwner() {
         return owner;
+    }
+
+    public boolean hasHypothek() {
+        return hasHypothek;
+    }
+
+    public int getHypothek() {
+        return hypothek;
     }
 }

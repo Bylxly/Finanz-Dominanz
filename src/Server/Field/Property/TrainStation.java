@@ -28,11 +28,14 @@ public class TrainStation extends Property {
 
     @Override
     public boolean startAction(Player p) {
-        if (GameUtilities.checkIfEnoughMoney(p, getRent(getAnzahlBahnhöfe()))) {
-            payRent(p);
-            return true;
+        if (!hasHypothek()) {
+            if (GameUtilities.checkIfEnoughMoney(p, getRent(getAnzahlBahnhöfe()))) {
+                payRent(p);
+                return true;
+            }
+            return false;
         }
-        return false;
+        return true;
     }
 }
 

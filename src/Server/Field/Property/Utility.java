@@ -17,11 +17,14 @@ public class Utility extends Property {
 
     @Override
     public boolean startAction(Player player) {
-        if (GameUtilities.checkIfEnoughMoney(player, getRent(getAnzahlWerkeOwnedByPlayer(getOwner()) - 1))) {
-            payRent(player);
-            return true;
+        if (!hasHypothek()) {
+            if (GameUtilities.checkIfEnoughMoney(player, getRent(getAnzahlWerkeOwnedByPlayer(getOwner()) - 1))) {
+                payRent(player);
+                return true;
+            }
+            return false;
         }
-        return false;
+        return true;
     }
 
     public int getAnzahlWerkeOwnedByPlayer(Player player) {
