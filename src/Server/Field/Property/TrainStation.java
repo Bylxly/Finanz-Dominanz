@@ -5,13 +5,12 @@ import Server.Player;
 
 public class TrainStation extends Property {
 
-    public int anzahlDerBesitzendenBahnhöfeEinesSpielers = 0;
-
     public TrainStation(String name, int price, int[] rent, int hypothek) {
         super(name, price, rent, hypothek);
     }
 
     public int getAnzahlBahnhöfe() {
+        int anzahlDerBesitzendenBahnhöfeEinesSpielers = 0;
         for(Property property : getOwner().getProperties()){
             if(property instanceof TrainStation){
                 anzahlDerBesitzendenBahnhöfeEinesSpielers++;
