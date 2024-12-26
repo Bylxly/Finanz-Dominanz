@@ -238,49 +238,6 @@ public class Action {
 
         }
 
-        //old
-//        public static void doBuild(Client client){
-//            BufferedReader consoleReader = new BufferedReader(new InputStreamReader(System.in));
-//            //Check on which properties the player can build
-//
-//            //same as in buildstate
-//            List<Street> streets = new ArrayList<>();
-//            for (Property property : client.getGame().getActivePlayer().getProperties()) {
-//                if (property instanceof Street && ((Street) property).getHouses() < 5
-//                        && ((Street) property).getColorGroup().isComplete()) {
-//                    streets.add((Street) property);
-//                }
-//            }
-//
-//            //Print dialogue to player
-//            if (!streets.isEmpty()) {
-//                System.out.println("You can build on following properties:");
-//
-//                int index = 1;
-//                Map<Integer, Property> sortedProperties = new HashMap<>();
-//                for (Street street : streets) {
-//                    if (street.getColorGroup().isComplete()) {
-//                        System.out.println(index + ": " + street.getName() + " Kosten: " + street.getHousePrice());
-//                        sortedProperties.put(index, street);
-//                        index++;
-//                    }
-//                }
-//
-//                //Player selects property
-//                System.out.print("Choose a property: ");
-//                try {
-//                    int selection = Integer.parseInt(consoleReader.readLine());
-//                    PrintWriter writer = client.getWriter();
-//                    writer.println(client.getGame().getActivePlayer().getProperties().indexOf(sortedProperties.get(selection)));
-//                } catch (IOException e) {
-//                    System.out.println("Error during building properties: " + e.getMessage());
-//                }
-//            }
-//            else {
-//                System.out.println("You don't own any properties where you can build on");
-//                doNext(client);
-//            }
-//        }
 
 
         public static void doAuction(Client client, Message message) {
