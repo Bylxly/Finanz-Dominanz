@@ -42,7 +42,7 @@ public class Street extends Property {
         }
     }
 
-    public void buyHouses(){
+    public void buyHouse(){
         if(colorGroup.isComplete() && houses < 5){
             if(GameUtilities.checkIfEnoughMoney(getOwner(), housePrice)){
                 GameUtilities.payBank(getOwner(), housePrice);
