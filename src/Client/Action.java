@@ -18,7 +18,7 @@ public class Action {
         ASK_SERVER {
             @Override
             public void execute(Client client, Message message) {
-                doServer(client, message);
+                doServer(client);
             }
         },
         ASK_ROLL {
@@ -59,12 +59,12 @@ public class Action {
         DO_AUCTION{
             @Override
             public void execute(Client client, Message message) {
-                doAuction(client, message);
+                doAuction(client);
             }
         }
         ;
 
-        public static void doServer(Client client, Message message) {
+        public static void doServer(Client client) {
             BufferedReader consoleReader = new BufferedReader(new InputStreamReader(System.in));
             // Create or join a game
             try {
@@ -247,8 +247,7 @@ public class Action {
         }
 
 
-
-        public static void doAuction(Client client, Message message) {
+        public static void doAuction(Client client) {
             BufferedReader consoleReader = new BufferedReader(new InputStreamReader(System.in));
             PrintWriter writer = client.getWriter();
             System.out.println(client.getGame().getActivePlayer().getCurrentField().getName() + " will now be auctioned!");
