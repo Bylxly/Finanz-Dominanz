@@ -38,7 +38,6 @@ public abstract class SelectState implements GameState {
         } else {
             List<String> message = new ArrayList<>();
             message.add(getSelectPropertyMessage());
-            //TODO: Quit hinzufügen, falls Spieler keine Auswahl treffen möchte
             for (Integer index : properties.keySet()) {
                 message.add(index + ": " + properties.get(index).getName() + generatePropertyInfoMessage(index, properties));
             }
