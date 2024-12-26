@@ -225,9 +225,17 @@ public class Action {
                     }
 
                     System.out.print("Choose a property: ");
-                    int selection = Integer.parseInt(consoleReader.readLine());
+
+                    //TODO: add check for invalid inputs
+                    String input = consoleReader.readLine();
                     PrintWriter writer = client.getWriter();
-                    writer.println(selection);
+                    if (input.isEmpty() || input.equalsIgnoreCase("quit")) {
+                        writer.println("-1");
+                    }
+                    else {
+                        int selection = Integer.parseInt(input);
+                        writer.println(selection);
+                    }
                 }
                 else if (o instanceof Message) {
                     System.out.println(((Message) o).message());
