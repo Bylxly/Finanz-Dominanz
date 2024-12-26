@@ -71,7 +71,7 @@ public class Street extends Property {
         StringBuilder name;
         name = new StringBuilder(colorGroup.getColorCode() + super.getName() + "\u001B[0m" + " ");
         if (hasHypothek()) {
-            name.append(" M "); //TODO: Replace with emoji
+            name.append("❌");
         }
         else if (getHouses() == 5) {
             name.append("\uD83C\uDFE8");
