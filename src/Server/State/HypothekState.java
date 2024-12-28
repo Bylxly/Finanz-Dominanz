@@ -14,11 +14,11 @@ public class HypothekState extends SelectState {
     }
 
     @Override
-    protected Map<Integer, Property> getEligibleProperties() {
+    protected Map<Integer, Object> getEligibleObjects() {
         int mapIndex = 1;
-        Map<Integer, Property> mortageableProperties = new HashMap<>();
+        Map<Integer, Object> mortageableProperties = new HashMap<>();
         for (Property property : game.getActivePlayer().getProperties()) {
-            if (!(property instanceof Street) || ((Street) property).getHouses() == 0) {
+            if (!property.hasHypothek() && (!(property instanceof Street) || ((Street) property).getHouses() == 0)) {
                 mortageableProperties.put(mapIndex++, property);
             }
         }
@@ -26,12 +26,12 @@ public class HypothekState extends SelectState {
     }
 
     @Override
-    protected void performAction(Property property) {
-        property.mortgageProperty();
+    protected void performAction(Object property) {
+        ((Property)property).mortgageProperty();
     }
 
     @Override
-    public String getNoSuitablePropertiesMessage() {
+    public String getNoSuitableObjectsMessage() {
         return "There are no properties where you can take a mortgage on";
     }
 
@@ -41,8 +41,13 @@ public class HypothekState extends SelectState {
     }
 
     @Override
-    public String generatePropertyInfoMessage(int index, Map<Integer, ? extends Property> properties) {
-        return "Mortgage value: " + properties.get(index).getHypothek();
+    public String generateObjectInfoMessage(int index, Map<Integer, Object> properties) {
+        return "Mortgage value: " + ((Property)properties.get(index)).getHypothek();
+    }
+
+    @Override
+    public String getChooseMessage() {
+        return "Choose a property:";
     }
 
 }
