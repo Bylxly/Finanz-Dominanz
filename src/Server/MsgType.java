@@ -9,7 +9,7 @@ public enum MsgType implements Serializable {
     ASK_NEXT,
     ASK_KNAST,
     INFO,
-    SELECT_PROPERTY,
+    SELECT_OBJECT,
     DO_AUCTION,
     NEW_BID,
     END_AUCTION
