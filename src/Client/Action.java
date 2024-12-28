@@ -50,7 +50,7 @@ public class Action {
                 doNext(client);
             }
         },
-        SELECT_PROPERTY{
+        SELECT_OBJECT {
             @Override
             public void execute(Client client, Message message) {
                 doSelect(client);
@@ -223,8 +223,6 @@ public class Action {
                     for (String s : message) {
                         System.out.println(s);
                     }
-
-                    System.out.print("Choose a property: ");
 
                     //TODO: add check for invalid inputs
                     String input = consoleReader.readLine();
