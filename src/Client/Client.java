@@ -272,6 +272,6 @@ public class Client {
 
     public static void main(String[] args) {
         Client client = new Client();
-        // The main method can be left empty or used for other purposes
+        client.startGUI();
     }
 }

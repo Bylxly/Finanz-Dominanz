@@ -24,7 +24,9 @@ public class Draw extends PApplet {
 
     public Draw(Client client) {
         this.client = client;
+        mainmenu = new MainMenu(this);
         HandleAction.initialize(client, currentField, currentPlayer);
+
     }
 
     @Override
@@ -40,11 +42,9 @@ public class Draw extends PApplet {
         size(2736, 1824);
     }*/
 
-    @Override
     public void setup() {
         surface.setTitle("Monopoly Game");
         textSize(14);
-        mainmenu = new MainMenu();
         initializeFields();
         createButtons();
         createInfoPanel(); // Initialize the info panel

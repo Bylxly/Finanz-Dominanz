@@ -7,6 +7,7 @@ import java.awt.datatransfer.StringSelection;
 
 public class MainMenu extends PApplet {
 
+    private PApplet parent;
     private GTextBox ipTextBox;
     private GTextBox portTextBox;
     private GTextBox lobbyCodeTextBox;
@@ -15,15 +16,10 @@ public class MainMenu extends PApplet {
     private GButton joinGameButton;
     private String serverMessage = "";
     private boolean isConnected = false;
-    private Client client; // Reference to the existing Client instance
+    private Client client;
 
-    public MainMenu() {
-        this.client = client; // Initialize the client reference
-    }
-
-    @Override
-    public void settings() {
-        size(1200, 800);
+    public MainMenu(PApplet parent) {
+        this.parent = parent; // Store the reference
     }
 
     @Override
@@ -119,7 +115,7 @@ public class MainMenu extends PApplet {
     private void createGame() {
         if (client != null) {
             client.getWriter().println("CREATE");
-            String lobbyCode = "ABCDEF"; // Replace with actual code from server
+            String lobbyCode = "ABCDEF";
             Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(lobbyCode), null);
             serverMessage = "Game created. Lobby code copied to clipboard: " + lobbyCode;
         }
