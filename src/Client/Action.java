@@ -174,7 +174,7 @@ public class Action {
         public static void doNext(Client client) {
             BufferedReader consoleReader = new BufferedReader(new InputStreamReader(System.in));
             try {
-                System.out.println("It's your turn. Choose an action: END, BUILD, MORTGAGE, BANKRUPT");
+                System.out.println("It's your turn. Choose an action: END, BUILD, MORTGAGE, TRADE, BANKRUPT");
 
                 String input = consoleReader.readLine().trim();
                 String response = "";
@@ -185,7 +185,9 @@ public class Action {
                     response = "BUILD";
                 } else if (input.equalsIgnoreCase("mortgage") || input.equals("3")) {
                     response = "MORTGAGE";
-                } else if (input.equals("bankrupt") || input.equals("end me") || input.equals("4") || input.equals("BANKRUPT")) {
+                } else if (input.equalsIgnoreCase("trade") || input.equals("4")) {
+                    response = "TRADE";
+                } else if (input.equals("bankrupt") || input.equals("end me") || input.equals("5") || input.equals("BANKRUPT")) {
                     response = "BANKRUPT";
                 } else if (input.equals("end") || input.equals("1") || input.equals("endturn") || input.equals("END") || input.isEmpty()) {
                     response = "END";
@@ -197,6 +199,8 @@ public class Action {
                     case "BUILD":writer.println("BUILD");
                         break;
                     case "MORTGAGE":writer.println("MORTGAGE");
+                        break;
+                    case "TRADE":writer.println("TRADE");
                         break;
                     case "BANKRUPT":writer.println("BANKRUPT");
                         break;
