@@ -12,5 +12,8 @@ public enum MsgType implements Serializable {
     SELECT_OBJECT,
     DO_AUCTION,
     NEW_BID,
-    END_AUCTION
+    END_AUCTION,
+    REQUEST_TRADE,
+    SELECT_TRADE,
+    GET_ANSWER //TODO: Mby ändern => @TradeState
 }
