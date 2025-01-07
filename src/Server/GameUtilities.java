@@ -1,5 +1,7 @@
 package Server;
 
+import Server.Field.Property.Property;
+
 import java.util.ArrayList;
 
 public class GameUtilities {
@@ -7,6 +9,12 @@ public class GameUtilities {
     public static void transferMoney(Player fromPlayer, Player toPlayer, int amount){
         fromPlayer.takeMoney(amount);
         toPlayer.giveMoney(amount);
+    }
+
+    public static void transferProperty(Player fromPlayer, Player toPlayer, Property property){
+        fromPlayer.removeProperty(property);
+        property.setOwner(toPlayer);
+        toPlayer.addProperty(property);
     }
 
     public static void payBank(Player p, int amount){
