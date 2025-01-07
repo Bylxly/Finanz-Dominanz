@@ -61,6 +61,18 @@ public class Action {
             public void execute(Client client, Message message) {
                 doAuction(client);
             }
+        },
+        SELECT_TRADE{
+            @Override
+            public void execute(Client client, Message message) {
+                doSelectTrade(client, message);
+            }
+        },
+        GET_ANSWER {
+            @Override
+            public void execute(Client client, Message message) {
+                doGetAnswer(client, message);
+            }
         }
         ;
 
@@ -311,6 +323,73 @@ public class Action {
             } catch (InterruptedException e) {
                 System.out.println("Auction interrupted: " + e.getMessage());
                 Thread.currentThread().interrupt();
+            }
+        }
+
+        public static void doSelectTrade(Client client, Message option) {
+            BufferedReader consoleReader = new BufferedReader(new InputStreamReader(System.in));
+            PrintWriter writer = client.getWriter();
+            ObjectInputStream objectReader = client.getObjectReader();
+
+            try {
+                Object obj = objectReader.readObject();
+                List<String> message = List.of();
+
+                if (obj instanceof List<?>) {
+                    message = (List<String>) obj;
+                }
+
+                for (String s : message) {
+                    System.out.println(s);
+                }
+
+                // Validierung der Benutzereingabe
+                String input;
+                do {
+                    System.out.print("Enter your choice: ");
+                    input = consoleReader.readLine();
+
+                    if (option.message().equals("build") ? isValidInputBuild(input) : isValidInputRequest(input)) {
+                        System.out.println("Invalid input. Please try again.");
+                    }
+                } while (option.message().equals("build") ? isValidInputBuild(input) : isValidInputRequest(input));
+
+                // Sende gültige Eingabe an den Server
+                writer.println(input);
+
+            } catch (IOException | ClassNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        private static boolean isValidInputBuild(String input) {
+            String regex = "a[B|M]\\d+|r[A|M]\\d+|[c|s|f|q]";
+            return !input.matches(regex);
+        }
+
+        private static boolean isValidInputRequest(String input) {
+            String regex = "[yn]";
+            return !input.matches(regex);
+        }
+
+        public static void doGetAnswer(Client client, Message message) {
+            BufferedReader consoleReader = new BufferedReader(new InputStreamReader(System.in));
+            PrintWriter writer = client.getWriter();
+
+            try {
+                String input;
+                do {
+                    System.out.println(message.message());
+                    input = consoleReader.readLine();
+
+                    if (isValidInputRequest(input)) {
+                        System.out.println("Invalid input. Please try again.");
+                    }
+                } while (isValidInputRequest(input));
+
+                writer.println(input);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
         }
 
