@@ -18,60 +18,60 @@ public class MainMenu extends PApplet {
     private boolean isConnected = false;
     private Client client;
 
+
     public MainMenu(PApplet parent) {
-        this.parent = parent; // Store the reference
-    }
+        this.parent = parent;
+        this.client = new Client();
 
-    @Override
-    public void setup() {
-        surface.setTitle("Monopoly Game - Main Menu");
-        textSize(14);
+        ipTextBox = new GTextBox("tbIP", 400, 200, 300, 30, parent.color(255), parent.color(0), parent.color(0), parent.color(200), true);
+        portTextBox = new GTextBox("tbPort", 400, 250, 300, 30, parent.color(255), parent.color(0), parent.color(0), parent.color(200), true);
+        lobbyCodeTextBox = new GTextBox("tbLCode", 400, 250, 300, 30, parent.color(255), parent.color(0), parent.color(0), parent.color(200), false);
 
-        ipTextBox = new GTextBox(450, 200, 300, 30, color(255), color(0), color(0), true);
-        portTextBox = new GTextBox(450, 250, 300, 30, color(255), color(0), color(0), true);
-
-        connectButton = new GButton("connect", 450, 300, 300, 40, "Connect", color(200), color(0), true, false);
+        connectButton = new GButton("btnConnect", 400, 350, 300, 40, "Connect", parent.color(200), parent.color(255), true, false);
         connectButton.setAction(this::connectToServer);
 
-        createGameButton = new GButton("create", 450, 400, 300, 40, "Create Game", color(200), color(0), true, false);
+        createGameButton = new GButton("btnCreate", 400, 400, 300, 40, "Create Game", parent.color(200), parent.color(255), true, false);
         createGameButton.setAction(this::createGame);
-        createGameButton.setActive(false);
 
-        joinGameButton = new GButton("join", 450, 450, 300, 40, "Join Game", color(200), color(0), true, false);
+        joinGameButton = new GButton("btnJoin", 400, 450, 300, 40, "Join Game", parent.color(200), parent.color(255), true, false);
         joinGameButton.setAction(this::joinGame);
-        joinGameButton.setActive(false);
 
-        lobbyCodeTextBox = new GTextBox(450, 500, 300, 30, color(255), color(0), color(0), true);
-        lobbyCodeTextBox.setActive(false);
+        toggleConnectionUI(true);
     }
 
-    @Override
+
     public void draw() {
-        background(34, 139, 34);
+        parent.background(34, 139, 34);
 
-        fill(255);
-        textAlign(CENTER);
-        text("Enter Server IP and Port", width / 2.0f, 150);
+        parent.fill(255);
+        parent.textAlign(PApplet.CENTER);
+        parent.text("Enter Server IP and Port", parent.width / 2.0f, 150);
 
-        ipTextBox.draw(this);
-        portTextBox.draw(this);
-        connectButton.draw(this);
+        ipTextBox.draw(parent);
+        portTextBox.draw(parent);
+        if (lobbyCodeTextBox != null) {
+            lobbyCodeTextBox.draw(parent);
+        }
+        connectButton.draw(parent);
 
         if (isConnected) {
-            createGameButton.draw(this);
-            joinGameButton.draw(this);
-            lobbyCodeTextBox.draw(this);
+            createGameButton.draw(parent);
+            joinGameButton.draw(parent);
 
-            text("Server Message: " + serverMessage, width / 2.0f, 600);
+            parent.fill(255);
+            parent.text("Server Message: " + serverMessage, parent.width / 2.0f, 600);
         }
     }
 
+
+
     @Override
     public void keyPressed() {
-        if (!isConnected) {
+        if (ipTextBox.isFocused()) {
             ipTextBox.keyPressed(key, keyCode);
+        } else if (portTextBox.isFocused()) {
             portTextBox.keyPressed(key, keyCode);
-        } else {
+        } else if (lobbyCodeTextBox != null && lobbyCodeTextBox.isFocused()) {
             lobbyCodeTextBox.keyPressed(key, keyCode);
         }
     }
@@ -80,7 +80,9 @@ public class MainMenu extends PApplet {
     public void mousePressed() {
         ipTextBox.mousePressed(mouseX, mouseY);
         portTextBox.mousePressed(mouseX, mouseY);
-        lobbyCodeTextBox.mousePressed(mouseX, mouseY);
+        if (lobbyCodeTextBox != null) {
+            lobbyCodeTextBox.mousePressed(mouseX, mouseY);
+        }
 
         if (connectButton.isClicked(this)) {
             connectButton.performAction();
@@ -93,6 +95,7 @@ public class MainMenu extends PApplet {
         }
     }
 
+
     private void connectToServer() {
         String ipAddress = ipTextBox.getSavedText().isEmpty() ? "localhost" : ipTextBox.getSavedText();
         String portInput = portTextBox.getSavedText().isEmpty() ? "5555" : portTextBox.getSavedText();
@@ -104,10 +107,10 @@ public class MainMenu extends PApplet {
             isConnected = true;
             serverMessage = "Connected to server at " + ipAddress + ":" + port;
 
-            createGameButton.setActive(true);
-            joinGameButton.setActive(true);
-            lobbyCodeTextBox.setActive(true);
+            toggleConnectionUI(false);
         } catch (NumberFormatException e) {
+            serverMessage = "Invalid port. Please enter a valid number.";
+        } catch (Exception e) {
             serverMessage = "Connection failed: " + e.getMessage();
         }
     }
@@ -127,9 +130,28 @@ public class MainMenu extends PApplet {
             if (!lobbyCode.isEmpty()) {
                 client.getWriter().println(lobbyCode);
                 serverMessage = "Attempting to join game with code: " + lobbyCode;
+                isConnected = true;
             } else {
                 serverMessage = "Please enter a lobby code.";
             }
         }
+    }
+
+    private void toggleConnectionUI(boolean enable) {
+        ipTextBox.setActive(enable);
+        portTextBox.setActive(enable);
+        connectButton.setActive(enable);
+
+        createGameButton.setActive(!enable);
+        joinGameButton.setActive(!enable);
+        lobbyCodeTextBox.setActive(!enable);
+    }
+
+    public boolean isConnectionComplete() {
+        return isConnected;
+    }
+
+    public Client getClient() {
+        return client;
     }
 }

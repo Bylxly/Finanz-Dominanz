@@ -20,39 +20,49 @@ public class Draw extends PApplet {
 
     private ArrayList<GField> fields = new ArrayList<>();
     private ArrayList<GButton> buttons = new ArrayList<>();
-    private GPanel infoPanel; // New GPanel for displaying info
+    private ArrayList<GTextBox> textboxes = new ArrayList<>();
+    private GPanel infoPanel;
+    private boolean isConnected = false;
 
     public Draw(Client client) {
         this.client = client;
-        mainmenu = new MainMenu(this);
-        HandleAction.initialize(client, currentField, currentPlayer);
-
     }
 
     @Override
     public void settings() {
         size(1200, 800);
     }
-    /*
-    public void settings() {
-        size(1920, 1080);
-    }*/
-    /*
-    public void settings() {
-        size(2736, 1824);
-    }*/
 
+    @Override
     public void setup() {
         surface.setTitle("Monopoly Game");
-        textSize(14);
-        initializeFields();
-        createButtons();
-        createInfoPanel(); // Initialize the info panel
-        noLoop();
+        mainmenu = new MainMenu(this);
     }
 
     @Override
     public void draw() {
+        if (!isConnected) {
+            background(200);
+            mainmenu.draw();
+            if (mainmenu.isConnectionComplete()) {
+                isConnected = true;
+                client = mainmenu.getClient();
+                initializeGameComponents();
+            }
+        } else {
+            renderGame();
+        }
+    }
+
+    private void initializeGameComponents() {
+        initializeFields();
+        game = client.getGame();
+        createButtons();
+        createInfoPanel();
+        redraw();
+    }
+
+    private void renderGame() {
         background(34, 139, 34);
 
         if (game == null) {
@@ -60,11 +70,10 @@ public class Draw extends PApplet {
         } else {
             drawFields();
             drawPlayers();
-            infoPanel.display(); // Display the info panel
+            infoPanel.display();
             drawButtons();
         }
     }
-
     private void createInfoPanel() {
         infoPanel = new GPanel(this, 900, 20, 220, 500, color(255));
         updateInfoPanel();
@@ -105,10 +114,8 @@ public class Draw extends PApplet {
                 }
             }
 
-            // Clear previous text
             infoPanel.clearText();
 
-            // Add game status information to the panel
             infoPanel.addText("Status:", color(0), true, false);
             infoPanel.addText("Number of Players: " + game.getPlayers().size(), color(0), false, false);
             infoPanel.addText("Number of Fields: " + game.getBoard().length, color(0), false, false);
@@ -167,6 +174,15 @@ public class Draw extends PApplet {
 
         buttons.add(new GButton("btnNextBANKRUPT", 950, 700, 200, 30, "Bankrupt", color(200), color(255), true, false)
                 .setAction(HandleAction.ActionType.BANKRUPT::action));
+
+        buttons.add(new GButton("btnConnect", 500, 200, 200, 30, "Connect", color(200), color(255), true, false)
+                .setAction(HandleAction.ActionType.CONNECT::action));
+
+        buttons.add(new GButton("btnCreate", 500, 200, 200, 30, "Create", color(200), color(255), true, false)
+                .setAction(HandleAction.ActionType.CREATE::action));
+
+        buttons.add(new GButton("btnJoin", 500, 300, 200, 30, "Join", color(200), color(255), true, false)
+                .setAction(HandleAction.ActionType.JOIN::action));
     }
 
     private void drawButtons() {
@@ -184,6 +200,13 @@ public class Draw extends PApplet {
             }
         }
         System.out.println("Button not found: " + name);
+    }
+
+    private void createTextBoxes() {
+        textboxes.add(new GTextBox("tbIP", 200, 200, 400, 300, color(200, 10), color(255), color(10), color(200), false));
+        textboxes.add(new GTextBox("tbPort", 200, 200, 400, 300, color(200, 10), color(255), color(10), color(200), false));
+        textboxes.add(new GTextBox("tbLCode", 200, 200, 400, 300, color(200, 10), color(255), color(10), color(200), false));
+
     }
 
     private void initializeFields() {
