@@ -214,6 +214,30 @@ public class Game extends Thread implements Serializable {
             }
     }
 
+    public void movePlayerToField(Field field) {
+        int fieldPos = 0;
+        for (Field f : board) {
+            if (f == field) {
+                break;
+            } else {
+                fieldPos++;
+            }
+        }
+        int playerPos = getPlayerPosition();
+        if (fieldPos < playerPos) {
+            GameUtilities.receiveFromBank(getActivePlayer(), BONUS);
+        }
+        activePlayer.setCurrentField(field);
+    }
+
+    public void movePlayerToPosition(int newPos) {
+        int playerPos = getPlayerPosition();
+        if (newPos < playerPos) {
+            GameUtilities.receiveFromBank(getActivePlayer(), BONUS);
+        }
+        activePlayer.setCurrentField(board[newPos]);
+    }
+
     public int getPlayerPosition() {
         int pos = 0;
         for (Field f : board) {
