@@ -82,7 +82,6 @@ public class MainMenu extends PApplet {
                 || portTextBox.mousePressed(mouseX, mouseY, this)
                 || (lobbyCodeTextBox != null && lobbyCodeTextBox.mousePressed(mouseX, mouseY, this));
 
-        // Ensure only one textbox is focused
         if (!focusedOnTextbox) {
             ipTextBox.setFocused(false);
             portTextBox.setFocused(false);

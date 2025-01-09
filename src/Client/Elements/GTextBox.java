@@ -70,15 +70,11 @@ public class GTextBox {
     }
 
     public boolean mousePressed(float mouseX, float mouseY, PApplet applet) {
-        boolean inBounds = isActive && applet.mouseX > x && applet.mouseX < x + width && applet.mouseY > y && applet.mouseY < y + height;
-        if (inBounds) {
-            focused = true;
-            System.out.println("Textbox focused: " + text); // Debug
-        } else {
-            focused = false;
-        }
+        boolean inBounds = isMouseOver(applet);
+        focused = inBounds;
         return inBounds;
     }
+
     public String getText() {
         return text;
     }
