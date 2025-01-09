@@ -68,6 +68,9 @@ public class Game extends Thread implements Serializable {
                 case 1:
                     board[i] = new Street("Badstraße", 60, 50, new int[]{2, 10, 30, 90, 160, 250}, 30, purple);
                     break;
+                case 2:
+                    board[i] = new CommunityField("Gemeinschaftsfeld", this);
+                    break;
                 case 3:
                     board[i] = new Street("Turmstraße", 60, 50 , new int[]{4, 20, 60, 180, 320, 450}, 30, purple);
                     break;
@@ -76,6 +79,9 @@ public class Game extends Thread implements Serializable {
                     break;
                 case 6:
                     board[i] = new Street("Chausseestraße", 100, 50, new int[]{6, 30, 90, 270, 400, 550}, 50, cyan);
+                    break;
+                case 7:
+                    board[i] = new EventField("Ereignisfeld", this);
                     break;
                 case 8:
                     board[i] = new Street("Elisenstraße", 100, 50, new int[]{6, 30, 90, 270, 400, 550}, 50, cyan);
@@ -104,6 +110,9 @@ public class Game extends Thread implements Serializable {
                 case 16:
                     board[i] = new Street("Münchner Straße", 180, 100, new int[]{14, 70, 200, 550, 750, 950}, 90, orange);
                     break;
+                case 17:
+                    board[i] = new CommunityField("Gemeinschaftsfeld", this);
+                    break;
                 case 18:
                     board[i] = new Street("Wiener Straße", 180, 100, new int[]{14, 70, 200, 550, 750, 950}, 90, orange);
                     break;
@@ -112,6 +121,9 @@ public class Game extends Thread implements Serializable {
                     break;
                 case 21:
                     board[i] = new Street("Theaterstraße", 220, 150, new int[]{18, 90, 250, 700, 875, 1050}, 110, red);
+                    break;
+                case 22:
+                    board[i] = new EventField("Ereignisfeld", this);
                     break;
                 case 23:
                     board[i] = new Street("Museumstraße", 220, 150, new int[]{18, 90, 250, 700, 875, 1050}, 110, red);
@@ -143,11 +155,17 @@ public class Game extends Thread implements Serializable {
                 case 32:
                     board[i] = new Street("Hauptstraße", 300, 200, new int[]{26, 130, 390, 900, 1100, 1275}, 150, green);
                     break;
+                case 33:
+                    board[i] = new CommunityField("Gemeinschaftsfeld", this);
+                    break;
                 case 34:
                     board[i] = new Street("Bahnhofstraße", 320, 200, new int[]{28, 150, 450, 1000, 1200, 1400}, 160, green);
                     break;
                 case 35:
                     board[i] = new TrainStation("Hauptbahnhof", 200, new int[]{25, 50, 100, 200}, 100);
+                    break;
+                case 36:
+                    board[i] = new EventField("Ereignisfeld", this);
                     break;
                 case 37:
                     board[i] = new Street("Parkstraße", 350, 200, new int[]{35, 175, 500, 1100, 1300, 1500}, 175, blue);
