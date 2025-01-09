@@ -1,15 +1,10 @@
 package Server;
 
-import Server.Field.AbInKnast;
-import Server.Field.DummyField;
-import Server.Field.Field;
+import Server.Field.*;
 import Server.Field.Property.*;
-import Server.Field.Start;
 import Server.State.*;
 
-import java.awt.*;
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.net.Socket;
