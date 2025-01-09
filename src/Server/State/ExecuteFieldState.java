@@ -25,8 +25,6 @@ public class ExecuteFieldState implements GameState {
         else if (game.getActivePlayer().getCurrentField() instanceof AbInKnast) {
             game.getActivePlayer().getCurrentField().startAction(game.getActivePlayer());
             game.movePlayerToKnast(game.getActivePlayer());
-            ((Knast) game.getActivePlayer().getCurrentField()).addRollAmount(game.getActivePlayer(), 0);
-            game.getActivePlayer().sendObject(new Message(MsgType.INFO, "Du musst in den Knast gehen!"));
         }
         else if (!game.getActivePlayer().getCurrentField().startAction(game.getActivePlayer())) {
             game.printBoard();

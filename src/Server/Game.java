@@ -246,7 +246,6 @@ public class Game extends Thread implements Serializable {
             int paschAnzahl = 0;
             do {
                 if (paschAnzahl == 3){
-                    activePlayer.setArrested(true);
                     movePlayerToKnast(activePlayer);
                     break;
                 }
@@ -325,6 +324,10 @@ public class Game extends Thread implements Serializable {
     }
 
     public void movePlayerToKnast(Player player) {
+        player.setArrested(true);
+        ((Knast) getActivePlayer().getCurrentField()).addRollAmount(getActivePlayer(), 0);
+        getActivePlayer().sendObject(new Message(MsgType.INFO, "Du musst in den Knast gehen!"));
+
         for (Field f : board) {
             if (f instanceof Knast) {
                 player.setCurrentField(f);
