@@ -2,6 +2,8 @@ package Client.Elements;
 
 import processing.core.PApplet;
 
+import static processing.core.PConstants.*;
+
 public class GTextBox {
     private float x, y, width, height;
     private String text = "";
@@ -39,25 +41,32 @@ public class GTextBox {
 
     public void keyPressed(char key, int keyCode) {
         if (focused) {
-            if (keyCode == PApplet.BACKSPACE && text.length() > 0) {
+            if (keyCode == BACKSPACE && text.length() > 0) {
                 text = text.substring(0, text.length() - 1);
-            } else if (keyCode == PApplet.ENTER) {
+                System.out.println("Text after BACKSPACE: " + text); // Debug
+            } else if (key != CODED && keyCode != ENTER) {
+                text += key;
+                System.out.println("Text after key press: " + text); // Debug
+            } else if (keyCode == ENTER) {
                 focused = false;
                 saveText();
-            } else if (key != PApplet.CODED) {
-                text += key;
+                System.out.println("Textbox unfocused, saved text: " + savedText); // Debug
             }
         }
     }
 
+
     public boolean mousePressed(float mouseX, float mouseY) {
-        if (isActive && mouseX > x && mouseX < x + width && mouseY > y && mouseY < y + height) {
+        boolean inBounds = isActive && mouseX > x && mouseX < x + width && mouseY > y && mouseY < y + height;
+        if (inBounds) {
             focused = true;
-            return true;
+            System.out.println("Textbox focused: " + text); // Debug
+        } else {
+            focused = false;
         }
-        focused = false;
-        return false;
+        return inBounds;
     }
+
 
     public String getText() {
         return text;

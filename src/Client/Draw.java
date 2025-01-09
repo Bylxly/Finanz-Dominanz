@@ -115,7 +115,6 @@ public class Draw extends PApplet {
             }
 
             infoPanel.clearText();
-
             infoPanel.addText("Status:", color(0), true, false);
             infoPanel.addText("Number of Players: " + game.getPlayers().size(), color(0), false, false);
             infoPanel.addText("Number of Fields: " + game.getBoard().length, color(0), false, false);
@@ -256,10 +255,17 @@ public class Draw extends PApplet {
     }
     @Override
     public void mousePressed() {
+        // Handle button clicks
         for (GButton button : buttons) {
             if (button.isClicked(this)) {
                 button.performAction();
             }
         }
+
+        // Handle textbox clicks
+        for (GTextBox textBox : textboxes) {
+            textBox.mousePressed(mouseX, mouseY);
+        }
     }
+
 }

@@ -78,22 +78,23 @@ public class MainMenu extends PApplet {
 
     @Override
     public void mousePressed() {
-        ipTextBox.mousePressed(mouseX, mouseY);
-        portTextBox.mousePressed(mouseX, mouseY);
-        if (lobbyCodeTextBox != null) {
-            lobbyCodeTextBox.mousePressed(mouseX, mouseY);
+        boolean focusedOnTextbox = ipTextBox.mousePressed(mouseX, mouseY)
+                || portTextBox.mousePressed(mouseX, mouseY)
+                || (lobbyCodeTextBox != null && lobbyCodeTextBox.mousePressed(mouseX, mouseY));
+
+        // Ensure only one textbox is focused
+        if (!focusedOnTextbox) {
+            ipTextBox.setFocused(false);
+            portTextBox.setFocused(false);
+            if (lobbyCodeTextBox != null) lobbyCodeTextBox.setFocused(false);
         }
 
-        if (connectButton.isClicked(this)) {
-            connectButton.performAction();
-        }
-        if (createGameButton.isClicked(this) && isConnected) {
-            createGameButton.performAction();
-        }
-        if (joinGameButton.isClicked(this) && isConnected) {
-            joinGameButton.performAction();
-        }
+        // Handle buttons
+        if (connectButton.isClicked(this)) connectButton.performAction();
+        if (createGameButton.isClicked(this) && isConnected) createGameButton.performAction();
+        if (joinGameButton.isClicked(this) && isConnected) joinGameButton.performAction();
     }
+
 
 
     private void connectToServer() {
