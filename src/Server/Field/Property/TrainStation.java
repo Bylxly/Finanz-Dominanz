@@ -26,6 +26,13 @@ public class TrainStation extends Property {
         }
     }
 
+    // for event cards
+    public void payRentCard(Player p) {
+        if (getOwner() != null && getOwner() != p) {
+            GameUtilities.transferMoney(p, getOwner(), getRent(getAnzahlBahnhöfe()) * 2);
+        }
+    }
+
     @Override
     public boolean startAction(Player p) {
         if (!hasHypothek()) {
