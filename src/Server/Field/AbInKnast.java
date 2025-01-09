@@ -10,7 +10,8 @@ public class AbInKnast extends Field {
 
     @Override
     public boolean startAction(Player player) {
-        player.setArrested(true);
+        //player.setArrested(true);
+        // => Moved to movePlayerToKnast() in Game
         return true;
     }
 

@@ -63,7 +63,7 @@ public class Draw extends PApplet {
         }
 
         for (int i = 0; i < fields.size(); i++) {
-            String fieldName = board[i].getName();
+            String fieldName = board[i].getUIName();
             fields.get(i).setName(fieldName);
         }
 

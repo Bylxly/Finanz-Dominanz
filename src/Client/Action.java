@@ -1,21 +1,27 @@
 package Client;
 
-import Server.Field.Property.Property;
-import Server.Field.Property.Street;
+import Server.Field.Property.Knast;
+import Server.Game;
 import Server.Message;
+import Server.MsgType;
 import Server.State.GameState;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.*;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class Action {
     private int actionId;
     private String description;
 
     public enum ServerMessage {
+        ASK_SERVER {
+            @Override
+            public void execute(Client client, Message message) {
+                doServer(client);
+            }
+        },
         ASK_ROLL {
             @Override
             public void execute(Client client, Message message) {
@@ -33,25 +39,73 @@ public class Action {
 
 
         },
+        ASK_KNAST {
+            @Override
+            public void execute(Client client, Message message) {
+                doKnast(client);
+            }
+        },
         ASK_NEXT{
             @Override
             public void execute(Client client, Message message) {
                 doNext(client);
             }
         },
-        BUILD_SELECT_PROPERTY{
+        SELECT_OBJECT {
             @Override
             public void execute(Client client, Message message) {
-                doBuild(client);
+                doSelect(client);
             }
         },
-        DO_AUCTIONS{
+        DO_AUCTION{
             @Override
             public void execute(Client client, Message message) {
-                doAuction(client, message);
+                doAuction(client);
+            }
+        },
+        SELECT_TRADE{
+            @Override
+            public void execute(Client client, Message message) {
+                doSelectTrade(client, message);
+            }
+        },
+        GET_ANSWER {
+            @Override
+            public void execute(Client client, Message message) {
+                doGetAnswer(client, message);
             }
         }
         ;
+
+        public static void doServer(Client client) {
+            BufferedReader consoleReader = new BufferedReader(new InputStreamReader(System.in));
+            // Create or join a game
+            try {
+                String msgClient;
+                System.out.println("Would you like to CREATE or JOIN a game?");
+                msgClient = consoleReader.readLine();
+                if (msgClient.equalsIgnoreCase("CREATE")) {
+                    client.getWriter().println("CREATE");
+                }
+                //Temp for quick join
+                else if (msgClient.isEmpty()) {
+                    client.getWriter().println("CREATE_CUSTOM");
+                }
+                else if (msgClient.equalsIgnoreCase("JOIN") || msgClient.equalsIgnoreCase("j")) {
+                    System.out.print("Enter code of the game: ");
+                    msgClient = consoleReader.readLine();
+                    //Temp for quick join
+                    if (msgClient.isEmpty()) {
+                        client.getWriter().println("ABCDEF");
+                    }
+                    else {
+                        client.getWriter().println(msgClient);
+                    }
+                }
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
 
         public static void doRoll(Client client) {
             try {
@@ -106,17 +160,49 @@ public class Action {
             }
         }
 
+        public static void doKnast(Client client) {
+            BufferedReader consoleReader = new BufferedReader(new InputStreamReader(System.in));
+            System.out.println("You are in the Knast!");
+            try {
+                if (((Knast) client.getGame().getActivePlayer().getCurrentField()).getRollAmount(client.getGame().getActivePlayer()) < 3) {
+                    System.out.println("What do you want to do? ROLL or PAY");
+                    if (consoleReader.readLine().equalsIgnoreCase("ROLL")) {
+                        client.getWriter().println("ROLL");
+                    }
+                    else {
+                        client.getWriter().println("PAY");
+                    }
+                }
+                else {
+                    System.out.println("You've already rolled three times, you now can only buy yourself a way out");
+                    consoleReader.readLine();
+                    client.getWriter().println("PAY");
+                }
+            } catch (IOException e) {
+                System.out.println("Error during knast decision: " + e.getMessage());
+            }
+
+        }
+
         public static void doNext(Client client) {
             BufferedReader consoleReader = new BufferedReader(new InputStreamReader(System.in));
             try {
-                System.out.println("It's your turn. Choose an action: END, BUILD, BANKRUPT");
+                System.out.println("It's your turn. Choose an action: END, BUILD, MORTGAGE, LIFT, TRADE, BANKRUPT");
 
                 String input = consoleReader.readLine().trim();
                 String response = "";
 
+                //TODO: simplify
+
                 if (input.equals("build") || input.equals("2") || input.equals("BUILD")) {
                     response = "BUILD";
-                } else if (input.equals("bankrupt") || input.equals("end me") || input.equals("3") || input.equals("BANKRUPT")) {
+                } else if (input.equalsIgnoreCase("mortgage") || input.equals("3")) {
+                    response = "MORTGAGE";
+                } else if (input.equalsIgnoreCase("lift") || input.equals("4")) {
+                    response = "LIFT";
+                } else if (input.equalsIgnoreCase("trade") || input.equals("5")) {
+                    response = "TRADE";
+                } else if (input.equals("bankrupt") || input.equals("end me") || input.equals("6") || input.equals("BANKRUPT")) {
                     response = "BANKRUPT";
                 } else if (input.equals("end") || input.equals("1") || input.equals("endturn") || input.equals("END") || input.isEmpty()) {
                     response = "END";
@@ -126,6 +212,12 @@ public class Action {
 
                 switch (response) {
                     case "BUILD":writer.println("BUILD");
+                        break;
+                    case "MORTGAGE":writer.println("MORTGAGE");
+                        break;
+                    case "LIFT":writer.println("LIFT");
+                        break;
+                    case "TRADE":writer.println("TRADE");
                         break;
                     case "BANKRUPT":writer.println("BANKRUPT");
                         break;
@@ -139,45 +231,183 @@ public class Action {
             }
         }
 
-        public static void doBuild(Client client){
+        public static void doSelect(Client client) {
             BufferedReader consoleReader = new BufferedReader(new InputStreamReader(System.in));
-            List<Street> streets = new ArrayList<>();
-            for (Property property : client.getGame().getActivePlayer().getProperties()) {
-                if (property instanceof Street && ((Street) property).getHouses() < 5
-                        && ((Street) property).getColorGroup().isComplete()) {
-                    streets.add((Street) property);
-                }
-            }
+            ObjectInputStream objectReader = client.getObjectReader();
 
-            if (!streets.isEmpty()) {
-                System.out.println("You can build on following properties:");
+            try {
+                Object o = objectReader.readObject();
+                if (o instanceof List<?>) {
+                    //TODO: Check warning
+                    List<String> message = (List<String>) o;
 
-                int index = 1;
-                Map<Integer, Property> sortedProperties = new HashMap<>();
-                for (Street street : streets) {
-                    if (street.getColorGroup().isComplete()) {
-                        System.out.println(index + ": " + street.getName());
-                        sortedProperties.put(index, street);
+                    for (String s : message) {
+                        System.out.println(s);
+                    }
+
+                    //TODO: add check for invalid inputs
+                    String input = consoleReader.readLine();
+                    PrintWriter writer = client.getWriter();
+                    if (input.isEmpty() || input.equalsIgnoreCase("quit")) {
+                        writer.println("-1");
+                    }
+                    else {
+                        int selection = Integer.parseInt(input);
+                        writer.println(selection);
                     }
                 }
-
-                System.out.print("Choose a property: ");
-                try {
-                    int selection = Integer.parseInt(consoleReader.readLine());
-                    PrintWriter writer = client.getWriter();
-                    writer.println(client.getGame().getActivePlayer().getProperties().indexOf(sortedProperties.get(selection)));
-                } catch (IOException e) {
-                    System.out.println("Error during building properties: " + e.getMessage());
+                else if (o instanceof Message) {
+                    System.out.println(((Message) o).message());
                 }
+            } catch (ClassNotFoundException | IOException e) {
+                throw new RuntimeException(e);
             }
-            else {
-                System.out.println("You don't own any properties where you can build on");
-                doNext(client);
+
+        }
+
+
+        public static void doAuction(Client client) {
+            BufferedReader consoleReader = new BufferedReader(new InputStreamReader(System.in));
+            PrintWriter writer = client.getWriter();
+            System.out.println(client.getGame().getActivePlayer().getCurrentField().getName() + " will now be auctioned!");
+            System.out.println("You can either write the amount you want to pay or 'QUIT' to quit the auction");
+
+            AtomicBoolean auctionEnded = new AtomicBoolean(false);
+            AtomicInteger lastBid = new AtomicInteger(0); // Local storage for the latest bid
+
+            Thread printBid = new Thread(() -> {
+                try {
+                    ObjectInputStream objectReader = client.getObjectReader();
+                    while (!auctionEnded.get()) {
+                        Object o = objectReader.readObject();
+                        if (o instanceof Game) {
+                            return;
+                        }
+                        Message msg = (Message) o;
+                        if (msg.messageType() == MsgType.NEW_BID) {
+                            int newBid = Integer.parseInt(msg.message());
+                            lastBid.set(newBid);
+                            System.out.println("New Bid: " + newBid);
+                        }
+                        else if (msg.messageType() == MsgType.QUIT_AUCTION) {
+                            System.out.println(msg.message());
+                            System.out.println("Press ENTER to continue");
+                            auctionEnded.set(true);
+                        }
+                        else if (msg.messageType() == MsgType.INFO) {
+                            System.out.println(msg.message());
+                        }
+                        else if (msg.messageType() == MsgType.END_AUCTION) {
+                            writer.println("QUIT_AUCTION");
+                            System.out.println(msg.message());
+                            System.out.println("Press ENTER to continue");
+                            auctionEnded.set(true);
+                        }
+                    }
+                } catch (IOException | ClassNotFoundException e) {
+                    System.out.println("Error in auction thread: " + e.getMessage());
+                }
+            });
+
+            try {
+                printBid.start();
+                while (!auctionEnded.get()) {
+
+                    String userInput = consoleReader.readLine();
+
+                    if (auctionEnded.get()) break; // Double-check flag in case of race condition
+
+                    if (userInput.equalsIgnoreCase("QUIT")) {
+                        writer.println("QUIT_AUCTION");
+                    }
+                    else {
+                        try {
+                            int bid = Integer.parseInt(userInput);
+                            if (bid > lastBid.get()) { // Compare with the locally stored last bid
+                                writer.println(bid);
+                            } else {
+                                System.out.println("Your bid is lower than the current bid.");
+                            }
+                        } catch (NumberFormatException e) {
+                            System.out.println("Invalid input. Please enter a valid number or 'QUIT'.");
+                        }
+                    }
+                }
+                auctionEnded.set(true); // Ensure thread ends
+                printBid.join();
+            } catch (IOException e) {
+                System.out.println("Error during auction decision: " + e.getMessage());
+            } catch (InterruptedException e) {
+                System.out.println("Auction interrupted: " + e.getMessage());
+                Thread.currentThread().interrupt();
             }
         }
 
-        public static void doAuction(Client client, Message message){
+        public static void doSelectTrade(Client client, Message option) {
+            BufferedReader consoleReader = new BufferedReader(new InputStreamReader(System.in));
+            PrintWriter writer = client.getWriter();
+            ObjectInputStream objectReader = client.getObjectReader();
 
+            try {
+                Object obj = objectReader.readObject();
+                List<String> message = List.of();
+
+                if (obj instanceof List<?>) {
+                    message = (List<String>) obj;
+                }
+
+                for (String s : message) {
+                    System.out.println(s);
+                }
+
+                // Validierung der Benutzereingabe
+                String input;
+                do {
+                    System.out.print("Enter your choice: ");
+                    input = consoleReader.readLine();
+
+                    if (option.message().equals("build") ? isValidInputBuild(input) : isValidInputRequest(input)) {
+                        System.out.println("Invalid input. Please try again.");
+                    }
+                } while (option.message().equals("build") ? isValidInputBuild(input) : isValidInputRequest(input));
+
+                // Sende gültige Eingabe an den Server
+                writer.println(input);
+
+            } catch (IOException | ClassNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        private static boolean isValidInputBuild(String input) {
+            String regex = "a[B|M]\\d+|r[A|M]\\d+|[c|s|f|q]";
+            return !input.matches(regex);
+        }
+
+        private static boolean isValidInputRequest(String input) {
+            String regex = "[yn]";
+            return !input.matches(regex);
+        }
+
+        public static void doGetAnswer(Client client, Message message) {
+            BufferedReader consoleReader = new BufferedReader(new InputStreamReader(System.in));
+            PrintWriter writer = client.getWriter();
+
+            try {
+                String input;
+                do {
+                    System.out.println(message.message());
+                    input = consoleReader.readLine();
+
+                    if (isValidInputRequest(input)) {
+                        System.out.println("Invalid input. Please try again.");
+                    }
+                } while (isValidInputRequest(input));
+
+                writer.println(input);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         }
 
         public abstract void execute(Client client, Message message);

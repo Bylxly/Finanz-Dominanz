@@ -18,21 +18,31 @@ public class Street extends Property {
 
     @Override
     public boolean startAction(Player player) {
-        if (GameUtilities.checkIfEnoughMoney(player, getRent(getHouses()))) {
-            payRent(player);
-            return true;
+        if (!hasHypothek()) {
+            if (GameUtilities.checkIfEnoughMoney(player, getRent(getHouses()))) {
+                payRent(player);
+                return true;
+            }
+            return false;
         }
-        return false;
+        return true;
     }
 
     @Override
     public void payRent(Player player) {
-        if (getOwner() != null && getOwner() != player) {
-            GameUtilities.transferMoney(player, getOwner(), getRent(getHouses()));
+            if (getOwner() != null && getOwner() != player) {
+                GameUtilities.transferMoney(player, getOwner(), getRent(getHouses()));
+            }
+    }
+
+    @Override
+    public void mortgageProperty() {
+        if (getHouses() == 0) {
+            super.mortgageProperty();
         }
     }
 
-    public void buyHouses(){
+    public void buyHouse(){
         if(colorGroup.isComplete() && houses < 5){
             if(GameUtilities.checkIfEnoughMoney(getOwner(), housePrice)){
                 GameUtilities.payBank(getOwner(), housePrice);
@@ -60,13 +70,19 @@ public class Street extends Property {
     public String getName() {
         StringBuilder name;
         name = new StringBuilder(colorGroup.getColorCode() + super.getName() + "\u001B[0m" + " ");
-        if (getHouses() == 5) {
+        if (hasHypothek()) {
+            name.append("❌");
+        }
+        else if (getHouses() == 5) {
             name.append("\uD83C\uDFE8");
         }
         else {
-            name.append("\uD83C\uDFE0 ".repeat(Math.max(0, getHouses())));
+            name.append("\uD83C\uDFE0 ".repeat(getHouses()));
         }
         return name.toString();
     }
 
+    public int getHousePrice() {
+        return housePrice;
+    }
 }
