@@ -202,23 +202,28 @@ public class Game extends Thread implements Serializable {
             askRoll(activePlayer);
 
             // get array position of Player
-            int pos = 0;
-            for (Field f : board) {
-                if (f == activePlayer.getCurrentField()) {
-                    break;
-                } else {
-                    pos++;
-                }
-            }
+            int playerPos = getPlayerPosition();
 
             // move player to new field
-            int newPos = (pos + roll.getTotal()) % BOARD_SIZE;
+            int newPos = (playerPos + roll.getTotal()) % BOARD_SIZE;
             activePlayer.setCurrentField(board[newPos]);
 
-            int timesAroundField = (int) Math.floor((double) (pos + roll.getTotal()) / BOARD_SIZE);
+            int timesAroundField = (int) Math.floor((double) (playerPos + roll.getTotal()) / BOARD_SIZE);
             if (!(activePlayer.getCurrentField() instanceof Start) && timesAroundField >= 1) {
                 GameUtilities.receiveFromBank(getActivePlayer(), BONUS * timesAroundField);
             }
+    }
+
+    public int getPlayerPosition() {
+        int pos = 0;
+        for (Field f : board) {
+            if (f == activePlayer.getCurrentField()) {
+                break;
+            } else {
+                pos++;
+            }
+        }
+        return pos;
     }
 
     public void nextPlayer() {
