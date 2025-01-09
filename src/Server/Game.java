@@ -96,7 +96,7 @@ public class Game extends Thread implements Serializable {
                     board[i] = new Street("Seestraße", 140, 100, new int[]{10, 50, 150, 450, 625, 750}, 70, magenta);
                     break;
                 case 12:
-                    board[i] = new Utility("Elektrizitätswerk", 150, new int[]{50, 75}, 75);
+                    board[i] = new Utility("Elektrizitätswerk", 150, 75, this);
                     break;
                 case 13:
                     board[i] = new Street("Hafenstraße", 140, 100, new int[]{10, 50, 150, 450, 625, 750}, 70, magenta);
@@ -141,7 +141,7 @@ public class Game extends Thread implements Serializable {
                     board[i] = new Street("Schillerstraße", 260, 150, new int[]{22, 110, 330, 800, 975, 1150}, 130, yellow);
                     break;
                 case 28:
-                    board[i] = new Utility("Wasserwerk", 150, new int[]{50, 75}, 75);
+                    board[i] = new Utility("Wasserwerk", 150, 75, this);
                     break;
                 case 29:
                     board[i] = new Street("Goethestraße", 280, 150, new int[]{24, 120, 360, 850, 1025, 1200}, 140, yellow);
