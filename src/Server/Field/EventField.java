@@ -77,7 +77,9 @@ public class EventField extends Field {
 
     private void advanceTo(int newPos) {
         game.movePlayerToPosition(newPos);
-        game.setBuildOrExecuteState();
+        if (newPos != 0) {
+            game.setBuildOrExecuteState();
+        }
     }
 
     private void goBack(int amount) {
@@ -108,6 +110,7 @@ public class EventField extends Field {
         Property property = (Property) game.getActivePlayer().getCurrentField();
         if (!property.isOwned()) {
             game.setCurrentGameState(new BuyFieldState(game));
+            game.getCurrentGameState().execute();
         }
         else if (property instanceof Utility utility) {
             utility.payRentTimes(game.getActivePlayer(), 10);
