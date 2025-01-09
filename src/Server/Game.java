@@ -324,15 +324,7 @@ public class Game extends Thread implements Serializable {
                     movePlayer();
                 }
 
-                if (activePlayer.getCurrentField() instanceof Property
-                    && !((Property) activePlayer.getCurrentField()).isOwned()) {
-                        currentGameState = new BuyFieldState(this);
-                }
-                else {
-                    currentGameState = new ExecuteFieldState(this);
-                }
-                currentGameState.execute();
-                printBoard();
+                setBuildOrExecuteState();
 
                 if (roll.getPasch()) {
                     ++paschAnzahl;
@@ -382,6 +374,18 @@ public class Game extends Thread implements Serializable {
                 return;
             }
         }
+    }
+
+    public void setBuildOrExecuteState() {
+        if (activePlayer.getCurrentField() instanceof Property
+                && !((Property) activePlayer.getCurrentField()).isOwned()) {
+            currentGameState = new BuyFieldState(this);
+        }
+        else {
+            currentGameState = new ExecuteFieldState(this);
+        }
+        currentGameState.execute();
+        printBoard();
     }
 
 
