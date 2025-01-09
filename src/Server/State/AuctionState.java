@@ -58,9 +58,13 @@ public class AuctionState extends Thread implements GameState {
                         int newBid = Integer.parseInt(msg);
                         synchronized (this) {
                             if (newBid > currentBid) {
-                                currentBid = newBid;
-                                highestBidder = player;
-                                broadcast(new Message(MsgType.NEW_BID, String.valueOf(newBid)));
+                                if (newBid <= player.getMoney()) {
+                                    currentBid = newBid;
+                                    highestBidder = player;
+                                    broadcast(new Message(MsgType.NEW_BID, String.valueOf(newBid)));
+                                } else {
+                                    player.sendObject(new Message(MsgType.INFO, "You don't have enough money."));
+                                }
                             } else {
                                 player.sendObject(new Message(MsgType.INFO, "Your bid is too low."));
                             }
