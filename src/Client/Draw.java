@@ -202,9 +202,9 @@ public class Draw extends PApplet {
     }
 
     private void createTextBoxes() {
-        textboxes.add(new GTextBox("tbIP", 200, 200, 400, 300, color(200, 10), color(255), color(10), color(200), false));
-        textboxes.add(new GTextBox("tbPort", 200, 200, 400, 300, color(200, 10), color(255), color(10), color(200), false));
-        textboxes.add(new GTextBox("tbLCode", 200, 200, 400, 300, color(200, 10), color(255), color(10), color(200), false));
+        textboxes.add(new GTextBox("tbIP", 200, 200, 400, 300, color(200, 10), color(255), color(50), color(10), color(200), false));
+        textboxes.add(new GTextBox("tbPort", 200, 200, 400, 300, color(200, 10), color(255), color(50), color(10), color(200), false));
+        textboxes.add(new GTextBox("tbLCode", 200, 200, 400, 300, color(200, 10), color(255), color(50), color(10), color(200), false));
 
     }
 
@@ -255,16 +255,32 @@ public class Draw extends PApplet {
     }
     @Override
     public void mousePressed() {
+        boolean focusedOnTextbox = false;
+
+        // Handle textbox clicks
+        for (GTextBox textBox : textboxes) {
+            if (textBox.mousePressed(mouseX, mouseY, this)) {
+                focusedOnTextbox = true; // A textbox was focused
+            } else {
+                textBox.setFocused(false); // Unfocus if not clicked
+            }
+        }
+
         // Handle button clicks
         for (GButton button : buttons) {
             if (button.isClicked(this)) {
                 button.performAction();
             }
         }
+    }
 
-        // Handle textbox clicks
+    @Override
+    public void keyPressed() {
         for (GTextBox textBox : textboxes) {
-            textBox.mousePressed(mouseX, mouseY);
+            if (textBox.isFocused()) {
+                textBox.keyPressed(key, keyCode);
+                break;
+            }
         }
     }
 

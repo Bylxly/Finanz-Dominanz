@@ -23,9 +23,9 @@ public class MainMenu extends PApplet {
         this.parent = parent;
         this.client = new Client();
 
-        ipTextBox = new GTextBox("tbIP", 400, 200, 300, 30, parent.color(255), parent.color(0), parent.color(0), parent.color(200), true);
-        portTextBox = new GTextBox("tbPort", 400, 250, 300, 30, parent.color(255), parent.color(0), parent.color(0), parent.color(200), true);
-        lobbyCodeTextBox = new GTextBox("tbLCode", 400, 250, 300, 30, parent.color(255), parent.color(0), parent.color(0), parent.color(200), false);
+        ipTextBox = new GTextBox("tbIP", 400, 200, 300, 30, parent.color(255), parent.color(0), parent.color(50), parent.color(200), parent.color(200), true);
+        portTextBox = new GTextBox("tbPort", 400, 250, 300, 30, parent.color(255), parent.color(0), parent.color(50), parent.color(200), parent.color(200), true);
+        lobbyCodeTextBox = new GTextBox("tbLCode", 400, 250, 300, 30, parent.color(255), parent.color(0), parent.color(50), parent.color(200), parent.color(200), false);
 
         connectButton = new GButton("btnConnect", 400, 350, 300, 40, "Connect", parent.color(200), parent.color(255), true, false);
         connectButton.setAction(this::connectToServer);
@@ -78,9 +78,9 @@ public class MainMenu extends PApplet {
 
     @Override
     public void mousePressed() {
-        boolean focusedOnTextbox = ipTextBox.mousePressed(mouseX, mouseY)
-                || portTextBox.mousePressed(mouseX, mouseY)
-                || (lobbyCodeTextBox != null && lobbyCodeTextBox.mousePressed(mouseX, mouseY));
+        boolean focusedOnTextbox = ipTextBox.mousePressed(mouseX, mouseY, this)
+                || portTextBox.mousePressed(mouseX, mouseY, this)
+                || (lobbyCodeTextBox != null && lobbyCodeTextBox.mousePressed(mouseX, mouseY, this));
 
         // Ensure only one textbox is focused
         if (!focusedOnTextbox) {

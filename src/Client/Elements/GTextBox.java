@@ -8,25 +8,32 @@ public class GTextBox {
     private float x, y, width, height;
     private String text = "";
     private String savedText = "";
-    private int backgroundColor, focusBackgroundColor, textColor, borderColor;
+    private int backgroundColor, focusBackgroundColor, hoverBackgroundColor, textColor, borderColor;
     private boolean isActive;
     private boolean focused = false;
 
-    public GTextBox(String name, float x, float y, float width, float height, int backgroundColor, int focusBackgroundColor, int textColor, int borderColor, boolean isActive) {
+    public GTextBox(String name, float x, float y, float width, float height, int backgroundColor, int focusBackgroundColor, int hoverBackgroundColor, int textColor, int borderColor, boolean isActive) {
         this.x = x;
         this.y = y;
         this.width = width;
         this.height = height;
         this.backgroundColor = backgroundColor;
         this.focusBackgroundColor = focusBackgroundColor;
+        this.hoverBackgroundColor = hoverBackgroundColor; // New hover color
         this.textColor = textColor;
         this.borderColor = borderColor;
         this.isActive = isActive;
     }
 
     public void draw(PApplet applet) {
+        // Check if mouse is over the text box
+        boolean isMouseOver = isMouseOver(applet);
+
+        // Set background color based on focus and hover state
         if (focused) {
             applet.fill(focusBackgroundColor);
+        } else if (isMouseOver) {
+            applet.fill(hoverBackgroundColor); // Use hover color
         } else {
             applet.fill(backgroundColor);
         }
@@ -56,8 +63,14 @@ public class GTextBox {
     }
 
 
-    public boolean mousePressed(float mouseX, float mouseY) {
-        boolean inBounds = isActive && mouseX > x && mouseX < x + width && mouseY > y && mouseY < y + height;
+
+    // New method to check if the mouse is over the text box
+    private boolean isMouseOver(PApplet applet) {
+        return isActive && applet.mouseX > x && applet.mouseX < x + width && applet.mouseY > y && applet.mouseY < y + height;
+    }
+
+    public boolean mousePressed(float mouseX, float mouseY, PApplet applet) {
+        boolean inBounds = isActive && applet.mouseX > x && applet.mouseX < x + width && applet.mouseY > y && applet.mouseY < y + height;
         if (inBounds) {
             focused = true;
             System.out.println("Textbox focused: " + text); // Debug
@@ -66,8 +79,6 @@ public class GTextBox {
         }
         return inBounds;
     }
-
-
     public String getText() {
         return text;
     }
