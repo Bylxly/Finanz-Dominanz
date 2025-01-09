@@ -225,6 +225,32 @@ public class Game extends Thread implements Serializable {
         players.remove(activePlayer);
     }
 
+    public void declareBankruptcy(Player player) {
+        player.sendObject(new Message(MsgType.INFO, getActivePlayer().getName() + "is bankrupt"));
+        for (Property property : activePlayer.getProperties()) {
+            property.setOwner(player);
+            player.addProperty(property);
+            getActivePlayer().removeProperty(property);
+
+            if (property.hasHypothek()) {
+                //TODO: Player könnte 10 % nicht bezahlen können und muss selber eine Hypothek aufnehmen
+                player.sendObject(new Message(MsgType.GET_ANSWER, property.getName() + "is mortgaged.\n"
+                        + "You can either keep the mortgage and pay 10 % of the mortgage value \n"
+                        + "or you can lift the mortgage and pay the mortgage value + 10 % interest fee."
+                        + "Choose an option: KEEP or LIFT"));
+
+                String selection = player.recieveMessage();
+                if (selection.equals("KEEP")) {
+                    GameUtilities.payBank(player, (int) Math.round(property.getHypothek() * 0.1));
+                }
+                else if (selection.equals("LIFT")) {
+                    property.redeemProperty();
+                }
+            }
+        }
+        players.remove(activePlayer);
+    }
+
     public void startGame() {
         Map<Player, Integer> rolledResults = new HashMap<>();
 
