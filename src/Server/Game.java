@@ -430,4 +430,8 @@ public class Game extends Thread implements Serializable {
     public GameState getCurrentGameState() {
         return currentGameState;
     }
+
+    public int getBOARD_SIZE() {
+        return BOARD_SIZE;
+    }
 }
