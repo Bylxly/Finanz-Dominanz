@@ -1,6 +1,7 @@
 package Client;
 
 import Server.Field.Property.Knast;
+import Server.Game;
 import Server.Message;
 import Server.MsgType;
 import Server.State.GameState;
@@ -278,12 +279,25 @@ public class Action {
                 try {
                     ObjectInputStream objectReader = client.getObjectReader();
                     while (!auctionEnded.get()) {
-                        Message msg = (Message) objectReader.readObject();
+                        Object o = objectReader.readObject();
+                        if (o instanceof Game) {
+                            return;
+                        }
+                        Message msg = (Message) o;
                         if (msg.messageType() == MsgType.NEW_BID) {
                             int newBid = Integer.parseInt(msg.message());
                             lastBid.set(newBid);
                             System.out.println("New Bid: " + newBid);
-                        } else if (msg.messageType() == MsgType.END_AUCTION) {
+                        }
+                        else if (msg.messageType() == MsgType.QUIT_AUCTION) {
+                            System.out.println(msg.message());
+                            System.out.println("Press ENTER to continue");
+                            auctionEnded.set(true);
+                        }
+                        else if (msg.messageType() == MsgType.INFO) {
+                            System.out.println(msg.message());
+                        }
+                        else if (msg.messageType() == MsgType.END_AUCTION) {
                             writer.println("QUIT_AUCTION");
                             System.out.println(msg.message());
                             System.out.println("Press ENTER to continue");
@@ -305,19 +319,18 @@ public class Action {
 
                     if (userInput.equalsIgnoreCase("QUIT")) {
                         writer.println("QUIT_AUCTION");
-                        System.out.println("You left the auction.");
-                        break;
                     }
-
-                    try {
-                        int bid = Integer.parseInt(userInput);
-                        if (bid > lastBid.get()) { // Compare with the locally stored last bid
-                            writer.println(bid);
-                        } else {
-                            System.out.println("Your bid is lower than the current bid.");
+                    else {
+                        try {
+                            int bid = Integer.parseInt(userInput);
+                            if (bid > lastBid.get()) { // Compare with the locally stored last bid
+                                writer.println(bid);
+                            } else {
+                                System.out.println("Your bid is lower than the current bid.");
+                            }
+                        } catch (NumberFormatException e) {
+                            System.out.println("Invalid input. Please enter a valid number or 'QUIT'.");
                         }
-                    } catch (NumberFormatException e) {
-                        System.out.println("Invalid input. Please enter a valid number or 'QUIT'.");
                     }
                 }
                 auctionEnded.set(true); // Ensure thread ends
