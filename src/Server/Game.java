@@ -266,7 +266,7 @@ public class Game extends Thread implements Serializable {
         for (Property property : activePlayer.getProperties()) {
             property.setOwner(null);
         }
-        players.remove(activePlayer);
+        lastStepForPlayer();
     }
 
     public void declareBankruptcy(Player player) {
@@ -280,8 +280,15 @@ public class Game extends Thread implements Serializable {
                 askMortgage(player, property);
             }
         }
-        players.remove(activePlayer);
+        lastStepForPlayer();
     }
+
+    private void lastStepForPlayer() {
+        players.remove(activePlayer);
+        activePlayer.sendObject(new Message(MsgType.INFO, "You are bankrupt and lost the game!"));
+        activePlayer.closeConnection();
+    }
+
     public void askMortgage(Player player, Property property) {
         //TODO: Player könnte 10 % nicht bezahlen können und muss selber eine Hypothek aufnehmen
         player.sendObject(new Message(MsgType.GET_ANSWER_KEEP_LIFT, property.getName() + "is mortgaged.\n"
