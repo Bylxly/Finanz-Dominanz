@@ -41,6 +41,8 @@ public class Game extends Thread implements Serializable {
             if (players.size() >= 2) {
                 printBoard();
                 startGame();
+                System.out.println("Game ended");
+                return;
             }
         }
     }
@@ -374,6 +376,8 @@ public class Game extends Thread implements Serializable {
 
             // ends game if only one player is left
             if (players.size() <= 1) {
+                activePlayer = players.get(0);
+                wonGame();
                 return;
             }
         }
@@ -408,6 +412,11 @@ public class Game extends Thread implements Serializable {
                 player.setCurrentField(f);
             }
         }
+    }
+
+    private void wonGame() {
+        activePlayer.sendObject(new Message(MsgType.INFO, "You won the game!"));
+        activePlayer.closeConnection();
     }
 
     public Roll getRoll() {

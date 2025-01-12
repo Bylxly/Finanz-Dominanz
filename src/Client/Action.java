@@ -81,6 +81,11 @@ public class Action {
                 doGetAnswerKeepLift(client, message);
             }
         },
+        CLOSE_CONNECTION {
+            @Override
+            public void execute(Client client, Message message) {
+                doCloseConnection(client);
+            }
         }
         ;
 
@@ -440,6 +445,11 @@ public class Action {
                 }
             } while (true);
         }
+
+        public static void doCloseConnection(Client client) {
+            client.disconnect();
+        }
+
 
         public abstract void execute(Client client, Message message);
     }
