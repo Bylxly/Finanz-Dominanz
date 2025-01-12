@@ -330,6 +330,9 @@ public class TradeState extends SelectState {
         for (Object object : objects.values()) {
             if (object instanceof Property property) {
                 GameUtilities.transferProperty(fromPlayer, toPlayer, property);
+                if (property.hasHypothek()) {
+                    game.askMortgage(toPlayer, property);
+                }
             } else if (object instanceof Integer amount) {
                 GameUtilities.transferMoney(fromPlayer, toPlayer, amount);
             }
