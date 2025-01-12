@@ -83,12 +83,13 @@ public class AuctionState extends Thread implements GameState {
     @Override
     public void run() {
         broadcast(new Message(MsgType.DO_AUCTION, "Auction started! Place your bids."));
-        while (auctionRunning.get() && activePlayers.size() > 1) {
-            try {
-                Thread.sleep(100);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-                Thread.currentThread().interrupt();
+        synchronized (this) {
+            while (auctionRunning.get() && activePlayers.size() > 1) {
+                try {
+                    this.wait();
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e.getMessage());
+                }
             }
         }
         System.out.println("Auction stopped.");
@@ -124,5 +125,6 @@ public class AuctionState extends Thread implements GameState {
 
     public synchronized void removePlayerFromList(Player player) {
         activePlayers.remove(player);
+        this.notifyAll();
     }
 }
