@@ -19,21 +19,19 @@ public class GTextBox {
         this.height = height;
         this.backgroundColor = backgroundColor;
         this.focusBackgroundColor = focusBackgroundColor;
-        this.hoverBackgroundColor = hoverBackgroundColor; // New hover color
+        this.hoverBackgroundColor = hoverBackgroundColor;
         this.textColor = textColor;
         this.borderColor = borderColor;
         this.isActive = isActive;
     }
 
     public void draw(PApplet applet) {
-        // Check if mouse is over the text box
         boolean isMouseOver = isMouseOver(applet);
 
-        // Set background color based on focus and hover state
         if (focused) {
             applet.fill(focusBackgroundColor);
         } else if (isMouseOver) {
-            applet.fill(hoverBackgroundColor); // Use hover color
+            applet.fill(hoverBackgroundColor);
         } else {
             applet.fill(backgroundColor);
         }
@@ -69,10 +67,16 @@ public class GTextBox {
         return isActive && applet.mouseX > x && applet.mouseX < x + width && applet.mouseY > y && applet.mouseY < y + height;
     }
 
-    public boolean mousePressed(float mouseX, float mouseY, PApplet applet) {
-        boolean inBounds = isMouseOver(applet);
-        focused = inBounds;
-        return inBounds;
+    public boolean mousePressed(PApplet applet) {
+        if (isMouseOver(applet)) {
+            setFocused(true);
+            System.out.println("Textbox focused.");
+            return true;
+        } else {
+            setFocused(false);
+            System.out.println("Textbox unfocused.");
+            return false;
+        }
     }
 
     public String getText() {

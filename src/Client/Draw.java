@@ -20,7 +20,6 @@ public class Draw extends PApplet {
 
     private ArrayList<GField> fields = new ArrayList<>();
     private ArrayList<GButton> buttons = new ArrayList<>();
-    private ArrayList<GTextBox> textboxes = new ArrayList<>();
     private GPanel infoPanel;
     private boolean isConnected = false;
 
@@ -173,15 +172,6 @@ public class Draw extends PApplet {
 
         buttons.add(new GButton("btnNextBANKRUPT", 950, 700, 200, 30, "Bankrupt", color(200), color(255), true, false)
                 .setAction(HandleAction.ActionType.BANKRUPT::action));
-
-        buttons.add(new GButton("btnConnect", 500, 200, 200, 30, "Connect", color(200), color(255), true, false)
-                .setAction(HandleAction.ActionType.CONNECT::action));
-
-        buttons.add(new GButton("btnCreate", 500, 200, 200, 30, "Create", color(200), color(255), true, false)
-                .setAction(HandleAction.ActionType.CREATE::action));
-
-        buttons.add(new GButton("btnJoin", 500, 300, 200, 30, "Join", color(200), color(255), true, false)
-                .setAction(HandleAction.ActionType.JOIN::action));
     }
 
     private void drawButtons() {
@@ -201,12 +191,6 @@ public class Draw extends PApplet {
         System.out.println("Button not found: " + name);
     }
 
-    private void createTextBoxes() {
-        textboxes.add(new GTextBox("tbIP", 200, 200, 400, 300, color(200, 10), color(255), color(50), color(10), color(200), false));
-        textboxes.add(new GTextBox("tbPort", 200, 200, 400, 300, color(200, 10), color(255), color(50), color(10), color(200), false));
-        textboxes.add(new GTextBox("tbLCode", 200, 200, 400, 300, color(200, 10), color(255), color(50), color(10), color(200), false));
-
-    }
 
     private void initializeFields() {
         float boardSize = height;
@@ -255,15 +239,20 @@ public class Draw extends PApplet {
     }
     @Override
     public void mousePressed() {
-        boolean focusedOnTextbox = false;
+        // Unfocus all textboxes initially
+        mainmenu.ipTextBox.setFocused(false);
+        mainmenu.portTextBox.setFocused(false);
+        if (mainmenu.lobbyCodeTextBox != null) {
+            mainmenu.lobbyCodeTextBox.setFocused(false);
+        }
 
-        // Handle textbox clicks
-        for (GTextBox textBox : textboxes) {
-            if (textBox.mousePressed(mouseX, mouseY, this)) {
-                focusedOnTextbox = true; // A textbox was focused
-            } else {
-                textBox.setFocused(false); // Unfocus if not clicked
-            }
+        // Check which textbox (if any) was clicked
+        if (mainmenu.ipTextBox.mousePressed(this)) {
+            System.out.println("IP Textbox clicked.");
+        } else if (mainmenu.portTextBox.mousePressed(this)) {
+            System.out.println("Port Textbox clicked.");
+        } else if (mainmenu.lobbyCodeTextBox != null && mainmenu.lobbyCodeTextBox.mousePressed(this)) {
+            System.out.println("Lobby Code Textbox clicked.");
         }
 
         // Handle button clicks
@@ -275,12 +264,13 @@ public class Draw extends PApplet {
     }
 
     @Override
-    public void keyPressed() { //
-        for (GTextBox textBox : textboxes) { //
-            if (textBox.isFocused()) { //
-                textBox.keyPressed(key, keyCode); //
-                break; //
-            }
+    public void keyPressed() {
+        if (mainmenu.ipTextBox.isFocused()) {
+            mainmenu.ipTextBox.keyPressed(key, keyCode);
+        } else if (mainmenu.portTextBox.isFocused()) {
+            mainmenu.portTextBox.keyPressed(key, keyCode);
+        } else if (mainmenu.lobbyCodeTextBox != null && mainmenu.lobbyCodeTextBox.isFocused()) {
+            mainmenu.lobbyCodeTextBox.keyPressed(key, keyCode);
         }
     }
 

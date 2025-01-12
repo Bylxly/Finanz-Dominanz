@@ -8,9 +8,9 @@ import java.awt.datatransfer.StringSelection;
 public class MainMenu extends PApplet {
 
     private PApplet parent;
-    private GTextBox ipTextBox;
-    private GTextBox portTextBox;
-    private GTextBox lobbyCodeTextBox;
+    GTextBox portTextBox;
+    GTextBox ipTextBox;
+    GTextBox lobbyCodeTextBox;
     private GButton connectButton;
     private GButton createGameButton;
     private GButton joinGameButton;
@@ -23,9 +23,9 @@ public class MainMenu extends PApplet {
         this.parent = parent;
         this.client = new Client();
 
-        ipTextBox = new GTextBox("tbIP", 400, 200, 300, 30, parent.color(255), parent.color(0), parent.color(50), parent.color(200), parent.color(200), true);
-        portTextBox = new GTextBox("tbPort", 400, 250, 300, 30, parent.color(255), parent.color(0), parent.color(50), parent.color(200), parent.color(200), true);
-        lobbyCodeTextBox = new GTextBox("tbLCode", 400, 250, 300, 30, parent.color(255), parent.color(0), parent.color(50), parent.color(200), parent.color(200), false);
+        portTextBox = new GTextBox("tbPort", 400, 250, 300, 30, parent.color(255), parent.color(220), parent.color(220), parent.color(0), parent.color(50), true);
+        ipTextBox = new GTextBox("tbIP", 400, 200, 300, 30, parent.color(255), parent.color(220), parent.color(220), parent.color(0), parent.color(50), true);
+        lobbyCodeTextBox = new GTextBox("tbLCode", 400, 250, 300, 30, parent.color(255), parent.color(220), parent.color(220), parent.color(0), parent.color(50), false);
 
         connectButton = new GButton("btnConnect", 400, 350, 300, 40, "Connect", parent.color(200), parent.color(255), true, false);
         connectButton.setAction(this::connectToServer);
@@ -45,15 +45,16 @@ public class MainMenu extends PApplet {
 
         parent.fill(255);
         parent.textAlign(PApplet.CENTER);
-        parent.text("Enter Server IP and Port", parent.width / 2.0f, 150);
+        parent.text("Enter Server IP and Port", parent.width / 1.5f, 150);
 
-        ipTextBox.draw(parent);
         portTextBox.draw(parent);
+        ipTextBox.draw(parent);
         if (lobbyCodeTextBox != null) {
             lobbyCodeTextBox.draw(parent);
         }
-        connectButton.draw(parent);
 
+
+        connectButton.draw(parent);
         if (isConnected) {
             createGameButton.draw(parent);
             joinGameButton.draw(parent);
@@ -64,41 +65,9 @@ public class MainMenu extends PApplet {
     }
 
 
-
-    @Override
-    public void keyPressed() {
-        if (ipTextBox.isFocused()) {
-            ipTextBox.keyPressed(key, keyCode);
-        } else if (portTextBox.isFocused()) {
-            portTextBox.keyPressed(key, keyCode);
-        } else if (lobbyCodeTextBox != null && lobbyCodeTextBox.isFocused()) {
-            lobbyCodeTextBox.keyPressed(key, keyCode);
-        }
-    }
-
-    @Override
-    public void mousePressed() {
-        boolean focusedOnTextbox = ipTextBox.mousePressed(mouseX, mouseY, this)
-                || portTextBox.mousePressed(mouseX, mouseY, this)
-                || (lobbyCodeTextBox != null && lobbyCodeTextBox.mousePressed(mouseX, mouseY, this));
-
-        if (!focusedOnTextbox) {
-            ipTextBox.setFocused(false);
-            portTextBox.setFocused(false);
-            if (lobbyCodeTextBox != null) lobbyCodeTextBox.setFocused(false);
-        }
-
-        // Handle buttons
-        if (connectButton.isClicked(this)) connectButton.performAction();
-        if (createGameButton.isClicked(this) && isConnected) createGameButton.performAction();
-        if (joinGameButton.isClicked(this) && isConnected) joinGameButton.performAction();
-    }
-
-
-
     private void connectToServer() {
-        String ipAddress = ipTextBox.getSavedText().isEmpty() ? "localhost" : ipTextBox.getSavedText();
         String portInput = portTextBox.getSavedText().isEmpty() ? "5555" : portTextBox.getSavedText();
+        String ipAddress = ipTextBox.getSavedText().isEmpty() ? "localhost" : ipTextBox.getSavedText();
 
         try {
             int port = Integer.parseInt(portInput);
@@ -138,13 +107,15 @@ public class MainMenu extends PApplet {
     }
 
     private void toggleConnectionUI(boolean enable) {
-        ipTextBox.setActive(enable);
         portTextBox.setActive(enable);
+        ipTextBox.setActive(enable);
         connectButton.setActive(enable);
 
         createGameButton.setActive(!enable);
         joinGameButton.setActive(!enable);
-        lobbyCodeTextBox.setActive(!enable);
+        if (lobbyCodeTextBox != null) {
+            lobbyCodeTextBox.setActive(!enable);
+        }
     }
 
     public boolean isConnectionComplete() {
