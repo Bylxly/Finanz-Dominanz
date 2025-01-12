@@ -41,6 +41,8 @@ public class Game extends Thread implements Serializable {
             if (players.size() >= 2) {
                 printBoard();
                 startGame();
+                System.out.println("Game ended");
+                return;
             }
         }
     }
@@ -264,7 +266,7 @@ public class Game extends Thread implements Serializable {
         for (Property property : activePlayer.getProperties()) {
             property.setOwner(null);
         }
-        players.remove(activePlayer);
+        lastStepForPlayer();
     }
 
     public void declareBankruptcy(Player player) {
@@ -275,22 +277,32 @@ public class Game extends Thread implements Serializable {
             getActivePlayer().removeProperty(property);
 
             if (property.hasHypothek()) {
-                //TODO: Player könnte 10 % nicht bezahlen können und muss selber eine Hypothek aufnehmen
-                player.sendObject(new Message(MsgType.GET_ANSWER, property.getName() + "is mortgaged.\n"
-                        + "You can either keep the mortgage and pay 10 % of the mortgage value \n"
-                        + "or you can lift the mortgage and pay the mortgage value + 10 % interest fee."
-                        + "Choose an option: KEEP or LIFT"));
-
-                String selection = player.recieveMessage();
-                if (selection.equals("KEEP")) {
-                    GameUtilities.payBank(player, (int) Math.round(property.getHypothek() * 0.1));
-                }
-                else if (selection.equals("LIFT")) {
-                    property.redeemProperty();
-                }
+                askMortgage(player, property);
             }
         }
+        lastStepForPlayer();
+    }
+
+    private void lastStepForPlayer() {
         players.remove(activePlayer);
+        activePlayer.sendObject(new Message(MsgType.INFO, "You are bankrupt and lost the game!"));
+        activePlayer.closeConnection();
+    }
+
+    public void askMortgage(Player player, Property property) {
+        //TODO: Player könnte 10 % nicht bezahlen können und muss selber eine Hypothek aufnehmen
+        player.sendObject(new Message(MsgType.GET_ANSWER_KEEP_LIFT, property.getName() + "is mortgaged.\n"
+                + "You can either keep the mortgage and pay 10 % of the mortgage value \n"
+                + "or you can lift the mortgage and pay the mortgage value + 10 % interest fee."
+                + "Choose an option: KEEP or LIFT"));
+
+        String selection = player.recieveMessage();
+        if (selection.equals("KEEP")) {
+            GameUtilities.payBank(player, (int) Math.round(property.getHypothek() * 0.1));
+        }
+        else if (selection.equals("LIFT")) {
+            property.redeemProperty();
+        }
     }
 
     public void startGame() {
@@ -313,7 +325,7 @@ public class Game extends Thread implements Serializable {
         while (true) {
             int paschAnzahl = 0;
             do {
-                if (paschAnzahl == 3){
+                if (paschAnzahl == 3) {
                     movePlayerToKnast(activePlayer);
                     break;
                 }
@@ -333,45 +345,53 @@ public class Game extends Thread implements Serializable {
                 }
             } while (roll.getPasch() && !activePlayer.isArrested());
 
-            String msg;
-            do {
-                activePlayer.sendObject(new Message(MsgType.ASK_NEXT, null));
-                msg = activePlayer.recieveMessage();
-                switch (msg) {
-                    case "BUILD":
-                        currentGameState = new BuildState(this);
-                        currentGameState.execute();
-                        break;
-                    case "MORTGAGE":
-                        currentGameState = new HypothekState(this);
-                        currentGameState.execute();
-                        break;
-                    case "LIFT":
-                        currentGameState = new LiftMortgageState(this);
-                        currentGameState.execute();
-                        break;
-                    case "TRADE":
-                        currentGameState = new TradeState(this);
-                        currentGameState.execute();
-                        break;
-                    case "BANKRUPT":
-                        declareBankruptcy();
-                        msg = "END";
-                        break;
-                    case "END":
-                        break;
-                    default:
-                        throw new RuntimeException("Reply not allowed.");
-                }
-            } while (!msg.equals("END"));
+            // Don't send request to player if they declared bankruptcy
+            if (players.contains(activePlayer)) {
+                String msg;
+                do {
+                    activePlayer.sendObject(new Message(MsgType.ASK_NEXT, null));
+                    msg = activePlayer.recieveMessage();
+                    switch (msg) {
+                        case "BUILD":
+                            currentGameState = new BuildState(this);
+                            currentGameState.execute();
+                            break;
+                        case "MORTGAGE":
+                            currentGameState = new HypothekState(this);
+                            currentGameState.execute();
+                            break;
+                        case "LIFT":
+                            currentGameState = new LiftMortgageState(this);
+                            currentGameState.execute();
+                            break;
+                        case "TRADE":
+                            currentGameState = new TradeState(this);
+                            currentGameState.execute();
+                            break;
+                        case "BANKRUPT":
+                            declareBankruptcy();
+                            msg = "END";
+                            break;
+                        case "END":
+                            break;
+                        default:
+                            throw new RuntimeException("Reply not allowed.");
+                    }
+                } while (!msg.equals("END"));
+            }
             currentGameState = new EndTurnState(this);
-
             currentGameState.execute();
-            printBoard();
+
 
             // ends game if only one player is left
             if (players.size() <= 1) {
+                activePlayer = players.get(0);
+                wonGame();
                 return;
+            }
+            else {
+                printBoard();
+                //TODO: Messages werden teilweise versteckt von dem printBoard()
             }
         }
     }
@@ -405,6 +425,11 @@ public class Game extends Thread implements Serializable {
                 player.setCurrentField(f);
             }
         }
+    }
+
+    private void wonGame() {
+        activePlayer.sendObject(new Message(MsgType.INFO, "You won the game!"));
+        activePlayer.closeConnection();
     }
 
     public Roll getRoll() {
