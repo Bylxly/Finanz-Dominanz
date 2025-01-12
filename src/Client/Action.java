@@ -51,6 +51,12 @@ public class Action {
                 doNext(client);
             }
         },
+        ASK_NO_MONEY{
+            @Override
+            public void execute(Client client, Message message) {
+                doNoMoney(client, message);
+            }
+        },
         SELECT_OBJECT {
             @Override
             public void execute(Client client, Message message) {
@@ -241,6 +247,34 @@ public class Action {
             } catch (IOException e) {
                 System.out.println("Error during next action selection: " + e.getMessage());
             }
+        }
+
+        public static void doNoMoney(Client client, Message message)  {
+            BufferedReader consoleReader = new BufferedReader(new InputStreamReader(System.in));
+
+            System.out.println(message.message());
+            do {
+                try {
+                    String selection = consoleReader.readLine();
+                    if (selection.equalsIgnoreCase("mortgage")) {
+                        client.getWriter().println("MORTGAGE");
+                        return;
+                    }
+                    else if (selection.equalsIgnoreCase("trade")) {
+                        client.getWriter().println("TRADE");
+                        return;
+                    }
+                    else if (selection.equalsIgnoreCase("bankrupt")) {
+                        client.getWriter().println("BANKRUPT");
+                        return;
+                    }
+                    else {
+                        System.out.println("Invalid selection. Please try again.");
+                    }
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            } while (true);
         }
 
         public static void doSelect(Client client) {
