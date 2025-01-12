@@ -325,7 +325,7 @@ public class Game extends Thread implements Serializable {
         while (true) {
             int paschAnzahl = 0;
             do {
-                if (paschAnzahl == 3){
+                if (paschAnzahl == 3) {
                     movePlayerToKnast(activePlayer);
                     break;
                 }
