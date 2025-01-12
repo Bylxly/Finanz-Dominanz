@@ -17,4 +17,5 @@ public enum MsgType implements Serializable {
     REQUEST_TRADE,
     SELECT_TRADE,
     GET_ANSWER //TODO: Mby ändern => @TradeState
+    GET_ANSWER_KEEP_LIFT,
 }

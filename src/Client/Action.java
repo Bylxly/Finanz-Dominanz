@@ -74,6 +74,13 @@ public class Action {
             public void execute(Client client, Message message) {
                 doGetAnswer(client, message);
             }
+        },
+        GET_ANSWER_KEEP_LIFT {
+            @Override
+            public void execute(Client client, Message message) {
+                doGetAnswerKeepLift(client, message);
+            }
+        },
         }
         ;
 
@@ -408,6 +415,30 @@ public class Action {
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
+        }
+
+        public static void doGetAnswerKeepLift(Client client, Message message) {
+            BufferedReader consoleReader = new BufferedReader(new InputStreamReader(System.in));
+
+            System.out.println(message.message());
+            do {
+                try {
+                    String selection = consoleReader.readLine();
+                    if (selection.equalsIgnoreCase("keep")) {
+                        client.getWriter().println("KEEP");
+                        return;
+                    }
+                    else if (selection.equalsIgnoreCase("lift")) {
+                        client.getWriter().println("LIFT");
+                        return;
+                    }
+                    else {
+                        System.out.println("Invalid selection. Please try again.");
+                    }
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            } while (true);
         }
 
         public abstract void execute(Client client, Message message);

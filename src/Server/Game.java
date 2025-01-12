@@ -275,22 +275,25 @@ public class Game extends Thread implements Serializable {
             getActivePlayer().removeProperty(property);
 
             if (property.hasHypothek()) {
-                //TODO: Player könnte 10 % nicht bezahlen können und muss selber eine Hypothek aufnehmen
-                player.sendObject(new Message(MsgType.GET_ANSWER, property.getName() + "is mortgaged.\n"
-                        + "You can either keep the mortgage and pay 10 % of the mortgage value \n"
-                        + "or you can lift the mortgage and pay the mortgage value + 10 % interest fee."
-                        + "Choose an option: KEEP or LIFT"));
-
-                String selection = player.recieveMessage();
-                if (selection.equals("KEEP")) {
-                    GameUtilities.payBank(player, (int) Math.round(property.getHypothek() * 0.1));
-                }
-                else if (selection.equals("LIFT")) {
-                    property.redeemProperty();
-                }
+                askMortgage(player, property);
             }
         }
         players.remove(activePlayer);
+    }
+    public void askMortgage(Player player, Property property) {
+        //TODO: Player könnte 10 % nicht bezahlen können und muss selber eine Hypothek aufnehmen
+        player.sendObject(new Message(MsgType.GET_ANSWER_KEEP_LIFT, property.getName() + "is mortgaged.\n"
+                + "You can either keep the mortgage and pay 10 % of the mortgage value \n"
+                + "or you can lift the mortgage and pay the mortgage value + 10 % interest fee."
+                + "Choose an option: KEEP or LIFT"));
+
+        String selection = player.recieveMessage();
+        if (selection.equals("KEEP")) {
+            GameUtilities.payBank(player, (int) Math.round(property.getHypothek() * 0.1));
+        }
+        else if (selection.equals("LIFT")) {
+            property.redeemProperty();
+        }
     }
 
     public void startGame() {
