@@ -345,47 +345,53 @@ public class Game extends Thread implements Serializable {
                 }
             } while (roll.getPasch() && !activePlayer.isArrested());
 
-            String msg;
-            do {
-                activePlayer.sendObject(new Message(MsgType.ASK_NEXT, null));
-                msg = activePlayer.recieveMessage();
-                switch (msg) {
-                    case "BUILD":
-                        currentGameState = new BuildState(this);
-                        currentGameState.execute();
-                        break;
-                    case "MORTGAGE":
-                        currentGameState = new HypothekState(this);
-                        currentGameState.execute();
-                        break;
-                    case "LIFT":
-                        currentGameState = new LiftMortgageState(this);
-                        currentGameState.execute();
-                        break;
-                    case "TRADE":
-                        currentGameState = new TradeState(this);
-                        currentGameState.execute();
-                        break;
-                    case "BANKRUPT":
-                        declareBankruptcy();
-                        msg = "END";
-                        break;
-                    case "END":
-                        break;
-                    default:
-                        throw new RuntimeException("Reply not allowed.");
-                }
-            } while (!msg.equals("END"));
+            // Don't send request to player if they declared bankruptcy
+            if (players.contains(activePlayer)) {
+                String msg;
+                do {
+                    activePlayer.sendObject(new Message(MsgType.ASK_NEXT, null));
+                    msg = activePlayer.recieveMessage();
+                    switch (msg) {
+                        case "BUILD":
+                            currentGameState = new BuildState(this);
+                            currentGameState.execute();
+                            break;
+                        case "MORTGAGE":
+                            currentGameState = new HypothekState(this);
+                            currentGameState.execute();
+                            break;
+                        case "LIFT":
+                            currentGameState = new LiftMortgageState(this);
+                            currentGameState.execute();
+                            break;
+                        case "TRADE":
+                            currentGameState = new TradeState(this);
+                            currentGameState.execute();
+                            break;
+                        case "BANKRUPT":
+                            declareBankruptcy();
+                            msg = "END";
+                            break;
+                        case "END":
+                            break;
+                        default:
+                            throw new RuntimeException("Reply not allowed.");
+                    }
+                } while (!msg.equals("END"));
+            }
             currentGameState = new EndTurnState(this);
-
             currentGameState.execute();
-            printBoard();
+
 
             // ends game if only one player is left
             if (players.size() <= 1) {
                 activePlayer = players.get(0);
                 wonGame();
                 return;
+            }
+            else {
+                printBoard();
+                //TODO: Messages werden teilweise versteckt von dem printBoard()
             }
         }
     }
