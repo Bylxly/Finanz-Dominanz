@@ -102,6 +102,17 @@ public class Player implements Serializable {
         money += amount;
     }
 
+    public void closeConnection() {
+        sendObject(new Message(MsgType.CLOSE_CONNECTION, null));
+        try {
+            objectOutputStream.close();
+            bufferedReader.close();
+            client.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e.getMessage());
+        }
+    }
+
     public Field getCurrentField() {
         return currentField;
     }
