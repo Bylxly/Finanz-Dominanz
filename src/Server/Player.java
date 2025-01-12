@@ -3,6 +3,9 @@ package Server;
 
 import Server.Field.Field;
 import Server.Field.Property.Property;
+import Server.State.GameState;
+import Server.State.HypothekState;
+import Server.State.TradeState;
 
 import java.io.*;
 import java.net.Socket;
@@ -13,6 +16,7 @@ public class Player implements Serializable {
 
     private int money;
     private final String name;
+    private final Game game;
     private Field currentField;
     private List<Property> properties;
     private boolean arrested;
@@ -20,9 +24,10 @@ public class Player implements Serializable {
     private transient ObjectOutputStream objectOutputStream;
     private transient BufferedReader bufferedReader;
 
-    public Player(int money, String name, Socket client, ObjectOutputStream objectOutputStream, BufferedReader bufferedReader) {
+    public Player(int money, String name, Game game, Socket client, ObjectOutputStream objectOutputStream, BufferedReader bufferedReader) {
         this.money = money;
         this.name = name;
+        this.game = game;
         properties = new ArrayList<>();
         this.client = client;
         this.objectOutputStream = objectOutputStream;
@@ -65,6 +70,31 @@ public class Player implements Serializable {
     }
 
     public void takeMoney(int amount) {
+        GameState last_state = game.getCurrentGameState();
+        while (amount > money) {
+            sendObject(new Message(MsgType.ASK_NO_MONEY, """
+                    You can't afford to pay this \
+                    What would you like to do?\
+                    MORTGAGE, TRADE, BANKRUPT"""));
+            String response = recieveMessage();
+            switch (response) {
+                case "MORTGAGE":
+                    game.setCurrentGameState(new HypothekState(game));
+                    break;
+                case "TRADE":
+                    game.setCurrentGameState(new TradeState(game));
+                    break;
+                case "BANKRUPT":
+                    if (currentField instanceof Property && ((Property) currentField).getOwner() != null) {
+                        game.declareBankruptcy(((Property) currentField).getOwner());
+                        return;
+                    }
+                    game.declareBankruptcy();
+                    return;
+            }
+            game.getCurrentGameState().execute();
+        }
+        game.setCurrentGameState(last_state);
         money -= amount;
     }
 
