@@ -239,20 +239,30 @@ public class Draw extends PApplet {
     }
     @Override
     public void mousePressed() {
-        // Unfocus all textboxes initially
         mainmenu.ipTextBox.setFocused(false);
         mainmenu.portTextBox.setFocused(false);
         if (mainmenu.lobbyCodeTextBox != null) {
             mainmenu.lobbyCodeTextBox.setFocused(false);
         }
 
-        // Check which textbox (if any) was clicked
         if (mainmenu.ipTextBox.mousePressed(this)) {
             System.out.println("IP Textbox clicked.");
         } else if (mainmenu.portTextBox.mousePressed(this)) {
             System.out.println("Port Textbox clicked.");
         } else if (mainmenu.lobbyCodeTextBox != null && mainmenu.lobbyCodeTextBox.mousePressed(this)) {
             System.out.println("Lobby Code Textbox clicked.");
+        }
+
+        if (mainmenu.connectButton.isClicked(this)) {
+            mainmenu.connectButton.performAction();
+        }
+
+        if (mainmenu.createGameButton.isClicked(this)) {
+            mainmenu.createGameButton.performAction();
+        }
+
+        if (mainmenu.joinGameButton.isClicked(this)) {
+            mainmenu.joinGameButton.performAction();
         }
 
         // Handle button clicks

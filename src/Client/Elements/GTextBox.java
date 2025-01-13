@@ -5,6 +5,7 @@ import processing.core.PApplet;
 import static processing.core.PConstants.*;
 
 public class GTextBox {
+    private String name = "";
     private float x, y, width, height;
     private String text = "";
     private String savedText = "";
@@ -13,6 +14,7 @@ public class GTextBox {
     private boolean focused = false;
 
     public GTextBox(String name, float x, float y, float width, float height, int backgroundColor, int focusBackgroundColor, int hoverBackgroundColor, int textColor, int borderColor, boolean isActive) {
+        this.name = name;
         this.x = x;
         this.y = y;
         this.width = width;
@@ -48,14 +50,14 @@ public class GTextBox {
         if (focused) {
             if (keyCode == BACKSPACE && text.length() > 0) {
                 text = text.substring(0, text.length() - 1);
-                System.out.println("Text after BACKSPACE: " + text); // Debug
+                System.out.println(name + " Text after BACKSPACE: " + text); // Debug
             } else if (key != CODED && keyCode != ENTER) {
                 text += key;
-                System.out.println("Text after key press: " + text); // Debug
+                System.out.println(name + " Text after key press: " + text); // Debug
             } else if (keyCode == ENTER) {
                 focused = false;
                 saveText();
-                System.out.println("Textbox unfocused, saved text: " + savedText); // Debug
+                System.out.println(name + " Textbox unfocused, saved text: " + savedText); // Debug
             }
         }
     }
@@ -70,11 +72,11 @@ public class GTextBox {
     public boolean mousePressed(PApplet applet) {
         if (isMouseOver(applet)) {
             setFocused(true);
-            System.out.println("Textbox focused.");
+            System.out.println(name + " Textbox focused.");
             return true;
         } else {
             setFocused(false);
-            System.out.println("Textbox unfocused.");
+            System.out.println(name + " Textbox unfocused.");
             return false;
         }
     }
