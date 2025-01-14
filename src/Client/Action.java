@@ -21,12 +21,12 @@ public class Action {
     private static boolean debug = false;
 
     public enum ServerMessage {
-        ASK_SERVER {
-            @Override
-            public void execute(Client client, Message message) {
-                doServer(client, message);
-            }
-        },
+//        ASK_SERVER {
+//            @Override
+//            public void execute(Client client, Message message) {
+//                doServer(client, message);
+//            }
+//        },
         ASK_ROLL {
             @Override
             public void execute(Client client, Message message) {
@@ -68,37 +68,37 @@ public class Action {
         }
         ;
 
-        public static void doServer(Client client, Message message) {
-            BufferedReader consoleReader = new BufferedReader(new InputStreamReader(System.in));
-            // Create or join a game
-            try {
-                String msgClient;
-                System.out.println("Would you like to CREATE or JOIN a game?");
-                msgClient = consoleReader.readLine();
-                if (msgClient.equalsIgnoreCase("CREATE")) {
-                    client.getWriter().println("CREATE");
-                }
-                //Temp for quick join
-                else if (msgClient.isEmpty()) {
-                    client.getWriter().println("CREATE_CUSTOM");
-                }
-                else if (msgClient.equalsIgnoreCase("JOIN") || msgClient.equalsIgnoreCase("j")) {
-                    System.out.print("Enter code of the game: ");
-                    msgClient = consoleReader.readLine();
-                    //Temp for quick join
-                    if (msgClient.isEmpty()) {
-                        client.getWriter().println("ABCDEF");
-                    }
-                    else {
-                        client.getWriter().println(msgClient);
-                    }
-                }
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            } finally {
-                client.startGUI();
-            }
-        }
+//        public static void doServer(Client client, Message message) {
+//            BufferedReader consoleReader = new BufferedReader(new InputStreamReader(System.in));
+//            // Create or join a game
+//            try {
+//                String msgClient;
+//                System.out.println("Would you like to CREATE or JOIN a game?");
+//                msgClient = consoleReader.readLine();
+//                if (msgClient.equalsIgnoreCase("CREATE")) {
+//                    client.getWriter().println("CREATE");
+//                }
+//                //Temp for quick join
+//                else if (msgClient.isEmpty()) {
+//                    client.getWriter().println("CREATE_CUSTOM");
+//                }
+//                else if (msgClient.equalsIgnoreCase("JOIN") || msgClient.equalsIgnoreCase("j")) {
+//                    System.out.print("Enter code of the game: ");
+//                    msgClient = consoleReader.readLine();
+//                    //Temp for quick join
+//                    if (msgClient.isEmpty()) {
+//                        client.getWriter().println("ABCDEF");
+//                    }
+//                    else {
+//                        client.getWriter().println(msgClient);
+//                    }
+//                }
+//            } catch (IOException e) {
+//                throw new RuntimeException(e);
+//            } finally {
+//                client.startGUI();
+//            }
+//        }
 
         public static void doRoll(Client client) {
             try {

@@ -28,8 +28,8 @@ public class GTextBox {
     }
 
     public void draw(PApplet applet) {
+        if (!isActive) return;
         boolean isMouseOver = isMouseOver(applet);
-
         if (focused) {
             applet.fill(focusBackgroundColor);
         } else if (isMouseOver) {
@@ -50,21 +50,17 @@ public class GTextBox {
         if (focused) {
             if (keyCode == BACKSPACE && text.length() > 0) {
                 text = text.substring(0, text.length() - 1);
-                System.out.println(name + " Text after BACKSPACE: " + text); // Debug
             } else if (key != CODED && keyCode != ENTER) {
                 text += key;
-                System.out.println(name + " Text after key press: " + text); // Debug
             } else if (keyCode == ENTER) {
                 focused = false;
                 saveText();
-                System.out.println(name + " Textbox unfocused, saved text: " + savedText); // Debug
             }
         }
     }
 
 
 
-    // New method to check if the mouse is over the text box
     private boolean isMouseOver(PApplet applet) {
         return isActive && applet.mouseX > x && applet.mouseX < x + width && applet.mouseY > y && applet.mouseY < y + height;
     }
@@ -72,11 +68,9 @@ public class GTextBox {
     public boolean mousePressed(PApplet applet) {
         if (isMouseOver(applet)) {
             setFocused(true);
-            System.out.println(name + " Textbox focused.");
             return true;
         } else {
             setFocused(false);
-            System.out.println(name + " Textbox unfocused.");
             return false;
         }
     }
