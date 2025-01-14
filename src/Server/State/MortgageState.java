@@ -16,13 +16,14 @@ public class HypothekState extends SelectState {
     @Override
     protected Map<Integer, Object> getEligibleObjects() {
         int mapIndex = 1;
-        Map<Integer, Object> mortageableProperties = new HashMap<>();
+        Map<Integer, Object> mortgageableProperties = new HashMap<>();
         for (Property property : game.getActivePlayer().getProperties()) {
+            //TODO move if header to property class
             if (!property.hasHypothek() && (!(property instanceof Street) || ((Street) property).getHouses() == 0)) {
-                mortageableProperties.put(mapIndex++, property);
+                mortgageableProperties.put(mapIndex++, property);
             }
         }
-        return mortageableProperties;
+        return mortgageableProperties;
     }
 
     @Override
