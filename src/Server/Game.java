@@ -24,6 +24,7 @@ public class Game extends Thread implements Serializable {
     private Player activePlayer;
     private Roll roll;
     private GameState currentGameState;
+    private Knast knast;
 
     public Game() {
         players = new ArrayList<Player>();
@@ -87,7 +88,8 @@ public class Game extends Thread implements Serializable {
                     board[i] = new Street("Poststraße", 120, 50, new int[]{8, 40, 100, 300, 450, 600}, 60, cyan);
                     break;
                 case 10:
-                    board[i] = new Knast("Knast", 1000, new int[]{50}, 500);
+                    knast = new Knast("Knast", 1000, new int[]{50}, 500);
+                    board[i] = knast;
                     break;
                 case 11:
                     board[i] = new Street("Seestraße", 140, 100, new int[]{10, 50, 150, 450, 625, 750}, 70, magenta);
@@ -404,14 +406,10 @@ public class Game extends Thread implements Serializable {
 
     public void movePlayerToKnast(Player player) {
         player.setArrested(true);
-        getActivePlayer().sendObject(new Message(MsgType.INFO, "Du musst in den Knast gehen!"));
+        player.sendObject(new Message(MsgType.INFO, "Du musst in den Knast gehen!"));
 
-        for (Field f : board) {
-            if (f instanceof Knast k) {
-                player.setCurrentField(f);
-                k.addRollAmount(getActivePlayer(), 0);
-            }
-        }
+        player.setCurrentField(knast);
+        knast.addRollAmount(player, 0);
     }
 
     private void wonGame() {
@@ -445,5 +443,9 @@ public class Game extends Thread implements Serializable {
 
     public int getBOARD_SIZE() {
         return BOARD_SIZE;
+    }
+
+    public Knast getKnast() {
+        return knast;
     }
 }
