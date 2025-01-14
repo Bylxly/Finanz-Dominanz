@@ -347,7 +347,7 @@ public class Game extends Thread implements Serializable {
                             currentGameState.execute();
                             break;
                         case "MORTGAGE":
-                            currentGameState = new HypothekState(this);
+                            currentGameState = new MortgageState(this);
                             currentGameState.execute();
                             break;
                         case "LIFT":

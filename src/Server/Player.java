@@ -4,7 +4,7 @@ package Server;
 import Server.Field.Field;
 import Server.Field.Property.Property;
 import Server.State.GameState;
-import Server.State.HypothekState;
+import Server.State.MortgageState;
 import Server.State.TradeState;
 
 import java.io.*;
@@ -95,7 +95,7 @@ public class Player implements Serializable {
 
         switch (response) {
             case "MORTGAGE":
-                game.setCurrentGameState(new HypothekState(game));
+                game.setCurrentGameState(new MortgageState(game));
                 break;
             case "TRADE":
                 game.setCurrentGameState(new TradeState(game));

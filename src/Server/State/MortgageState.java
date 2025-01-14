@@ -7,9 +7,9 @@ import Server.Game;
 import java.util.HashMap;
 import java.util.Map;
 
-public class HypothekState extends SelectState {
+public class MortgageState extends SelectState {
 
-    public HypothekState(Game game) {
+    public MortgageState(Game game) {
         super(game);
     }
 
