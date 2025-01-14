@@ -8,7 +8,6 @@ import Server.Message;
 import Server.MsgType;
 
 import java.util.Objects;
-import java.util.Scanner;
 
 public class BuyFieldState implements GameState {
 
@@ -24,14 +23,21 @@ public class BuyFieldState implements GameState {
     public void execute() {
         game.printBoard();
         if (askClient()) {
-            if (GameUtilities.checkIfEnoughMoney(game.getActivePlayer(), currentProperty.getPrice())) {
-                currentProperty.buy(game.getActivePlayer());
-            }
-            else {
-                game.getActivePlayer().sendObject(new Message(MsgType.INFO, "Du hast nicht genügend Geld!"));
-                game.setCurrentGameState(new AuctionState(game));
-                game.getCurrentGameState().execute();
-            }
+            //TODO Samuel fragen wegen implementation in Client
+            do {
+                if (GameUtilities.checkIfEnoughMoney(game.getActivePlayer(), currentProperty.getPrice())) {
+                    currentProperty.buy(game.getActivePlayer());
+                    break;
+                }
+                else {
+                    game.getActivePlayer().sendObject(new Message(MsgType.INFO, "Du hast nicht genügend Geld!"));
+                    if (game.getActivePlayer().showOptions(true)) {
+                        game.setCurrentGameState(new AuctionState(game));
+                        game.getCurrentGameState().execute();
+                        break;
+                    }
+                }
+            } while (true);
         }
         else if (currentProperty instanceof Knast) {
             game.setCurrentGameState(new AuctionState(game));
