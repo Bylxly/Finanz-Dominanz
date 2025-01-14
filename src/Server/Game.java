@@ -404,12 +404,12 @@ public class Game extends Thread implements Serializable {
 
     public void movePlayerToKnast(Player player) {
         player.setArrested(true);
-        ((Knast) getActivePlayer().getCurrentField()).addRollAmount(getActivePlayer(), 0);
         getActivePlayer().sendObject(new Message(MsgType.INFO, "Du musst in den Knast gehen!"));
 
         for (Field f : board) {
-            if (f instanceof Knast) {
+            if (f instanceof Knast k) {
                 player.setCurrentField(f);
+                k.addRollAmount(getActivePlayer(), 0);
             }
         }
     }
