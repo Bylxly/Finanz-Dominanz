@@ -180,7 +180,7 @@ public class Game extends Thread implements Serializable {
     }
 
     public void makePlayer(String name, Socket client, ObjectOutputStream out, BufferedReader in) {
-        Player p = new Player(START_MONEY, name, client, out, in);
+        Player p = new Player(START_MONEY, name, this, client, out, in);
         players.add(p);
         if (activePlayer == null) {
             activePlayer = p;
