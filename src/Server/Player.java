@@ -70,32 +70,58 @@ public class Player implements Serializable {
     }
 
     public void takeMoney(int amount) {
-        GameState last_state = game.getCurrentGameState();
         while (amount > money) {
-            sendObject(new Message(MsgType.ASK_NO_MONEY, """
-                    You can't afford to pay this \
-                    What would you like to do?\
-                    MORTGAGE, TRADE, BANKRUPT"""));
-            String response = recieveMessage();
-            switch (response) {
-                case "MORTGAGE":
-                    game.setCurrentGameState(new HypothekState(game));
-                    break;
-                case "TRADE":
-                    game.setCurrentGameState(new TradeState(game));
-                    break;
-                case "BANKRUPT":
-                    if (currentField instanceof Property && ((Property) currentField).getOwner() != null) {
-                        game.declareBankruptcy(((Property) currentField).getOwner());
-                        return;
-                    }
-                    game.declareBankruptcy();
-                    return;
-            }
-            game.getCurrentGameState().execute();
+            showOptions(false);
         }
-        game.setCurrentGameState(last_state);
         money -= amount;
+    }
+    
+    //TODO prüfen ob kein einfacherer weg
+    public boolean showOptions(boolean includeQuit) {
+        GameState lastState = game.getCurrentGameState();
+
+        String message = includeQuit
+                ? """
+                You can't afford to pay this
+                What would you like to do?
+                MORTGAGE, TRADE, BANKRUPT, QUIT"""
+                : """
+                You can't afford to pay this
+                What would you like to do?
+                MORTGAGE, TRADE, BANKRUPT""";
+
+        sendObject(new Message(MsgType.ASK_NO_MONEY, message));
+        String response = recieveMessage();
+
+        switch (response) {
+            case "MORTGAGE":
+                game.setCurrentGameState(new HypothekState(game));
+                break;
+            case "TRADE":
+                game.setCurrentGameState(new TradeState(game));
+                break;
+            case "BANKRUPT":
+                if (currentField instanceof Property && ((Property) currentField).getOwner() != null) {
+                    game.declareBankruptcy(((Property) currentField).getOwner());
+                    return true;
+                }
+                game.declareBankruptcy();
+                return true;
+            case "QUIT":
+                if (includeQuit) {
+                    return true;
+                }
+                // Falls "QUIT" eingegeben wird, aber nicht erlaubt ist:
+                sendObject(new Message(MsgType.INFO, "Invalid option."));
+                return showOptions(false);
+            default:
+                sendObject(new Message(MsgType.INFO, "Invalid option."));
+                return showOptions(includeQuit);
+        }
+
+        game.getCurrentGameState().execute();
+        game.setCurrentGameState(lastState);
+        return false;
     }
 
     public void giveMoney(int amount) {
