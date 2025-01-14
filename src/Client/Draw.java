@@ -54,18 +54,24 @@ public class Draw extends PApplet {
     }
 
     private void initializeGameComponents() {
-        initializeFields();
         game = client.getGame();
+        if (game == null) {
+            System.out.println("Game object is null. Initialization aborted.");
+            return;
+        }
+        initializeFields();
         createButtons();
         createInfoPanel();
         redraw();
     }
+
 
     private void renderGame() {
         background(34, 139, 34);
 
         if (game == null) {
             displayMessage("Waiting for game state...");
+            initializeGameComponents();
         } else {
             drawFields();
             drawPlayers();
@@ -223,7 +229,12 @@ public class Draw extends PApplet {
         for (int i = 0; i < players.size(); i++) {
             Player player = players.get(i);
             Field currentField = player.getCurrentField();
+
             int fieldIndex = client.getFieldIndex(currentField);
+            if (fieldIndex == -1) {
+                System.out.println("Invalid field index for player " + player.getName() + " at field " + (currentField != null ? currentField.getUIName() : "null"));
+                continue; // Skip this player
+            }
 
             GField field = fields.get(fieldIndex);
             float x = field.getX();
@@ -237,6 +248,7 @@ public class Draw extends PApplet {
             text(i + 1, x + cellSize / 2.0f, y + cellSize / 2.0f);
         }
     }
+
     @Override
     public void mousePressed() {
         mainmenu.ipTextBox.setFocused(false);
