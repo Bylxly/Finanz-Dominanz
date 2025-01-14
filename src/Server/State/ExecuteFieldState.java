@@ -20,7 +20,7 @@ public class ExecuteFieldState implements GameState {
     @Override
     public void execute() {
         if (game.getActivePlayer().isArrested()) {
-            executeKnast();
+            game.getKnast().executeKnast(game);
         }
         else if (game.getActivePlayer().getCurrentField() instanceof AbInKnast) {
             game.getActivePlayer().getCurrentField().startAction(game.getActivePlayer());
@@ -37,39 +37,5 @@ public class ExecuteFieldState implements GameState {
                 game.declareBankruptcy();
             }
         }
-    }
-
-    public void executeKnast() {
-        game.getActivePlayer().sendObject(new Message(MsgType.ASK_KNAST, null));
-        String msg = game.getActivePlayer().recieveMessage();
-
-        if (Objects.equals(msg, "ROLL") &&
-                ((Knast) game.getActivePlayer().getCurrentField()).getRollAmount(game.getActivePlayer()) < 3) {
-            game.askRoll(game.getActivePlayer());
-            ((Knast) game.getActivePlayer().getCurrentField()).incrementRollAmount(game.getActivePlayer());
-            if (game.getRoll().getPasch()) {
-                game.getActivePlayer().setArrested(false);
-                System.out.println("Pasch: " + game.getRoll().getPasch());
-            }
-            else {
-                game.getActivePlayer().sendObject(new Message(MsgType.INFO, "Du hast keinen Pasch gewürfelt"));
-                return;
-            }
-        }
-        else {
-            if (((Knast) game.getActivePlayer().getCurrentField()).getRollAmount(game.getActivePlayer()) >= 3) {
-                game.getActivePlayer().sendObject(new Message(MsgType.INFO,
-                        "Sie haben bereits 3 mal gewürfelt und müssen jetzt zahlen"));
-            }
-            ((Knast) game.getActivePlayer().getCurrentField()).payRent(game.getActivePlayer());
-            game.getActivePlayer().setArrested(false);
-        }
-
-        ((Knast) game.getActivePlayer().getCurrentField()).removeRollAmount(game.getActivePlayer());
-        game.getActivePlayer().sendObject(new Message(MsgType.INFO, "Du bist wieder ein freier Mensch"));
-        // Roll after getting free
-        game.setCurrentGameState(new RollDiceState(game));
-        game.getCurrentGameState().execute();
-        game.movePlayer();
     }
 }
