@@ -70,10 +70,7 @@ public class Street extends Property {
     public String getName() {
         StringBuilder name;
         name = new StringBuilder(colorGroup.getColorCode() + super.getName() + "\u001B[0m" + " ");
-        if (hasHypothek()) {
-            name.append("❌");
-        }
-        else if (getHouses() == 5) {
+        if (getHouses() == 5) {
             name.append("\uD83C\uDFE8");
         }
         else {

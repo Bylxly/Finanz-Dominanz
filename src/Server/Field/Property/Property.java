@@ -69,6 +69,15 @@ public abstract class Property extends Field {
         }
     }
 
+    @Override
+    public String getName() {
+        String name = super.getName();
+        if (hasHypothek()) {
+            name += " ❌";
+        }
+        return name;
+    }
+
     public int getPrice() {
         return price;
     }
