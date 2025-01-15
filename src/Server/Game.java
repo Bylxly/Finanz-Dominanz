@@ -1,15 +1,10 @@
 package Server;
 
-import Server.Field.AbInKnast;
-import Server.Field.DummyField;
-import Server.Field.Field;
+import Server.Field.*;
 import Server.Field.Property.*;
-import Server.Field.Start;
 import Server.State.*;
 
-import java.awt.*;
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.net.Socket;
@@ -68,6 +63,9 @@ public class Game extends Thread implements Serializable {
                 case 1:
                     board[i] = new Street("Badstraße", 60, 50, new int[]{2, 10, 30, 90, 160, 250}, 30, purple);
                     break;
+                case 2:
+                    board[i] = new CommunityField("Gemeinschaftsfeld", this);
+                    break;
                 case 3:
                     board[i] = new Street("Turmstraße", 60, 50 , new int[]{4, 20, 60, 180, 320, 450}, 30, purple);
                     break;
@@ -76,6 +74,9 @@ public class Game extends Thread implements Serializable {
                     break;
                 case 6:
                     board[i] = new Street("Chausseestraße", 100, 50, new int[]{6, 30, 90, 270, 400, 550}, 50, cyan);
+                    break;
+                case 7:
+                    board[i] = new EventField("Ereignisfeld", this);
                     break;
                 case 8:
                     board[i] = new Street("Elisenstraße", 100, 50, new int[]{6, 30, 90, 270, 400, 550}, 50, cyan);
@@ -90,7 +91,7 @@ public class Game extends Thread implements Serializable {
                     board[i] = new Street("Seestraße", 140, 100, new int[]{10, 50, 150, 450, 625, 750}, 70, magenta);
                     break;
                 case 12:
-                    board[i] = new Utility("Elektrizitätswerk", 150, new int[]{50, 75}, 75);
+                    board[i] = new Utility("Elektrizitätswerk", 150, 75, this);
                     break;
                 case 13:
                     board[i] = new Street("Hafenstraße", 140, 100, new int[]{10, 50, 150, 450, 625, 750}, 70, magenta);
@@ -104,6 +105,9 @@ public class Game extends Thread implements Serializable {
                 case 16:
                     board[i] = new Street("Münchner Straße", 180, 100, new int[]{14, 70, 200, 550, 750, 950}, 90, orange);
                     break;
+                case 17:
+                    board[i] = new CommunityField("Gemeinschaftsfeld", this);
+                    break;
                 case 18:
                     board[i] = new Street("Wiener Straße", 180, 100, new int[]{14, 70, 200, 550, 750, 950}, 90, orange);
                     break;
@@ -112,6 +116,9 @@ public class Game extends Thread implements Serializable {
                     break;
                 case 21:
                     board[i] = new Street("Theaterstraße", 220, 150, new int[]{18, 90, 250, 700, 875, 1050}, 110, red);
+                    break;
+                case 22:
+                    board[i] = new EventField("Ereignisfeld", this);
                     break;
                 case 23:
                     board[i] = new Street("Museumstraße", 220, 150, new int[]{18, 90, 250, 700, 875, 1050}, 110, red);
@@ -129,7 +136,7 @@ public class Game extends Thread implements Serializable {
                     board[i] = new Street("Schillerstraße", 260, 150, new int[]{22, 110, 330, 800, 975, 1150}, 130, yellow);
                     break;
                 case 28:
-                    board[i] = new Utility("Wasserwerk", 150, new int[]{50, 75}, 75);
+                    board[i] = new Utility("Wasserwerk", 150, 75, this);
                     break;
                 case 29:
                     board[i] = new Street("Goethestraße", 280, 150, new int[]{24, 120, 360, 850, 1025, 1200}, 140, yellow);
@@ -143,11 +150,17 @@ public class Game extends Thread implements Serializable {
                 case 32:
                     board[i] = new Street("Hauptstraße", 300, 200, new int[]{26, 130, 390, 900, 1100, 1275}, 150, green);
                     break;
+                case 33:
+                    board[i] = new CommunityField("Gemeinschaftsfeld", this);
+                    break;
                 case 34:
                     board[i] = new Street("Bahnhofstraße", 320, 200, new int[]{28, 150, 450, 1000, 1200, 1400}, 160, green);
                     break;
                 case 35:
                     board[i] = new TrainStation("Hauptbahnhof", 200, new int[]{25, 50, 100, 200}, 100);
+                    break;
+                case 36:
+                    board[i] = new EventField("Ereignisfeld", this);
                     break;
                 case 37:
                     board[i] = new Street("Parkstraße", 350, 200, new int[]{35, 175, 500, 1100, 1300, 1500}, 175, blue);
@@ -189,23 +202,52 @@ public class Game extends Thread implements Serializable {
             askRoll(activePlayer);
 
             // get array position of Player
-            int pos = 0;
-            for (Field f : board) {
-                if (f == activePlayer.getCurrentField()) {
-                    break;
-                } else {
-                    pos++;
-                }
-            }
+            int playerPos = getPlayerPosition();
 
             // move player to new field
-            int newPos = (pos + roll.getTotal()) % BOARD_SIZE;
+            int newPos = (playerPos + roll.getTotal()) % BOARD_SIZE;
             activePlayer.setCurrentField(board[newPos]);
 
-            int timesAroundField = (int) Math.floor((double) (pos + roll.getTotal()) / BOARD_SIZE);
+            int timesAroundField = (int) Math.floor((double) (playerPos + roll.getTotal()) / BOARD_SIZE);
             if (!(activePlayer.getCurrentField() instanceof Start) && timesAroundField >= 1) {
                 GameUtilities.receiveFromBank(getActivePlayer(), BONUS * timesAroundField);
             }
+    }
+
+    public void movePlayerToField(Field field) {
+        int fieldPos = 0;
+        for (Field f : board) {
+            if (f == field) {
+                break;
+            } else {
+                fieldPos++;
+            }
+        }
+        int playerPos = getPlayerPosition();
+        if (fieldPos < playerPos) {
+            GameUtilities.receiveFromBank(getActivePlayer(), BONUS);
+        }
+        activePlayer.setCurrentField(field);
+    }
+
+    public void movePlayerToPosition(int newPos) {
+        int playerPos = getPlayerPosition();
+        if (newPos < playerPos) {
+            GameUtilities.receiveFromBank(getActivePlayer(), BONUS);
+        }
+        activePlayer.setCurrentField(board[newPos]);
+    }
+
+    public int getPlayerPosition() {
+        int pos = 0;
+        for (Field f : board) {
+            if (f == activePlayer.getCurrentField()) {
+                break;
+            } else {
+                pos++;
+            }
+        }
+        return pos;
     }
 
     public void nextPlayer() {
@@ -221,6 +263,32 @@ public class Game extends Thread implements Serializable {
     public void declareBankruptcy() {
         for (Property property : activePlayer.getProperties()) {
             property.setOwner(null);
+        }
+        players.remove(activePlayer);
+    }
+
+    public void declareBankruptcy(Player player) {
+        player.sendObject(new Message(MsgType.INFO, getActivePlayer().getName() + "is bankrupt"));
+        for (Property property : activePlayer.getProperties()) {
+            property.setOwner(player);
+            player.addProperty(property);
+            getActivePlayer().removeProperty(property);
+
+            if (property.hasHypothek()) {
+                //TODO: Player könnte 10 % nicht bezahlen können und muss selber eine Hypothek aufnehmen
+                player.sendObject(new Message(MsgType.GET_ANSWER, property.getName() + "is mortgaged.\n"
+                        + "You can either keep the mortgage and pay 10 % of the mortgage value \n"
+                        + "or you can lift the mortgage and pay the mortgage value + 10 % interest fee."
+                        + "Choose an option: KEEP or LIFT"));
+
+                String selection = player.recieveMessage();
+                if (selection.equals("KEEP")) {
+                    GameUtilities.payBank(player, (int) Math.round(property.getHypothek() * 0.1));
+                }
+                else if (selection.equals("LIFT")) {
+                    property.redeemProperty();
+                }
+            }
         }
         players.remove(activePlayer);
     }
@@ -246,37 +314,17 @@ public class Game extends Thread implements Serializable {
             int paschAnzahl = 0;
             do {
                 if (paschAnzahl == 3){
-                    activePlayer.setArrested(true);
                     movePlayerToKnast(activePlayer);
                     break;
                 }
                 currentGameState = new RollDiceState(this);
                 currentGameState.execute();
 
-                // Spieler ist im Knast und versucht, herauszukommen
-                if (activePlayer.isArrested()) {
-                    if (roll.getPasch()) {
-                        activePlayer.setArrested(false); // Spieler kommt aus dem Knast frei
-                        paschAnzahl = 0; // Zurücksetzen des Paschzählers
-                    } else {
-                        // Wenn kein Pasch gewürfelt wird, beendet der Spieler den Zug
-                        break;
-                    }
-                }
-
                 if (!activePlayer.isArrested()) {
                     movePlayer();
                 }
 
-                if (activePlayer.getCurrentField() instanceof Property
-                    && !((Property) activePlayer.getCurrentField()).isOwned()) {
-                        currentGameState = new BuyFieldState(this);
-                }
-                else {
-                    currentGameState = new ExecuteFieldState(this);
-                }
-                currentGameState.execute();
-                printBoard();
+                setBuildOrExecuteState();
 
                 if (roll.getPasch()) {
                     ++paschAnzahl;
@@ -292,6 +340,18 @@ public class Game extends Thread implements Serializable {
                 switch (msg) {
                     case "BUILD":
                         currentGameState = new BuildState(this);
+                        currentGameState.execute();
+                        break;
+                    case "MORTGAGE":
+                        currentGameState = new HypothekState(this);
+                        currentGameState.execute();
+                        break;
+                    case "LIFT":
+                        currentGameState = new LiftMortgageState(this);
+                        currentGameState.execute();
+                        break;
+                    case "TRADE":
+                        currentGameState = new TradeState(this);
                         currentGameState.execute();
                         break;
                     case "BANKRUPT":
@@ -316,6 +376,18 @@ public class Game extends Thread implements Serializable {
         }
     }
 
+    public void setBuildOrExecuteState() {
+        if (activePlayer.getCurrentField() instanceof Property
+                && !((Property) activePlayer.getCurrentField()).isOwned()) {
+            currentGameState = new BuyFieldState(this);
+        }
+        else {
+            currentGameState = new ExecuteFieldState(this);
+        }
+        currentGameState.execute();
+        printBoard();
+    }
+
 
     public void printBoard() {
         for (Player player : players) {
@@ -324,6 +396,10 @@ public class Game extends Thread implements Serializable {
     }
 
     public void movePlayerToKnast(Player player) {
+        player.setArrested(true);
+        ((Knast) getActivePlayer().getCurrentField()).addRollAmount(getActivePlayer(), 0);
+        getActivePlayer().sendObject(new Message(MsgType.INFO, "Du musst in den Knast gehen!"));
+
         for (Field f : board) {
             if (f instanceof Knast) {
                 player.setCurrentField(f);
@@ -353,5 +429,9 @@ public class Game extends Thread implements Serializable {
 
     public GameState getCurrentGameState() {
         return currentGameState;
+    }
+
+    public int getBOARD_SIZE() {
+        return BOARD_SIZE;
     }
 }

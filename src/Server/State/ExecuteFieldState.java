@@ -2,8 +2,8 @@ package Server.State;
 
 import Server.Field.AbInKnast;
 import Server.Field.Property.Knast;
+import Server.Field.Property.Property;
 import Server.Game;
-import Server.GameUtilities;
 import Server.Message;
 import Server.MsgType;
 
@@ -25,13 +25,17 @@ public class ExecuteFieldState implements GameState {
         else if (game.getActivePlayer().getCurrentField() instanceof AbInKnast) {
             game.getActivePlayer().getCurrentField().startAction(game.getActivePlayer());
             game.movePlayerToKnast(game.getActivePlayer());
-            ((Knast) game.getActivePlayer().getCurrentField()).addRollAmount(game.getActivePlayer(), 0);
-            game.getActivePlayer().sendObject(new Message(MsgType.INFO, "Du musst in den Knast gehen!"));
         }
         else if (!game.getActivePlayer().getCurrentField().startAction(game.getActivePlayer())) {
             game.printBoard();
             System.out.println("Der Spieler " + game.getActivePlayer().getName() + " ist bankrott.");
-            game.declareBankruptcy();
+            if (game.getActivePlayer().getCurrentField().getClass().isAssignableFrom(Property.class)
+                    && ((Property) game.getActivePlayer().getCurrentField()).getOwner() != game.getActivePlayer()) {
+                game.declareBankruptcy(((Property) game.getActivePlayer().getCurrentField()).getOwner());
+            }
+            else {
+                game.declareBankruptcy();
+            }
         }
     }
 

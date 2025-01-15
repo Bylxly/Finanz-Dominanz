@@ -29,6 +29,8 @@ public class BuyFieldState implements GameState {
             }
             else {
                 game.getActivePlayer().sendObject(new Message(MsgType.INFO, "Du hast nicht genügend Geld!"));
+                game.setCurrentGameState(new AuctionState(game));
+                game.getCurrentGameState().execute();
             }
         }
         else if (currentProperty instanceof Knast) {

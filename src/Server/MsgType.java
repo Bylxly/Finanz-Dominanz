@@ -9,8 +9,12 @@ public enum MsgType implements Serializable {
     ASK_NEXT,
     ASK_KNAST,
     INFO,
-    BUILD_SELECT_PROPERTY,
+    SELECT_OBJECT,
     DO_AUCTION,
+    QUIT_AUCTION,
     NEW_BID,
-    END_AUCTION
+    END_AUCTION,
+    REQUEST_TRADE,
+    SELECT_TRADE,
+    GET_ANSWER //TODO: Mby ändern => @TradeState
 }

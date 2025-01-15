@@ -47,18 +47,24 @@ public class AuctionState extends Thread implements GameState {
             while (auctionRunning.get() && contains(player)) {
                 String msg = player.recieveMessage();
                 if (msg.equalsIgnoreCase("QUIT_AUCTION")) {
-                    removePlayerFromList(player);
-                    if (auctionRunning.get()) {
-                        player.sendObject(new Message(MsgType.INFO, "You have quit the auction."));
-                    }
+                    if (player != highestBidder || activePlayers.size() == 1) {
+                        removePlayerFromList(player);
+                        if (auctionRunning.get()) {
+                            player.sendObject(new Message(MsgType.QUIT_AUCTION, "You have quit the auction."));
+                        }
+                    } else {player.sendObject(new Message(MsgType.INFO, "You can't quit the auction as the highest bidder."));}
                 } else {
                     try {
                         int newBid = Integer.parseInt(msg);
                         synchronized (this) {
                             if (newBid > currentBid) {
-                                currentBid = newBid;
-                                highestBidder = player;
-                                broadcast(new Message(MsgType.NEW_BID, String.valueOf(newBid)));
+                                if (newBid <= player.getMoney()) {
+                                    currentBid = newBid;
+                                    highestBidder = player;
+                                    broadcast(new Message(MsgType.NEW_BID, String.valueOf(newBid)));
+                                } else {
+                                    player.sendObject(new Message(MsgType.INFO, "You don't have enough money."));
+                                }
                             } else {
                                 player.sendObject(new Message(MsgType.INFO, "Your bid is too low."));
                             }

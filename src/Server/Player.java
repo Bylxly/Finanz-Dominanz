@@ -38,8 +38,11 @@ public class Player implements Serializable {
                 if (object instanceof Message) {
                     System.out.println("Sent to " + name + " :" + object);
                 }
-                else {
+                else if (object instanceof Game){
                     System.out.println("Game was sent to " + name);
+                }
+                else  {
+                    System.out.println("Object was sent to " + name + " (" + object.getClass() + ")");
                 }
 
             }

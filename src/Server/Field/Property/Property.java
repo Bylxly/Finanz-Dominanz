@@ -41,11 +41,14 @@ public abstract class Property extends Field {
     public abstract void payRent(Player player);
 
     public void redeemProperty() {
-
+        // 10 % interest rate
+        GameUtilities.payBank(owner, (int) Math.round((getHypothek() * 1.1)));
+        this.hasHypothek = false;
     }
 
     public void mortgageProperty() {
-
+        GameUtilities.receiveFromBank(owner, hypothek);
+        this.hasHypothek = true;
     }
 
     public int getPrice() {
@@ -66,5 +69,13 @@ public abstract class Property extends Field {
 
     public Player getOwner() {
         return owner;
+    }
+
+    public boolean hasHypothek() {
+        return hasHypothek;
+    }
+
+    public int getHypothek() {
+        return hypothek;
     }
 }
