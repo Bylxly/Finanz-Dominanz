@@ -74,9 +74,9 @@ public class Draw extends PApplet {
             initializeGameComponents();
         } else {
             drawFields();
-            drawPlayers();
             infoPanel.display();
             drawButtons();
+            drawPlayers();
         }
     }
     private void createInfoPanel() {
@@ -222,7 +222,7 @@ public class Draw extends PApplet {
     }
 
     private void drawPlayers() {
-        if (game == null) return;
+        if (game == null || fields.isEmpty()) return;
 
         List<Player> players = game.getPlayers();
 
@@ -230,24 +230,36 @@ public class Draw extends PApplet {
             Player player = players.get(i);
             Field currentField = player.getCurrentField();
 
-            int fieldIndex = client.getFieldIndex(currentField);
-            if (fieldIndex == -1) {
-                System.out.println("Invalid field index for player " + player.getName() + " at field " + (currentField != null ? currentField.getUIName() : "null"));
-                continue; // Skip this player
+            // Safeguard against null fields
+            if (currentField == null) {
+                System.out.println("Player " + player.getName() + " is on a null field.");
+                continue;
             }
 
+            // Get the index of the field
+            int fieldIndex = client.getFieldIndex(currentField);
+            if (fieldIndex < 0 || fieldIndex >= fields.size()) {
+                System.out.println("Invalid field index for player " + player.getName() +
+                        " at field " + currentField.getUIName());
+                continue;
+            }
+
+            // Get the field and draw the player
             GField field = fields.get(fieldIndex);
             float x = field.getX();
             float y = field.getY();
 
+            // Offset players to avoid overlap
+            float offset = 10 * (i % 4); // Adjust offset logic as needed
             fill(255);
-            ellipse(x + cellSize / 2.0f, y + cellSize / 2.0f, 20, 20);
+            ellipse(x + cellSize / 2.0f + offset, y + cellSize / 2.0f + offset, 20, 20);
 
             fill(0);
             textAlign(CENTER, CENTER);
-            text(i + 1, x + cellSize / 2.0f, y + cellSize / 2.0f);
+            text(i + 1, x + cellSize / 2.0f + offset, y + cellSize / 2.0f + offset);
         }
     }
+
 
     @Override
     public void mousePressed() {
