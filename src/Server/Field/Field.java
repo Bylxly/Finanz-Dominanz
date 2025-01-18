@@ -14,6 +14,21 @@ public abstract class Field implements Serializable {
 
     public abstract boolean startAction(Player p);
 
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+
+        Field other = (Field) obj;
+        return this.getName().equals(other.getName());
+    }
+
+    @Override
+    public int hashCode() {
+        return getName().hashCode();
+    }
+
+
     public String getName() {
         return name;
     }
