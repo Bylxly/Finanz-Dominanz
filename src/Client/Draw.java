@@ -7,6 +7,8 @@ import Server.Field.Field;
 import processing.core.PApplet;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+
 import Client.Elements.*;
 
 public class Draw extends PApplet {
@@ -19,7 +21,7 @@ public class Draw extends PApplet {
     private String currentPlayer = "";
 
     private ArrayList<GField> fields = new ArrayList<>();
-    private ArrayList<GButton> buttons = new ArrayList<>();
+    public static ArrayList<GButton> buttons = new ArrayList<>();
     private GPanel infoPanel;
     private boolean isConnected = false;
 
@@ -53,17 +55,6 @@ public class Draw extends PApplet {
         }
     }
 
-    private void initializeGameComponents() {
-        game = client.getGame();
-        if (game == null) {
-            System.out.println("Game object is null. Initialization aborted.");
-            return;
-        }
-        initializeFields();
-        createButtons();
-        createInfoPanel();
-        redraw();
-    }
 
 
     private void renderGame() {
@@ -77,6 +68,8 @@ public class Draw extends PApplet {
             infoPanel.display();
             drawButtons();
             drawPlayers();
+            redraw();
+//            System.out.println(". Current buttons: " + buttons.stream().map(GButton::getName).toList());
         }
     }
     private void createInfoPanel() {
@@ -85,24 +78,42 @@ public class Draw extends PApplet {
     }
 
     public void updateGameState(Game updatedGame) {
+        System.out.println("Updating game state...");
         this.game = updatedGame;
 
         Field[] board = game.getBoard();
-
         if (fields.size() != board.length) {
             System.out.println("Mismatch between field count and board size.");
-            System.out.println(board.length);
             return;
         }
 
         for (int i = 0; i < fields.size(); i++) {
             String fieldName = board[i].getUIName();
+            System.out.println("Updating field: " + fieldName);
             fields.get(i).setName(fieldName);
         }
 
         updateInfoPanel();
+        flush();
         redraw();
     }
+
+    private void initializeGameComponents() {
+        System.out.println("Initializing game components...");
+        game = client.getGame();
+
+        if (game == null) {
+            System.out.println("Game object is null. Initialization aborted.");
+            return;
+        }
+        HandleAction.initialize(client, currentField, currentPlayer);
+        initializeFields();
+        createButtons();
+        createInfoPanel();
+        System.out.println("Game components initialized.");
+        redraw();
+    }
+
 
     private void updateInfoPanel() {
         if (game != null) {
@@ -178,6 +189,8 @@ public class Draw extends PApplet {
 
         buttons.add(new GButton("btnNextBANKRUPT", 950, 700, 200, 30, "Bankrupt", color(200), color(255), true, false)
                 .setAction(HandleAction.ActionType.BANKRUPT::action));
+
+        System.out.println("Buttons created: " + buttons.stream().map(GButton::getName).toList());
     }
 
     private void drawButtons() {
@@ -263,6 +276,11 @@ public class Draw extends PApplet {
 
     @Override
     public void mousePressed() {
+        for (GButton button : buttons) {
+            if (button.isClicked(this)) {
+                button.performAction();
+            }
+        }
         mainmenu.ipTextBox.setFocused(false);
         mainmenu.portTextBox.setFocused(false);
         if (mainmenu.lobbyCodeTextBox != null) {
@@ -290,11 +308,6 @@ public class Draw extends PApplet {
         }
 
         // Handle button clicks
-        for (GButton button : buttons) {
-            if (button.isClicked(this)) {
-                button.performAction();
-            }
-        }
     }
 
     @Override
