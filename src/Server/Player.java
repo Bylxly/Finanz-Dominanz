@@ -75,8 +75,7 @@ public class Player implements Serializable {
         }
         money -= amount;
     }
-    
-    //TODO prüfen ob kein einfacherer weg
+
     public boolean showOptions(boolean includeQuit) {
         GameState lastState = game.getCurrentGameState();
 
