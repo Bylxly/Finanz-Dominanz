@@ -289,7 +289,6 @@ public class Action {
             try {
                 Object o = objectReader.readObject();
                 if (o instanceof List<?>) {
-                    //TODO: Check warning
                     List<String> message = (List<String>) o;
 
                     for (String s : message) {

@@ -20,12 +20,11 @@ public class CommunityField extends Field {
     }
 
     static {
-        //TODO: Test the cases same in EventField
         cards.add(new Card("You set aside time every week to hang out with your elderly neighbor – you’ve heard some amazing stories! COLLECT $100", 100, Card.CardAction.COLLECT));
         cards.add(new Card("You organize a group to clean up your town’s footpaths. COLLECT $50", 50, Card.CardAction.COLLECT));
         cards.add(new Card("You volunteered at a blood donation. There were free cookies! COLLECT $10", 10, Card.CardAction.COLLECT));
         cards.add(new Card("You buy a few bags of cookies from that school bake sale. Yum! PAY $50", 50, Card.CardAction.PAY));
-        //TODO: Out of (THE DARK) Jail Card same in EventField
+        //TODO: Out of Jail Card same in EventField
         //cards.add(new Card("You rescue a puppy – and you feel rescued, too!", 0, Card.CardAction.GET_OUT_OF_JAIL_FREE));
         cards.add(new Card("You organize a street party so people on your road can get to know each other. COLLECT $10", 10, Card.CardAction.COLLECT));
         cards.add(new Card("Blasting music late at night? Your neighbors do not approve. GO TO JAIL.", 0, Card.CardAction.GO_TO_JAIL));

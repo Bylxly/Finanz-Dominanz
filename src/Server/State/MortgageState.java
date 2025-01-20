@@ -18,7 +18,6 @@ public class MortgageState extends SelectState {
         int mapIndex = 1;
         Map<Integer, Object> mortgageableProperties = new HashMap<>();
         for (Property property : game.getActivePlayer().getProperties()) {
-            //TODO move if header to property class
             if (!property.hasHypothek() && (!(property instanceof Street) || ((Street) property).getHouses() == 0)) {
                 mortgageableProperties.put(mapIndex++, property);
             }

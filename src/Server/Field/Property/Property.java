@@ -54,7 +54,6 @@ public abstract class Property extends Field {
     }
 
     public void askMortgage(Player player) {
-        //TODO: Player könnte 10 % nicht bezahlen können und muss selber eine Hypothek aufnehmen
         player.sendObject(new Message(MsgType.GET_ANSWER_KEEP_LIFT, getName() + "is mortgaged.\n"
                 + "You can either keep the mortgage and pay 10 % of the mortgage value \n"
                 + "or you can lift the mortgage and pay the mortgage value + 10 % interest fee. \n"

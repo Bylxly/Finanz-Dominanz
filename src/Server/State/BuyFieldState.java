@@ -23,7 +23,6 @@ public class BuyFieldState implements GameState {
     public void execute() {
         game.printBoard();
         if (askClient()) {
-            //TODO Samuel fragen wegen implementation in Client
             do {
                 if (GameUtilities.checkIfEnoughMoney(game.getActivePlayer(), currentProperty.getPrice())) {
                     currentProperty.buy(game.getActivePlayer());
