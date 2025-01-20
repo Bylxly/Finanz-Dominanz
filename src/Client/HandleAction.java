@@ -85,21 +85,6 @@ public class HandleAction {
                 client.getDraw().setButtonActive("btnNextBUILD", false);
                 client.getDraw().setButtonActive("btnNextBANKRUPT", false);
             }
-        }, CONNECT {
-            @Override
-            public void action() {
-
-            }
-        }, CREATE {
-            @Override
-            public void action() {
-
-            }
-        }, JOIN {
-            @Override
-            public void action() {
-
-            }
         };
 
         public abstract void action();

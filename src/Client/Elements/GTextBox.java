@@ -102,4 +102,7 @@ public class GTextBox {
     private void saveText() {
         this.savedText = text;
     }
+
+    public Object getName() { return this.name;
+    }
 }

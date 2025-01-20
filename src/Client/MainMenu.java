@@ -24,9 +24,9 @@ public class MainMenu extends PApplet {
         this.parent = parent;
         this.client = new Client();
 
-        portTextBox = new GTextBox("tbPort", 400, 250, 300, 30, parent.color(255), parent.color(120), parent.color(220), parent.color(0), parent.color(50), true);
-        ipTextBox = new GTextBox("tbIP", 400, 200, 300, 30, parent.color(255), parent.color(120), parent.color(220), parent.color(0), parent.color(50), true);
-        lobbyCodeTextBox = new GTextBox("tbLCode", 400, 250, 300, 30, parent.color(255), parent.color(220), parent.color(220), parent.color(0), parent.color(50), false);
+        portTextBox = new GTextBox("tbPort", 400, 250, 300, 30, parent.color(240), parent.color(200), parent.color(255), parent.color(0), parent.color(50), true);
+        ipTextBox = new GTextBox("tbIP", 400, 200, 300, 30, parent.color(240), parent.color(200), parent.color(255), parent.color(0), parent.color(50), true);
+        lobbyCodeTextBox = new GTextBox("tbLCode", 400, 250, 300, 30, parent.color(240), parent.color(200), parent.color(255), parent.color(0), parent.color(50), false);
 
         connectButton = new GButton("btnConnect", 400, 350, 300, 40, "Connect", parent.color(200), parent.color(255), true, true);
         connectButton.setAction(this::connectToServer);
@@ -92,9 +92,9 @@ public class MainMenu extends PApplet {
         if (client != null) {
             try {
                 client.getWriter().println("CREATE");
-                String lobbyCode = "ABCDEF";
-                Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(lobbyCode), null);
-                serverMessage = "Game created. Lobby code copied to clipboard: " + lobbyCode;
+//                String lobbyCode = client.get;
+//                Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(lobbyCode), null);
+//                serverMessage = "Game created. Lobby code copied to clipboard: " + lobbyCode;
                 createGameButton.setActive(false);
                 joinGameButton.setActive(false);
                 lobbyCodeTextBox.setActive(false);

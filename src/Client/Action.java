@@ -32,8 +32,7 @@ public class Action {
         ASK_ROLL {
             @Override
             public void execute(Client client, Message message) {
-                if (debug){doRoll(client);} else {
-                client.getDraw().setButtonActive("btnRoll",true);}
+                client.getDraw().setButtonActive("btnRoll",true);
             }
         },
         ASK_BUY {
@@ -90,21 +89,21 @@ public class Action {
         }
         ;
 
-        public static void doServer(Client client) {
-            BufferedReader consoleReader = new BufferedReader(new InputStreamReader(System.in));
-            // Create or join a game
-            try {
-                PrintWriter writer = client.getWriter();
-                if (writer != null) {
-                    writer.println("ROLL");
-                }
-            } catch (Exception e) {
-                System.out.println("Error during roll: " + e.getMessage());
-            } finally {
-                rollTriggered = false;
-                setCurrentAction("");
-            }
-        }
+//        public static void doServer(Client client) {
+//            BufferedReader consoleReader = new BufferedReader(new InputStreamReader(System.in));
+//            // Create or join a game
+//            try {
+//                PrintWriter writer = client.getWriter();
+//                if (writer != null) {
+//                    writer.println("ROLL");
+//                }
+//            } catch (Exception e) {
+//                System.out.println("Error during roll: " + e.getMessage());
+//            } finally {
+//                rollTriggered = false;
+//                setCurrentAction("");
+//            }
+//        }
 
         public static synchronized void doRollGUI(Client client) {
             if (rollTriggered) {

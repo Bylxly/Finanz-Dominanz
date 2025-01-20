@@ -19,7 +19,7 @@ public class Client {
     private boolean isConnected;
     private GameState currentGameState;
     private boolean isTurn;
-    private Draw draw; // GUI handler
+    private Draw draw;
     private int money;
     private int figureID;
     private boolean gameOver;
@@ -89,7 +89,7 @@ public class Client {
             draw.updateGameState(updatedGame);
         }
 
-        printBoard();
+        //printBoard();
     }
 
     private void processMessage(Message message) {

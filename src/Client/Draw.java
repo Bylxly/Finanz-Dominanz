@@ -22,8 +22,11 @@ public class Draw extends PApplet {
 
     private ArrayList<GField> fields = new ArrayList<>();
     public static ArrayList<GButton> buttons = new ArrayList<>();
+    public static ArrayList<GTextBox> textboxes = new ArrayList<>();
     private GPanel infoPanel;
     private boolean isConnected = false;
+    private Field f;
+    private boolean firstTrenderC = false;
 
     public Draw(Client client) {
         this.client = client;
@@ -52,6 +55,7 @@ public class Draw extends PApplet {
             }
         } else {
             renderGame();
+            firstTrenderC = true;
         }
     }
 
@@ -67,9 +71,9 @@ public class Draw extends PApplet {
             drawFields();
             infoPanel.display();
             drawButtons();
+            drawTextBoxes();
             drawPlayers();
-            redraw();
-//            System.out.println(". Current buttons: " + buttons.stream().map(GButton::getName).toList());
+
         }
     }
     private void createInfoPanel() {
@@ -82,40 +86,42 @@ public class Draw extends PApplet {
         this.game = updatedGame;
 
         Field[] board = game.getBoard();
-        if (fields.size() != board.length) {
-            System.out.println("Mismatch between field count and board size.");
-            return;
-        }
 
         for (int i = 0; i < fields.size(); i++) {
             String fieldName = board[i].getUIName();
-            System.out.println("Updating field: " + fieldName);
             fields.get(i).setName(fieldName);
         }
-
+        printBoard();
         updateInfoPanel();
-        flush();
         redraw();
+        loop();
     }
 
     private void initializeGameComponents() {
-        System.out.println("Initializing game components...");
-        game = client.getGame();
+        boolean init = false;
+        if (!init) {
+            init = true;
+            System.out.println("Initializing game components...");
+            game = client.getGame();
 
-        if (game == null) {
-            System.out.println("Game object is null. Initialization aborted.");
-            return;
+            if (game == null) {
+                System.out.println("Game object is null. Initialization aborted.");
+                return;
+            }
+            initializeFields();
+            createButtons();
+            createInfoPanel();
+            createTextboxes();
+            System.out.println("Game components initialized.");
+            HandleAction.initialize(client, currentField, currentPlayer);
+            redraw();
+
         }
-        HandleAction.initialize(client, currentField, currentPlayer);
-        initializeFields();
-        createButtons();
-        createInfoPanel();
-        System.out.println("Game components initialized.");
-        redraw();
     }
 
 
     private void updateInfoPanel() {
+        if (infoPanel == null) initializeGameComponents();
         if (game != null) {
             currentPlayer = game.getActivePlayer().getName();
             currentField = game.getActivePlayer().getCurrentField().getName();
@@ -193,6 +199,10 @@ public class Draw extends PApplet {
         System.out.println("Buttons created: " + buttons.stream().map(GButton::getName).toList());
     }
 
+    private void createTextboxes(){
+        textboxes.add(new GTextBox("tbAuction", 950, 700, 200, 30, color(240), color(200), color(255), color(0), color(50), false));
+    }
+
     private void drawButtons() {
         for (GButton button : buttons) {
             button.draw(this);
@@ -209,6 +219,23 @@ public class Draw extends PApplet {
         }
         System.out.println("Button not found: " + name);
     }
+    private void drawTextBoxes() {
+        for (GTextBox tb : textboxes) {
+            tb.draw(this);
+        }
+        loop();
+    }
+
+    public void setTextboxesActive(String name, boolean active) {
+        for (GTextBox tb : textboxes) {
+            if (tb.getName().equals(name)) {
+                tb.setActive(active);
+                return;
+            }
+        }
+        System.out.println("Button not found: " + name);
+    }
+
 
 
     private void initializeFields() {
@@ -243,13 +270,11 @@ public class Draw extends PApplet {
             Player player = players.get(i);
             Field currentField = player.getCurrentField();
 
-            // Safeguard against null fields
             if (currentField == null) {
                 System.out.println("Player " + player.getName() + " is on a null field.");
                 continue;
             }
 
-            // Get the index of the field
             int fieldIndex = client.getFieldIndex(currentField);
             if (fieldIndex < 0 || fieldIndex >= fields.size()) {
                 System.out.println("Invalid field index for player " + player.getName() +
@@ -257,13 +282,11 @@ public class Draw extends PApplet {
                 continue;
             }
 
-            // Get the field and draw the player
             GField field = fields.get(fieldIndex);
             float x = field.getX();
             float y = field.getY();
 
-            // Offset players to avoid overlap
-            float offset = 10 * (i % 4); // Adjust offset logic as needed
+            float offset = 10 * (i % 4);
             fill(255);
             ellipse(x + cellSize / 2.0f + offset, y + cellSize / 2.0f + offset, 20, 20);
 
@@ -306,8 +329,6 @@ public class Draw extends PApplet {
         if (mainmenu.joinGameButton.isClicked(this)) {
             mainmenu.joinGameButton.performAction();
         }
-
-        // Handle button clicks
     }
 
     @Override
@@ -320,5 +341,54 @@ public class Draw extends PApplet {
             mainmenu.lobbyCodeTextBox.keyPressed(key, keyCode);
         }
     }
+    public void printBoard() {
+        System.out.println("Status:");
+        System.out.println("Spieleranzahl: " + game.getPlayers().size());
+        System.out.println("Felderanzahl: " + game.getBoard().length);
+        System.out.println("nächster Spieler: " + game.getActivePlayer().getName());
+        System.out.println("Augenanzahl vom letzten Wurf: " +
+                game.getRoll().getNumber1() + "+" + game.getRoll().getNumber2() + "=" + game.getRoll().getTotal());
 
+        System.out.println();
+
+        for (Player player : game.getPlayers()) {
+            System.out.println("Status von Spieler " + player.getName());
+            System.out.println("Geld: " + player.getMoney());
+            System.out.print("Felder im Besitz: ");
+            if (player.getProperties().isEmpty()) {
+                System.out.println("keine");
+            } else {
+                for (Property property : player.getProperties()) {
+                    if (player.getProperties().indexOf(property) == 0) {
+                        System.out.print(property.getName());
+                    } else {
+                        System.out.print(", " + property.getName());
+                    }
+                }
+                System.out.println();
+            }
+            System.out.println("Aktuelles Feld: " + player.getCurrentField().getName());
+            System.out.println();
+        }
+
+        System.out.println("Status vom Spielbrett");
+        for (Field f : game.getBoard()) {
+            int playerAmountOnField = 0;
+            for (Player p : game.getPlayers()) {
+                if (f == p.getCurrentField() && playerAmountOnField == 0) {
+                    System.out.print(f.getName() + " <-- " + p.getName());
+                    playerAmountOnField++;
+                } else if (f == p.getCurrentField()) {
+                    System.out.print(", " + p.getName());
+                    playerAmountOnField++;
+                }
+            }
+            if (playerAmountOnField == 0) {
+                System.out.print(f.getName());
+            }
+            System.out.println();
+        }
+
+        System.out.println();
+    }
 }
