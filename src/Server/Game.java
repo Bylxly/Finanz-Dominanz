@@ -72,6 +72,9 @@ public class Game extends Thread implements Serializable {
                 case 3:
                     board[i] = new Street("Turmstraße", 60, 50 , new int[]{4, 20, 60, 180, 320, 450}, 30, purple);
                     break;
+                case 4:
+                    board[i] = new Tax("Einkommensteuer", 200);
+                    break;
                 case 5:
                     board[i] = new TrainStation("Südbahnhof", 200, new int[]{25, 50, 100, 200}, 100);
                     break;
@@ -168,6 +171,9 @@ public class Game extends Thread implements Serializable {
                     break;
                 case 37:
                     board[i] = new Street("Parkstraße", 350, 200, new int[]{35, 175, 500, 1100, 1300, 1500}, 175, blue);
+                    break;
+                case 38:
+                    board[i] = new Tax("Zusatzsteuer", 100);
                     break;
                 case 39:
                     board[i] = new Street("Schlossallee", 400, 200, new int[]{50, 200, 600, 1400, 1700, 2000}, 200, blue);
