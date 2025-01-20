@@ -87,7 +87,7 @@ public class AuctionState extends Thread implements GameState {
     public void run() {
         broadcast(new Message(MsgType.DO_AUCTION, "Auction started! Place your bids."));
         synchronized (this) {
-            while (auctionRunning.get() && activePlayers.size() > 1) {
+            while (auctionRunning.get() && (activePlayers.size() > 1 || getCurrentBid() == 0)) {
                 try {
                     this.wait();
                 } catch (InterruptedException e) {
