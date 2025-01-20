@@ -65,7 +65,7 @@ public abstract class SelectState implements GameState {
             game.getActivePlayer().sendObject(message);
 
             // Spieler wählt ein Objekt aus.
-            int index = Integer.parseInt(game.getActivePlayer().recieveMessage());
+            int index = Integer.parseInt(game.getActivePlayer().receiveMessage());
 
             // If player selects quit
             if (index == -1) return null;

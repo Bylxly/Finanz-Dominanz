@@ -56,7 +56,7 @@ public class Player implements Serializable {
         }
     }
 
-    public String recieveMessage() {
+    public String receiveMessage() {
         try {
             if (bufferedReader != null) {
                 String message = bufferedReader.readLine();
@@ -90,7 +90,7 @@ public class Player implements Serializable {
                 MORTGAGE, TRADE, BANKRUPT""";
 
         sendObject(new Message(MsgType.ASK_NO_MONEY, message));
-        String response = recieveMessage();
+        String response = receiveMessage();
 
         switch (response) {
             case "MORTGAGE":

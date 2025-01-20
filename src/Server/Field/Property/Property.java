@@ -60,7 +60,7 @@ public abstract class Property extends Field {
                 + "or you can lift the mortgage and pay the mortgage value + 10 % interest fee. \n"
                 + "Choose an option: KEEP or LIFT"));
 
-        String selection = player.recieveMessage();
+        String selection = player.receiveMessage();
         if (selection.equals("KEEP")) {
             GameUtilities.payBank(player, (int) Math.round(getHypothek() * 0.1));
         }

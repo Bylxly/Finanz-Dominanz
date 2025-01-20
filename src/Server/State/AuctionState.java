@@ -45,7 +45,7 @@ public class AuctionState extends Thread implements GameState {
     private void handlePlayerBid(Player player) {
         try {
             while (auctionRunning.get() && contains(player)) {
-                String msg = player.recieveMessage();
+                String msg = player.receiveMessage();
                 if (msg.equalsIgnoreCase("QUIT_AUCTION")) {
                     if (player != highestBidder || activePlayers.size() == 1) {
                         removePlayerFromList(player);

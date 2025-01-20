@@ -1,10 +1,8 @@
 package Server.Field.Property;
 
 import Server.*;
-import Server.Field.AbInKnast;
 import Server.State.RollDiceState;
 
-import javax.swing.event.ChangeListener;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -41,7 +39,7 @@ public class Knast extends Property {
 
     public void executeKnast(Game game) {
         game.getActivePlayer().sendObject(new Message(MsgType.ASK_KNAST, null));
-        String msg = game.getActivePlayer().recieveMessage();
+        String msg = game.getActivePlayer().receiveMessage();
 
         if (Objects.equals(msg, "ROLL") && this.getRollAmount(game.getActivePlayer()) < 3) {
             game.askRoll(game.getActivePlayer());

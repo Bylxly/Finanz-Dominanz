@@ -56,6 +56,6 @@ public class BuyFieldState implements GameState {
     private boolean askClient() {
         game.getActivePlayer().sendObject(new Message(MsgType.ASK_BUY, currentProperty.getName()));
 
-        return Objects.equals(game.getActivePlayer().recieveMessage(), "BUY");
+        return Objects.equals(game.getActivePlayer().receiveMessage(), "BUY");
     }
 }
