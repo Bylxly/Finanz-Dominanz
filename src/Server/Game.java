@@ -182,7 +182,7 @@ public class Game extends Thread implements Serializable {
                     board[i] = new Street("Schlossallee", 400, 200, new int[]{50, 200, 600, 1400, 1700, 2000}, 200, blue);
                     break;
                 default:
-                    board[i] = new DummyField("Feld Nr." + i);
+                    board[i] = new FreeParking("Feld Nr." + i);
                     break;
             }
         }
