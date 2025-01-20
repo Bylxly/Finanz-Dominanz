@@ -5,6 +5,7 @@ import Server.*;
 public class Utility extends Property {
 
     private Game game;
+    private boolean canPay = true;
 
     public Utility(String name, int price, int hypothek, Game game) {
         super(name, price, null, hypothek);
@@ -25,6 +26,9 @@ public class Utility extends Property {
     public void payRentTimes(Player player, int times) {
         game.askRoll(player);
         int roll = game.getRoll().getTotal();
+        if (!GameUtilities.checkIfEnoughMoney(player, roll * times)) {
+            canPay = false;
+        }
         GameUtilities.transferMoney(player, getOwner(), roll * times);
     }
 
@@ -33,7 +37,7 @@ public class Utility extends Property {
         if (!hasHypothek()) {
             payRent(player);
         }
-        return true;
+        return canPay;
     }
 
     public int getAnzahlWerkeOwnedByOwner(Player player) {
@@ -44,4 +48,5 @@ public class Utility extends Property {
             }
         } return anzahlWerkeOwnedByPlayer;
     }
+
 }
