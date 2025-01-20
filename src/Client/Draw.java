@@ -27,6 +27,7 @@ public class Draw extends PApplet {
     private boolean isConnected = false;
     private Field f;
     private boolean firstTrenderC = false;
+    private boolean init = false;
 
     public Draw(Client client) {
         this.client = client;
@@ -73,7 +74,6 @@ public class Draw extends PApplet {
             drawButtons();
             drawTextBoxes();
             drawPlayers();
-
         }
     }
     private void createInfoPanel() {
@@ -94,20 +94,20 @@ public class Draw extends PApplet {
         printBoard();
         updateInfoPanel();
         redraw();
-        loop();
+        if (firstTrenderC) renderGame();
     }
 
     private void initializeGameComponents() {
-        boolean init = false;
+
+        System.out.println("Initializing game components...");
+        game = client.getGame();
+
+        if (game == null) {
+            System.out.println("Game object is null. Initialization aborted.");
+            return;
+        }
         if (!init) {
             init = true;
-            System.out.println("Initializing game components...");
-            game = client.getGame();
-
-            if (game == null) {
-                System.out.println("Game object is null. Initialization aborted.");
-                return;
-            }
             initializeFields();
             createButtons();
             createInfoPanel();
@@ -117,6 +117,7 @@ public class Draw extends PApplet {
             redraw();
 
         }
+
     }
 
 
