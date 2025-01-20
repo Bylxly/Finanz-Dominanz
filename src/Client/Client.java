@@ -85,6 +85,7 @@ public class Client {
         this.game = updatedGame;
 
         if (draw != null) {
+            if (updatedGame == null) System.out.println("Game is null!");
             draw.updateGameState(updatedGame);
         }
 
@@ -94,7 +95,6 @@ public class Client {
     private void processMessage(Message message) {
         MsgType type = message.messageType();
         String content = message.message();
-
         switch (type) {
             case INFO:
                 System.out.println("Server info: " + content);
@@ -123,11 +123,10 @@ public class Client {
         }
         Field[] board = game.getBoard();
         for (int i = 0; i < board.length; i++) {
-            if (board[i].equals(field)) {
+            if (board[i].getName().equals(field.getName())) {
                 return i;
             }
         }
-        // Field not found
         System.out.println("Field not found on the board: " + field.getName());
         return -1;
     }
