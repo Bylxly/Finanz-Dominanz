@@ -15,25 +15,29 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static Client.Client.debug;
+
 public class Action {
     private int actionId;
     private String description;
     public static boolean rollTriggered = false;
     private static String currentAction = "";
-    private static boolean debug = false;
 
     public enum ServerMessage {
-//        ASK_SERVER {
-//            @Override
-//            public void execute(Client client, Message message) {
-//                doServer(client, message);
-//            }
-//        },
+        ASK_SERVER {
+            @Override
+            public void execute(Client client, Message message) {
+                if (debug) {
+                    doServer(client);
+                }
+            }
+        },
         ASK_ROLL {
             @Override
             public void execute(Client client, Message message) {
+                if (debug) {doRoll(client);} else {
                 client.getDraw().setButtonActive("btnRoll",true);
-            }
+            }}
         },
         ASK_BUY {
 
@@ -51,8 +55,9 @@ public class Action {
         ASK_KNAST {
             @Override
             public void execute(Client client, Message message) {
+                if (debug) {
                 doKnast(client);
-            }
+            }}
         },
         ASK_NEXT {
             @Override
@@ -66,62 +71,106 @@ public class Action {
         ASK_NO_MONEY{
             @Override
             public void execute(Client client, Message message) {
+                if (debug) {
                 doNoMoney(client, message);
-            }
+            }}
         },
         SELECT_OBJECT {
             @Override
             public void execute(Client client, Message message) {
+                if (debug) {
                 doSelect(client);
-            }
+            }}
         },
         DO_AUCTION{
             @Override
             public void execute(Client client, Message message) {
+                if (debug) {
                 doAuction(client);
-            }
+            }}
         },
         SELECT_TRADE{
             @Override
             public void execute(Client client, Message message) {
+                if (debug) {
                 doSelectTrade(client, message);
-            }
+            }}
         },
         GET_ANSWER {
             @Override
             public void execute(Client client, Message message) {
+                if (debug) {
                 doGetAnswer(client, message);
-            }
+            }}
         },
         GET_ANSWER_KEEP_LIFT {
             @Override
             public void execute(Client client, Message message) {
+                if (debug) {
                 doGetAnswerKeepLift(client, message);
-            }
+            }}
         },
         CLOSE_CONNECTION {
             @Override
             public void execute(Client client, Message message) {
+                if (debug) {
                 doCloseConnection(client);
-            }
+            }}
         }
         ;
 
-//        public static void doServer(Client client) {
-//            BufferedReader consoleReader = new BufferedReader(new InputStreamReader(System.in));
-//            // Create or join a game
-//            try {
-//                PrintWriter writer = client.getWriter();
-//                if (writer != null) {
-//                    writer.println("ROLL");
-//                }
-//            } catch (Exception e) {
-//                System.out.println("Error during roll: " + e.getMessage());
-//            } finally {
-//                rollTriggered = false;
-//                setCurrentAction("");
-//            }
-//        }
+        public static void doServer(Client client) {
+            BufferedReader consoleReader = new BufferedReader(new InputStreamReader(System.in));
+            // Create or join a game
+            try {
+                String msgClient;
+                System.out.println("Would you like to CREATE or JOIN a game?");
+                msgClient = consoleReader.readLine();
+                if (msgClient.equalsIgnoreCase("CREATE")) {
+                    client.getWriter().println("CREATE");
+                }
+                //Temp for quick join
+                else if (msgClient.isEmpty()) {
+                    client.getWriter().println("CREATE_CUSTOM");
+                }
+                else if (msgClient.equalsIgnoreCase("JOIN") || msgClient.equalsIgnoreCase("j")) {
+                    System.out.print("Enter code of the game: ");
+                    msgClient = consoleReader.readLine();
+                    //Temp for quick join
+                    if (msgClient.isEmpty()) {
+                        client.getWriter().println("ABCDEF");
+                    }
+                    else {
+                        client.getWriter().println(msgClient);
+                    }
+                }
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+
+        public static void doRoll(Client client) {
+            try {
+                System.out.println("Press Enter to roll the dice...");
+                new BufferedReader(new InputStreamReader(System.in)).readLine();
+
+                Random random = new Random();
+                int[] rolls = new int[5];
+                System.out.print("Rolling");
+                System.out.println();
+
+                // Notify the server
+                PrintWriter writer = client.getWriter();
+                if (writer != null) {
+                    writer.println("ROLL");
+                }
+
+            } catch (IOException e) {
+                System.out.println("Error during dice roll: " + e.getMessage());
+            }
+        }
+
 
         public static synchronized void doRollGUI(Client client) {
             if (rollTriggered) {
