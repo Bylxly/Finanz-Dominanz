@@ -7,8 +7,15 @@ import Server.Game;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Zustand, der es einem Spieler ermöglicht, eine Hypothek auf einer Immobilie aufzunehmen.
+ */
 public class MortgageState extends SelectState {
 
+    /**
+     * Konstruktor für MortgageState.
+     * @param game Das aktuelle Spielobjekt.
+     */
     public MortgageState(Game game) {
         super(game);
     }

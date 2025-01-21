@@ -7,15 +7,22 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+/**
+ * Repräsentiert das Gefängnis (Knast) im Spiel.
+ * Spieler können hier festgehalten werden und müssen entweder würfeln oder zahlen, um freizukommen.
+ */
 public class Knast extends Property {
 
-    private Map<Player, Integer> rollAmount;
+    private Map<Player, Integer> rollAmount; // Speichert, wie oft ein Spieler bereits gewürfelt hat.
 
     public Knast(String name, int price, int[] rent, int hypothek) {
         super(name, price, rent, hypothek);
         rollAmount = new HashMap<>();
     }
 
+    /**
+     * Zieht Spieler die Miete ab, wenn er zahlen muss / will.
+     */
     @Override
     public void payRent(Player player) {
         if (player.isArrested()) {
@@ -31,12 +38,18 @@ public class Knast extends Property {
         }
     }
 
+    /**
+     * Startet die Aktion, wenn ein Spieler im Gefängnis ist.
+     */
     @Override
     public boolean startAction(Player player) {
         player.sendObject(new Message(MsgType.INFO, "Sie sind nur zu Besuch im Gefängnis!"));
         return true;
     }
 
+    /**
+     * Führt die Gefängnislogik aus: Spieler können würfeln oder zahlen, um freizukommen.
+     */
     public void executeKnast(Game game) {
         game.getActivePlayer().sendObject(new Message(MsgType.ASK_KNAST, null));
         String msg = game.getActivePlayer().receiveMessage();

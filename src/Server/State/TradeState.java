@@ -5,6 +5,10 @@ import Server.Field.Property.Property;
 
 import java.util.*;
 
+/**
+ * Zustand, der den Handel zwischen zwei Spielern ermöglicht.
+ * Spieler können Forderungen und Angebote austauschen und den Handel abschließen oder ablehnen.
+ */
 public class TradeState extends SelectState {
 
     private Player tradingPartner;
@@ -13,6 +17,11 @@ public class TradeState extends SelectState {
     private final Map<String, Object> demands;
     private final Map<String, Object> offers;
 
+
+    /**
+     * Konstruktor für TradeState.
+     * @param game Das aktuelle Spielobjekt.
+     */
     public TradeState(Game game) {
         super(game);
         check = true;
@@ -101,6 +110,10 @@ public class TradeState extends SelectState {
         dialog(tradingPartner);
     }
 
+    /**
+     * Dialoglogik für den Handel zwischen den Spielern.
+     * @param player Der Handelspartner.
+     */
     private void dialog(Player player) {
         do {
             List<String> message = buildTradeMessage(player);
@@ -112,6 +125,11 @@ public class TradeState extends SelectState {
         } while (check);
     }
 
+    /**
+     * Baut die Nachricht, die den aktuellen Stand des Handels darstellt.
+     * @param player Der Spieler, für den die Nachricht erstellt wird.
+     * @return Eine Liste von Strings, die die Nachricht repräsentieren.
+     */
     private List<String> buildTradeMessage(Player player) {
         List<String> message = new ArrayList<>();
         message.add("You're trading with " + tradingPartner.getName());
@@ -138,6 +156,11 @@ public class TradeState extends SelectState {
         return message;
     }
 
+    /**
+     * Holt die Liste der verfügbaren Immobilien eines Spielers.
+     * @param player Der Spieler, dessen Immobilien abgerufen werden.
+     * @return Eine Liste mit den Immobilien.
+     */
     private List<String> getAvailableProperties(Player player) {
         List<String> availableProperties = new ArrayList<>();
 
@@ -150,6 +173,11 @@ public class TradeState extends SelectState {
         return availableProperties;
     }
 
+    /**
+     * Gibt Informationen über das verfügbare Geld des Spielers zurück.
+     * @param player Der Spieler, dessen Geldinformationen abgerufen werden.
+     * @return Eine String-Nachricht mit den Geldinformationen.
+     */
     private String getMoneyInfo(Player player) {
         //Only shows money available to add to trade
         int moneyAddedToTrade = 0;
@@ -165,6 +193,11 @@ public class TradeState extends SelectState {
                 : "Their money: " + (player.getMoney() - moneyAddedToTrade));
     }
 
+    /**
+     * Baut die Nachricht, die die ausgewählten Forderungen oder Angebote enthält.
+     * @param message Die Nachrichtenliste.
+     * @param selectionMap Die Map mit den Forderungen oder Angeboten.
+     */
     private void buildSelectedMessage(List<String> message, Map<String, Object> selectionMap) {
         if (selectionMap.isEmpty()) {
             message.add("None");
@@ -178,6 +211,11 @@ public class TradeState extends SelectState {
         }
     }
 
+    /**
+     * Verarbeitet die Auswahl des Spielers und aktualisiert die Handelsdetails.
+     * @param selection Die Auswahl des Spielers.
+     * @param player Der Spieler, der die Auswahl getroffen hat.
+     */
     private void processSelection(String selection, Player player) {
         Map<String, Object> selectionMap = (player == requestingPlayer) ? offers : demands;
         char action = selection.charAt(0);
@@ -193,6 +231,12 @@ public class TradeState extends SelectState {
         }
     }
 
+    /**
+     * Fügt ein Objekt (Geld oder Immobilie) zum Handel hinzu.
+     * @param selection Die Auswahl des Objekts.
+     * @param player Der Spieler, der das Objekt hinzufügt.
+     * @param selectionMap Die Map mit den Handelsdetails.
+     */
     private void processAddAction(String selection, Player player, Map<String, Object> selectionMap) {
         char type = selection.charAt(1);
         if (type == 'M') {
@@ -214,6 +258,11 @@ public class TradeState extends SelectState {
         }
     }
 
+    /**
+     * Entfernt ein Objekt (Geld oder Immobilie) aus dem Handel.
+     * @param selection Die Auswahl des Objekts.
+     * @param selectionMap Die Map mit den Handelsdetails.
+     */
     private void processRemoveAction(String selection, Map<String, Object> selectionMap) {
         char type = selection.charAt(1);
         if (type == 'M') {
@@ -237,6 +286,9 @@ public class TradeState extends SelectState {
         }
     }
 
+    /**
+     * Beendet den Handel und überprüft die Akzeptanz durch den Handelspartner.
+     */
     private void finalizeTrade() {
         // Prevents empty trading requests
         if (demands.isEmpty() && offers.isEmpty()) {
@@ -274,11 +326,18 @@ public class TradeState extends SelectState {
         }
     }
 
+    /**
+     * Beendet den Handel ohne Abschluss.
+     */
     private void quitTrade() {
         requestingPlayer.sendObject(new Message(MsgType.INFO, "Trade ended"));
         check = false;
     }
 
+    /**
+     * Generiert die Nachricht, die den Handel beschreibt und dem Handelspartner angezeigt wird.
+     * @return Eine Liste von Strings, die die Handelsanfrage darstellen.
+     */
     private List<String> generateTradingRequest() {
         List<String> message = new ArrayList<>();
         message.add(requestingPlayer.getName() + " sent you a trade request");
@@ -305,6 +364,11 @@ public class TradeState extends SelectState {
         return message;
     }
 
+    /**
+     * Fügt Elemente (z. B. Immobilien oder Geld) einer Nachricht hinzu.
+     * @param message Die Nachrichtenliste, die ergänzt wird.
+     * @param items Die zu ergänzenden Elemente.
+     */
     private void addItemsToMessage(List<String> message, Collection<Object> items) {
         for (Object obj : items) {
             if (obj instanceof Property) {
@@ -315,17 +379,31 @@ public class TradeState extends SelectState {
         }
     }
 
+    /**
+     * Fügt die Grundstücke eines Spielers einer Nachricht hinzu.
+     * @param message Die Nachrichtenliste, die ergänzt wird.
+     * @param player Der Spieler, dessen Grundstücke angezeigt werden sollen.
+     */
     private void addPropertiesToMessage(List<String> message, Player player) {
         for (Property property : player.getProperties()) {
             message.add(property.getName());
         }
     }
 
+    /**
+     * Startet die Übertragung der Handelsobjekte zwischen den Spielern.
+     */
     private void startTransfer() {
         transferObjects(demands, tradingPartner, requestingPlayer);
         transferObjects(offers, requestingPlayer, tradingPartner);
     }
 
+    /**
+     * Führt die Übertragung von Objekten (Immobilien oder Geld) zwischen Spielern durch.
+     * @param objects Die Map mit den Objekten, die übertragen werden sollen.
+     * @param fromPlayer Der Spieler, von dem die Objekte stammen.
+     * @param toPlayer Der Spieler, der die Objekte erhält.
+     */
     private void transferObjects(Map<String, Object> objects, Player fromPlayer, Player toPlayer) {
         for (Object object : objects.values()) {
             if (object instanceof Property property) {

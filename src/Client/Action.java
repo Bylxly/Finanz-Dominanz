@@ -207,47 +207,46 @@ public class Action {
             try {
                 System.out.println("It's your turn. Choose an action: END, BUILD, SELL, MORTGAGE, LIFT, TRADE, BANKRUPT");
 
-                String input = consoleReader.readLine().trim();
-                String response = "";
-
-                //TODO: simplify
-
-                if (input.equals("build") || input.equals("2") || input.equals("BUILD")) {
-                    response = "BUILD";
-                } else if (input.equalsIgnoreCase("sell") || input.equals("3")) {
-                    response = "SELL";
-                } else if (input.equalsIgnoreCase("mortgage") || input.equals("4")) {
-                    response = "MORTGAGE";
-                } else if (input.equalsIgnoreCase("lift") || input.equals("5")) {
-                    response = "LIFT";
-                } else if (input.equalsIgnoreCase("trade") || input.equals("6")) {
-                    response = "TRADE";
-                } else if (input.equals("bankrupt") || input.equals("end me") || input.equals("7") || input.equals("BANKRUPT")) {
-                    response = "BANKRUPT";
-                } else if (input.equals("end") || input.equals("1") || input.equals("endturn") || input.equals("END") || input.isEmpty()) {
-                    response = "END";
-                }
+                String input = consoleReader.readLine().trim().toUpperCase();
                 PrintWriter writer = client.getWriter();
-                if ( writer!= null) {
 
-                switch (response) {
-                    case "BUILD":writer.println("BUILD");
-                        break;
-                    case "SELL":writer.println("SELL");
-                        break;
-                    case "MORTGAGE":writer.println("MORTGAGE");
-                        break;
-                    case "LIFT":writer.println("LIFT");
-                        break;
-                    case "TRADE":writer.println("TRADE");
-                        break;
-                    case "BANKRUPT":writer.println("BANKRUPT");
-                        break;
-                    case "END":writer.println("END");
-                        break;
-                    default:
-                        System.out.println("Invalid Input");
-                }}
+                if (writer != null) {
+                    switch (input) {
+                        case "1":
+                        case "END":
+                        case "ENDTURN":
+                        case "":
+                            writer.println("END");
+                            break;
+                        case "2":
+                        case "BUILD":
+                            writer.println("BUILD");
+                            break;
+                        case "3":
+                        case "SELL":
+                            writer.println("SELL");
+                            break;
+                        case "4":
+                        case "MORTGAGE":
+                            writer.println("MORTGAGE");
+                            break;
+                        case "5":
+                        case "LIFT":
+                            writer.println("LIFT");
+                            break;
+                        case "6":
+                        case "TRADE":
+                            writer.println("TRADE");
+                            break;
+                        case "7":
+                        case "BANKRUPT":
+                        case "END ME":
+                            writer.println("BANKRUPT");
+                            break;
+                        default:
+                            System.out.println("Invalid Input");
+                    }
+                }
             } catch (IOException e) {
                 System.out.println("Error during next action selection: " + e.getMessage());
             }
