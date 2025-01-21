@@ -29,27 +29,23 @@ public class GField {
         return applet.mouseX > x && applet.mouseX < x + width && applet.mouseY > y && applet.mouseY < y + height;
     }
 
-    // Checks if the GField is clicked
+    // Checks if GField is clicked
     public boolean isClicked(PApplet applet) {
         return isMouseOver(applet) && applet.mousePressed;
     }
 
-    // Getter for the label
     public String getName() {
         return label;
     }
 
-    // Setter for the label (new method)
     public void setName(String newName) {
         this.label = newName;
     }
 
-    // Getter for the x position
     public float getX() {
         return x;
     }
 
-    // Getter for the y position
     public float getY() {
         return y;
     }

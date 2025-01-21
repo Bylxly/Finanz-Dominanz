@@ -74,17 +74,16 @@ public class GPanel {
             this.italic = italic;
         }
 
-        // Sets the text of the text item
+        // Sets the text
         public void setText(String newText) {
             this.text = newText;
         }
 
-        // Returns the height of the text item based on its style
         public float getHeight() {
             return (bold ? 16 : 12) + (italic ? 2 : 0); // Adjust height based on style
         }
 
-        // Displays the text item at the specified position
+        // Displays the text item
         public void display(float x, float y) {
             parent.fill(color);
             parent.textSize(bold ? 16 : 12);
