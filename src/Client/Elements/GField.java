@@ -14,6 +14,7 @@ public class GField {
         this.label = label;
     }
 
+    // Draws the GField on the PApplet
     public void draw(PApplet applet) {
         applet.fill(isMouseOver(applet) ? applet.color(200, 255, 200) : applet.color(255, 223, 186));
         applet.stroke(0);
@@ -23,10 +24,12 @@ public class GField {
         applet.text(label, x + width / 2, y + height / 2);
     }
 
+    // Checks if the mouse is over the GField
     public boolean isMouseOver(PApplet applet) {
         return applet.mouseX > x && applet.mouseX < x + width && applet.mouseY > y && applet.mouseY < y + height;
     }
 
+    // Checks if the GField is clicked
     public boolean isClicked(PApplet applet) {
         return isMouseOver(applet) && applet.mousePressed;
     }
@@ -41,10 +44,12 @@ public class GField {
         this.label = newName;
     }
 
+    // Getter for the x position
     public float getX() {
         return x;
     }
 
+    // Getter for the y position
     public float getY() {
         return y;
     }

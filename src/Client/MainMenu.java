@@ -19,7 +19,7 @@ public class MainMenu extends PApplet {
     private Client client;
     private boolean connectedS = false;
 
-
+    // Konstruktor, der die Benutzeroberfläche initialisiert
     public MainMenu(PApplet parent) {
         this.parent = parent;
         this.client = new Client();
@@ -40,7 +40,7 @@ public class MainMenu extends PApplet {
         toggleConnectionUI(true);
     }
 
-
+    // Hauptzeichenschleife, die die Benutzeroberfläche aktualisiert
     public void draw() {
         parent.background(34, 139, 34);
 
@@ -52,8 +52,6 @@ public class MainMenu extends PApplet {
         portTextBox.draw(parent);
         lobbyCodeTextBox.draw(parent);
 
-
-
         connectButton.draw(parent);
         if (connectedS) {
             createGameButton.draw(parent);
@@ -62,17 +60,12 @@ public class MainMenu extends PApplet {
             parent.fill(255);
             parent.text("Server Message: " + serverMessage, parent.width / 2.0f, 600);
         }
-        //redraw();
     }
 
-
+    // Methode zum Verbinden mit dem Server
     private void connectToServer() {
         String portInput = portTextBox.getSavedText().isEmpty() ? "5555" : portTextBox.getSavedText();
         String ipAddress = ipTextBox.getSavedText().isEmpty() ? "localhost" : ipTextBox.getSavedText();
-
-//        String portInput = portTextBox.getSavedText();
-//        String ipAddress = ipTextBox.getSavedText();
-
 
         try {
             int port = Integer.parseInt(portInput);
@@ -88,23 +81,25 @@ public class MainMenu extends PApplet {
         }
     }
 
+    // Methode zum Erstellen eines Spiels
     private void createGame() {
         if (client != null) {
             try {
                 client.getWriter().println("CREATE");
-//                String lobbyCode = client.get;
-//                Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(lobbyCode), null);
-//                serverMessage = "Game created. Lobby code copied to clipboard: " + lobbyCode;
+                // String lobbyCode = client.get;
+                // Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(lobbyCode), null);
+                // serverMessage = "Game created. Lobby code copied to clipboard: " + lobbyCode;
                 createGameButton.setActive(false);
                 joinGameButton.setActive(false);
                 lobbyCodeTextBox.setActive(false);
                 isConnected = true;
-            }catch (Exception e) {
+            } catch (Exception e) {
                 serverMessage = "Game creation failed: " + e.getMessage();
             }
         }
     }
 
+    // Methode zum Beitreten zu einem Spiel
     private void joinGame() {
         if (client != null) {
             String lobbyCode = lobbyCodeTextBox.getSavedText();
@@ -118,6 +113,7 @@ public class MainMenu extends PApplet {
         }
     }
 
+    // Methode zum Aktivieren oder Deaktivieren der Benutzeroberfläche für die Verbindung
     private void toggleConnectionUI(boolean enable) {
         System.out.println("UI" + enable);
         portTextBox.setActive(enable);
@@ -127,13 +123,14 @@ public class MainMenu extends PApplet {
         createGameButton.setActive(!enable);
         joinGameButton.setActive(!enable);
         lobbyCodeTextBox.setActive(!enable);
-
     }
 
+    // Überprüft, ob die Verbindung abgeschlossen ist
     public boolean isConnectionComplete() {
         return isConnected;
     }
 
+    // Gibt den Client zurück
     public Client getClient() {
         return client;
     }

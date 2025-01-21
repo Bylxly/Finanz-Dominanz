@@ -1,4 +1,3 @@
-// HandleAction.java
 package Client;
 
 import Client.Action.ServerMessage;
@@ -14,6 +13,7 @@ public class HandleAction {
         currentPlayer = player;
     }
 
+    // Connects the Actions called by the Draw class with the Action class and handles the GUI logic order
     public enum ActionType {
         OPTION1 {
             @Override

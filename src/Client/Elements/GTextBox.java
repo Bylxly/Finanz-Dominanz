@@ -13,6 +13,7 @@ public class GTextBox {
     private boolean isActive;
     private boolean focused = false;
 
+    // Constructor to initialize the GTextBox with given parameters
     public GTextBox(String name, float x, float y, float width, float height, int backgroundColor, int focusBackgroundColor, int hoverBackgroundColor, int textColor, int borderColor, boolean isActive) {
         this.name = name;
         this.x = x;
@@ -27,6 +28,7 @@ public class GTextBox {
         this.isActive = isActive;
     }
 
+    // Method to draw the text box on the screen
     public void draw(PApplet applet) {
         if (!isActive) return;
         boolean isMouseOver = isMouseOver(applet);
@@ -46,6 +48,7 @@ public class GTextBox {
         applet.text(text, x + 5, y + height / 2);
     }
 
+    // Method to handle key presses
     public void keyPressed(char key, int keyCode) {
         if (focused) {
             if (keyCode == BACKSPACE && text.length() > 0) {
@@ -59,12 +62,12 @@ public class GTextBox {
         }
     }
 
-
-
+    // Method to check if the mouse is over the text box
     private boolean isMouseOver(PApplet applet) {
         return isActive && applet.mouseX > x && applet.mouseX < x + width && applet.mouseY > y && applet.mouseY < y + height;
     }
 
+    // Method to handle mouse press events
     public boolean mousePressed(PApplet applet) {
         if (isMouseOver(applet)) {
             setFocused(true);
@@ -75,34 +78,41 @@ public class GTextBox {
         }
     }
 
+    // Method to get the current text in the text box
     public String getText() {
         return text;
     }
 
+    // Method to set the text in the text box
     public void setText(String text) {
         this.text = text;
     }
 
+    // Method to set the active state of the text box
     public void setActive(boolean active) {
         this.isActive = active;
     }
 
+    // Method to check if the text box is focused
     public boolean isFocused() {
         return focused;
     }
 
+    // Method to set the focused state of the text box
     public void setFocused(boolean focused) {
         this.focused = focused;
     }
 
+    // Method to get the saved text
     public String getSavedText() {
         return savedText;
     }
 
+    // Method to save the current text
     private void saveText() {
         this.savedText = text;
     }
 
-    public Object getName() { return this.name;
-    }
+    // Method to get the name of the text box
+    public Object getName() { return this.name; }
 }

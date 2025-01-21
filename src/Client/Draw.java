@@ -33,17 +33,20 @@ public class Draw extends PApplet {
         this.client = client;
     }
 
+    // Initial window settings
     @Override
     public void settings() {
         size(1200, 800);
     }
 
+    // Setup window and initialize main menu
     @Override
     public void setup() {
         surface.setTitle("Monopoly Game");
         mainmenu = new MainMenu(this);
     }
 
+    // Main draw loop: Handles rendering based on connection state
     @Override
     public void draw() {
         if (!isConnected) {
@@ -60,8 +63,7 @@ public class Draw extends PApplet {
         }
     }
 
-
-
+    // Renders the game elements when connected
     private void renderGame() {
         background(34, 139, 34);
 
@@ -76,11 +78,14 @@ public class Draw extends PApplet {
             drawPlayers();
         }
     }
+
+    // Creates and initializes the information panel
     private void createInfoPanel() {
         infoPanel = new GPanel(this, 900, 20, 220, 500, color(255));
         updateInfoPanel();
     }
 
+    // Updates the game state and redraws relevant components
     public void updateGameState(Game updatedGame) {
         System.out.println("Updating game state...");
         this.game = updatedGame;
@@ -97,8 +102,8 @@ public class Draw extends PApplet {
         if (firstTrenderC) renderGame();
     }
 
+    // Initializes game components such as fields, buttons, and textboxes
     private void initializeGameComponents() {
-
         System.out.println("Initializing game components...");
         game = client.getGame();
 
@@ -115,12 +120,10 @@ public class Draw extends PApplet {
             System.out.println("Game components initialized.");
             HandleAction.initialize(client, currentField, currentPlayer);
             redraw();
-
         }
-
     }
 
-
+    // Updates the information panel with the latest game and player details
     private void updateInfoPanel() {
         if (infoPanel == null) initializeGameComponents();
         if (game != null) {
@@ -157,18 +160,21 @@ public class Draw extends PApplet {
         }
     }
 
+    // Displays a message on the screen
     private void displayMessage(String message) {
         fill(0);
         textAlign(CENTER, CENTER);
         text(message, width / 2.0f, height / 2.0f);
     }
 
+    // Draws all game fields on the board
     private void drawFields() {
         for (GField field : fields) {
             field.draw(this);
         }
     }
 
+    // Creates game buttons with specific actions
     private void createButtons() {
         buttons.add(new GButton("btnOption1", 950, 700, 200, 30, "Option 1", color(200), color(255), true, false)
                 .setAction(HandleAction.ActionType.OPTION1::action));
@@ -200,10 +206,12 @@ public class Draw extends PApplet {
         System.out.println("Buttons created: " + buttons.stream().map(GButton::getName).toList());
     }
 
-    private void createTextboxes(){
+    // Creates textboxes for user input
+    private void createTextboxes() {
         textboxes.add(new GTextBox("tbAuction", 950, 700, 200, 30, color(240), color(200), color(255), color(0), color(50), false));
     }
 
+    // Draws all buttons on the screen
     private void drawButtons() {
         for (GButton button : buttons) {
             button.draw(this);
@@ -211,6 +219,7 @@ public class Draw extends PApplet {
         loop();
     }
 
+    // Activates or deactivates a specific button by name
     public void setButtonActive(String name, boolean active) {
         for (GButton button : buttons) {
             if (button.getName().equals(name)) {
@@ -220,6 +229,8 @@ public class Draw extends PApplet {
         }
         System.out.println("Button not found: " + name);
     }
+
+    // Draws all textboxes on the screen
     private void drawTextBoxes() {
         for (GTextBox tb : textboxes) {
             tb.draw(this);
@@ -227,6 +238,7 @@ public class Draw extends PApplet {
         loop();
     }
 
+    // Activates or deactivates a specific textbox by name
     public void setTextboxesActive(String name, boolean active) {
         for (GTextBox tb : textboxes) {
             if (tb.getName().equals(name)) {
@@ -237,8 +249,7 @@ public class Draw extends PApplet {
         System.out.println("Button not found: " + name);
     }
 
-
-
+    // Initializes the game fields on the board
     private void initializeFields() {
         float boardSize = height;
         float cellSize = height / 11.0f;
@@ -262,6 +273,7 @@ public class Draw extends PApplet {
         }
     }
 
+    // Draws all players on their respective fields
     private void drawPlayers() {
         if (game == null || fields.isEmpty()) return;
 
@@ -297,7 +309,7 @@ public class Draw extends PApplet {
         }
     }
 
-
+    // Handles mouse input for buttons and textboxes
     @Override
     public void mousePressed() {
         for (GButton button : buttons) {
@@ -332,6 +344,7 @@ public class Draw extends PApplet {
         }
     }
 
+    // Handle keyboard input to TextBoxes
     @Override
     public void keyPressed() {
         if (mainmenu.ipTextBox.isFocused()) {
@@ -342,6 +355,8 @@ public class Draw extends PApplet {
             mainmenu.lobbyCodeTextBox.keyPressed(key, keyCode);
         }
     }
+
+    // Prints the current GameState within the Draw Class
     public void printBoard() {
         System.out.println("Status:");
         System.out.println("Spieleranzahl: " + game.getPlayers().size());

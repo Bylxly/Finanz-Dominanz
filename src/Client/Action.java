@@ -36,92 +36,89 @@ public class Action {
             @Override
             public void execute(Client client, Message message) {
                 if (debug) {doRoll(client);} else {
-                client.getDraw().setButtonActive("btnRoll",true);
-            }}
+                    client.getDraw().setButtonActive("btnRoll",true);
+                }}
         },
         ASK_BUY {
-
             @Override
             public void execute(Client client, Message message) {
                 if (message != null && message.message() != null && !message.message().isEmpty()) {
                     if (debug){ doBuy(client, message.message());}else{
-                    client.getDraw().setButtonActive("btnBuyY",true);
-                    client.getDraw().setButtonActive("btnBuyN",true);}
+                        client.getDraw().setButtonActive("btnBuyY",true);
+                        client.getDraw().setButtonActive("btnBuyN",true);}
                 }
             }
-
-
         },
         ASK_KNAST {
             @Override
             public void execute(Client client, Message message) {
                 if (debug) {
-                doKnast(client);
-            }}
+                    doKnast(client);
+                }}
         },
         ASK_NEXT {
             @Override
             public void execute(Client client, Message message) {
                 if (debug){ doNext(client);} else{
-                client.getDraw().setButtonActive("btnNextEND", true);
-                client.getDraw().setButtonActive("btnNextBUILD", true);
-                client.getDraw().setButtonActive("btnNextBANKRUPT", true);}
+                    client.getDraw().setButtonActive("btnNextEND", true);
+                    client.getDraw().setButtonActive("btnNextBUILD", true);
+                    client.getDraw().setButtonActive("btnNextBANKRUPT", true);}
             }
         },
         ASK_NO_MONEY{
             @Override
             public void execute(Client client, Message message) {
                 if (debug) {
-                doNoMoney(client, message);
-            }}
+                    doNoMoney(client, message);
+                }}
         },
         SELECT_OBJECT {
             @Override
             public void execute(Client client, Message message) {
                 if (debug) {
-                doSelect(client);
-            }}
+                    doSelect(client);
+                }}
         },
         DO_AUCTION{
             @Override
             public void execute(Client client, Message message) {
                 if (debug) {
-                doAuction(client);
-            }}
+                    doAuction(client);
+                }}
         },
         SELECT_TRADE{
             @Override
             public void execute(Client client, Message message) {
                 if (debug) {
-                doSelectTrade(client, message);
-            }}
+                    doSelectTrade(client, message);
+                }}
         },
         GET_ANSWER {
             @Override
             public void execute(Client client, Message message) {
                 if (debug) {
-                doGetAnswer(client, message);
-            }}
+                    doGetAnswer(client, message);
+                }}
         },
         GET_ANSWER_KEEP_LIFT {
             @Override
             public void execute(Client client, Message message) {
                 if (debug) {
-                doGetAnswerKeepLift(client, message);
-            }}
+                    doGetAnswerKeepLift(client, message);
+                }}
         },
         CLOSE_CONNECTION {
             @Override
             public void execute(Client client, Message message) {
                 if (debug) {
-                doCloseConnection(client);
-            }}
+                    doCloseConnection(client);
+                }}
         }
         ;
 
         public static void doServer(Client client) {
+            // Handle the server connection for creating or joining a game
             BufferedReader consoleReader = new BufferedReader(new InputStreamReader(System.in));
-            // Create or join a game
             try {
                 String msgClient;
                 System.out.println("Would you like to CREATE or JOIN a game?");
@@ -149,8 +146,8 @@ public class Action {
             }
         }
 
-
         public static void doRoll(Client client) {
+            // Handle the dice rolling process
             try {
                 System.out.println("Press Enter to roll the dice...");
                 new BufferedReader(new InputStreamReader(System.in)).readLine();
@@ -171,8 +168,8 @@ public class Action {
             }
         }
 
-
         public static synchronized void doRollGUI(Client client) {
+            // Handle the GUI dice rolling process
             if (rollTriggered) {
                 System.out.println("Roll already in progress.");
                 return;
@@ -194,6 +191,7 @@ public class Action {
         }
 
         public static synchronized void doBuyGUI(Client client, boolean buy) {
+            // Handle the GUI buy action
             setCurrentAction("BUY");
             try {
                 PrintWriter writer = client.getWriter();
@@ -210,6 +208,7 @@ public class Action {
         }
 
         public static void doBuy(Client client, String propertyName) {
+            // Handle the buying process for a property
             setCurrentAction("BUY");
             BufferedReader consoleReader = new BufferedReader(new InputStreamReader(System.in));
             try {
@@ -237,6 +236,7 @@ public class Action {
         }
 
         public static void doKnast(Client client) {
+            // Handle the situation when the user is in "Knast"
             BufferedReader consoleReader = new BufferedReader(new InputStreamReader(System.in));
             System.out.println("You are in the Knast!");
             try {
@@ -257,10 +257,10 @@ public class Action {
             } catch (IOException e) {
                 System.out.println("Error during knast decision: " + e.getMessage());
             }
-
         }
 
         public static void doNext(Client client) {
+            // Handle the selection of the next action
             setCurrentAction("END");
             BufferedReader consoleReader = new BufferedReader(new InputStreamReader(System.in));
             try {
@@ -289,24 +289,24 @@ public class Action {
                 PrintWriter writer = client.getWriter();
                 if ( writer!= null) {
 
-                switch (response) {
-                    case "BUILD":writer.println("BUILD");
-                        break;
-                    case "SELL":writer.println("SELL");
-                        break;
-                    case "MORTGAGE":writer.println("MORTGAGE");
-                        break;
-                    case "LIFT":writer.println("LIFT");
-                        break;
-                    case "TRADE":writer.println("TRADE");
-                        break;
-                    case "BANKRUPT":writer.println("BANKRUPT");
-                        break;
-                    case "END":writer.println("END");
-                        break;
-                    default:
-                        System.out.println("Invalid Input");
-                }}
+                    switch (response) {
+                        case "BUILD":writer.println("BUILD");
+                            break;
+                        case "SELL":writer.println("SELL");
+                            break;
+                        case "MORTGAGE":writer.println("MORTGAGE");
+                            break;
+                        case "LIFT":writer.println("LIFT");
+                            break;
+                        case "TRADE":writer.println("TRADE");
+                            break;
+                        case "BANKRUPT":writer.println("BANKRUPT");
+                            break;
+                        case "END":writer.println("END");
+                            break;
+                        default:
+                            System.out.println("Invalid Input");
+                    }}
             } catch (IOException e) {
                 System.out.println("Error during next action selection: " + e.getMessage());
             } finally {
@@ -315,6 +315,7 @@ public class Action {
         }
 
         public static void doNextGUI(Client client, String option) {
+            // Handle the GUI selection of the next action
             setCurrentAction("END");
             try {
                 PrintWriter writer = client.getWriter();
@@ -338,6 +339,7 @@ public class Action {
         }
 
         public static void doNoMoney(Client client, Message message) {
+            // Handle the situation when the user has no money
             BufferedReader consoleReader = new BufferedReader(new InputStreamReader(System.in));
             boolean includeQuit = message.message().toLowerCase().contains("quit");
 
@@ -367,6 +369,7 @@ public class Action {
         }
 
         public static void doSelect(Client client) {
+            // Handle the selection of an object by the user
             BufferedReader consoleReader = new BufferedReader(new InputStreamReader(System.in));
             ObjectInputStream objectReader = client.getObjectReader();
 
@@ -399,8 +402,8 @@ public class Action {
 
         }
 
-
         public static void doAuction(Client client) {
+            // Handle the auction process
             BufferedReader consoleReader = new BufferedReader(new InputStreamReader(System.in));
             PrintWriter writer = client.getWriter();
             System.out.println(client.getGame().getActivePlayer().getCurrentField().getName() + " will now be auctioned!");
@@ -478,6 +481,7 @@ public class Action {
         }
 
         public static void doSelectTrade(Client client, Message option) {
+            // Handle the selection of a trade option by the user
             BufferedReader consoleReader = new BufferedReader(new InputStreamReader(System.in));
             PrintWriter writer = client.getWriter();
             ObjectInputStream objectReader = client.getObjectReader();
@@ -494,7 +498,7 @@ public class Action {
                     System.out.println(s);
                 }
 
-                // Validierung der Benutzereingabe
+
                 String input;
                 do {
                     System.out.print("Enter your choice: ");
@@ -505,7 +509,6 @@ public class Action {
                     }
                 } while (option.message().equals("build") ? isValidInputBuild(input) : isValidInputRequest(input));
 
-                // Sende gültige Eingabe an den Server
                 writer.println(input);
 
             } catch (IOException | ClassNotFoundException e) {
@@ -514,16 +517,19 @@ public class Action {
         }
 
         private static boolean isValidInputBuild(String input) {
+            // Validate the input for building actions
             String regex = "a[B|M]\\d+|r[A|M]\\d+|[c|s|f|q]";
             return !input.matches(regex);
         }
 
         private static boolean isValidInputRequest(String input) {
+            // Validate the input for request actions
             String regex = "[yn]";
             return !input.matches(regex);
         }
 
         public static void doGetAnswer(Client client, Message message) {
+            // Get an answer from the user based on a message
             BufferedReader consoleReader = new BufferedReader(new InputStreamReader(System.in));
             PrintWriter writer = client.getWriter();
 
@@ -545,6 +551,7 @@ public class Action {
         }
 
         public static void doGetAnswerKeepLift(Client client, Message message) {
+            // Get an answer from the user regarding keeping or lifting the mortgage
             BufferedReader consoleReader = new BufferedReader(new InputStreamReader(System.in));
 
             System.out.println(message.message());

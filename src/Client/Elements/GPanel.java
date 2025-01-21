@@ -21,6 +21,7 @@ public class GPanel {
         this.textItems = new ArrayList<>();
     }
 
+    // Adds a new text item to the panel
     public void addText(String text, int color, boolean bold, boolean italic) {
         String[] lines = text.split("/n");
         for (String line : lines) {
@@ -29,22 +30,26 @@ public class GPanel {
         }
     }
 
+    // Removes a text item at the specified index
     public void removeText(int index) {
         if (index >= 0 && index < textItems.size()) {
             textItems.remove(index);
         }
     }
 
+    // Clears all text items from the panel
     public void clearText() {
         textItems.clear();
     }
 
+    // Updates the text of a text item at the specified index
     public void updateText(int index, String newText) {
         if (index >= 0 && index < textItems.size()) {
             textItems.get(index).setText(newText);
         }
     }
 
+    // Displays the panel and its text items
     public void display() {
         parent.fill(backgroundColor);
         parent.rect(x, y, width, height);
@@ -69,14 +74,17 @@ public class GPanel {
             this.italic = italic;
         }
 
+        // Sets the text of the text item
         public void setText(String newText) {
             this.text = newText;
         }
 
+        // Returns the height of the text item based on its style
         public float getHeight() {
             return (bold ? 16 : 12) + (italic ? 2 : 0); // Adjust height based on style
         }
 
+        // Displays the text item at the specified position
         public void display(float x, float y) {
             parent.fill(color);
             parent.textSize(bold ? 16 : 12);

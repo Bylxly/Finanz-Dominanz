@@ -27,9 +27,10 @@ public class Client {
     private PrintWriter writer;
     private ObjectInputStream objectReader;
     private Game game;
-    public static boolean debug = true;
+    public static boolean debug = false;
 
     public Client() {
+        // Konstruktor, der die grundlegenden Felder initialisiert.
         this.isConnected = false;
         this.isTurn = false;
         this.gameOver = false;
@@ -38,6 +39,7 @@ public class Client {
     }
 
     public void connectToServer(String ipAddress, int port) {
+        // Stellt eine Verbindung zu einem Server mit der angegebenen IP-Adresse und Port her.
         try {
             serverSocket = new Socket(ipAddress, port);
             this.isConnected = true;
@@ -54,6 +56,7 @@ public class Client {
     }
 
     public void connectToServerD() {
+        // Fordert den Benutzer auf, die Serverdetails (IP und Port) einzugeben und stellt die Verbindung her.
         try {
             BufferedReader consoleReader = new BufferedReader(new InputStreamReader(System.in));
             System.out.print("Enter server IP address: ");
@@ -80,12 +83,13 @@ public class Client {
         }
     }
 
-
     public boolean canRollThroughGUI() {
+        // Gibt zurück, ob der Spieler über die GUI würfeln kann (immer true).
         return true;
     }
 
     public void startGUI() {
+        // Startet die GUI in einem separaten Thread.
         Thread guiThread = new Thread(() -> {
             String[] processingArgs = {"Monopoly GUI"};
             PApplet.runSketch(processingArgs, draw);
@@ -94,6 +98,7 @@ public class Client {
     }
 
     private void readGameUpdates() {
+        // Liest Updates vom Server, darunter Game-Objekte und Nachrichten.
         try {
             while (isConnected && !serverSocket.isClosed()) {
                 Object obj = objectReader.readObject();
@@ -111,17 +116,17 @@ public class Client {
     }
 
     private synchronized void updateGame(Game updatedGame) {
+        // Aktualisiert das lokale Game-Objekt mit dem vom Server empfangenen.
         this.game = updatedGame;
 
         if (draw != null) {
             if (updatedGame == null) System.out.println("Game is null!");
             draw.updateGameState(updatedGame);
         }
-
-        //printBoard();
     }
 
     private void processMessage(Message message) {
+        // Verarbeitet eine vom Server empfangene Nachricht basierend auf ihrem Typ.
         MsgType type = message.messageType();
         String content = message.message();
         switch (type) {
@@ -140,12 +145,14 @@ public class Client {
     }
 
     public void sendAction(Action action) {
+        // Sendet eine Aktion an den Server.
         if (isConnected) {
             writer.println(action.toString());
         }
     }
 
     public int getFieldIndex(Field field) {
+        // Gibt den Index eines Spielfeldes auf dem Spielbrett zurück.
         if (game == null || game.getBoard() == null) {
             System.out.println("Game or board is not initialized.");
             return -1;
@@ -161,6 +168,7 @@ public class Client {
     }
 
     public void disconnect() {
+        // Trennt die Verbindung zum Server und schließt alle Streams.
         try {
             if (isConnected) {
                 if (reader != null) {
@@ -183,8 +191,8 @@ public class Client {
         }
     }
 
-    // For testing purposes: Console-based board representation
     public void printBoard() {
+        // Gibt den aktuellen Status des Spielbretts und der Spieler auf der Konsole aus.
         System.out.println("Status:");
         System.out.println("Spieleranzahl: " + game.getPlayers().size());
         System.out.println("Felderanzahl: " + game.getBoard().length);
