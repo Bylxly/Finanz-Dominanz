@@ -63,6 +63,12 @@ public class Action {
                 client.getDraw().setButtonActive("btnNextBANKRUPT", true);}
             }
         },
+        ASK_NO_MONEY{
+            @Override
+            public void execute(Client client, Message message) {
+                doNoMoney(client, message);
+            }
+        },
         SELECT_OBJECT {
             @Override
             public void execute(Client client, Message message) {
@@ -85,6 +91,18 @@ public class Action {
             @Override
             public void execute(Client client, Message message) {
                 doGetAnswer(client, message);
+            }
+        },
+        GET_ANSWER_KEEP_LIFT {
+            @Override
+            public void execute(Client client, Message message) {
+                doGetAnswerKeepLift(client, message);
+            }
+        },
+        CLOSE_CONNECTION {
+            @Override
+            public void execute(Client client, Message message) {
+                doCloseConnection(client);
             }
         }
         ;
@@ -197,7 +215,7 @@ public class Action {
             setCurrentAction("END");
             BufferedReader consoleReader = new BufferedReader(new InputStreamReader(System.in));
             try {
-                System.out.println("It's your turn. Choose an action: END, BUILD, MORTGAGE, LIFT, TRADE, BANKRUPT");
+                System.out.println("It's your turn. Choose an action: END, BUILD, SELL, MORTGAGE, LIFT, TRADE, BANKRUPT");
 
                 String input = consoleReader.readLine().trim();
                 String response = "";
@@ -206,13 +224,15 @@ public class Action {
 
                 if (input.equals("build") || input.equals("2") || input.equals("BUILD")) {
                     response = "BUILD";
-                } else if (input.equalsIgnoreCase("mortgage") || input.equals("3")) {
+                } else if (input.equalsIgnoreCase("sell") || input.equals("3")) {
+                    response = "SELL";
+                } else if (input.equalsIgnoreCase("mortgage") || input.equals("4")) {
                     response = "MORTGAGE";
-                } else if (input.equalsIgnoreCase("lift") || input.equals("4")) {
+                } else if (input.equalsIgnoreCase("lift") || input.equals("5")) {
                     response = "LIFT";
-                } else if (input.equalsIgnoreCase("trade") || input.equals("5")) {
+                } else if (input.equalsIgnoreCase("trade") || input.equals("6")) {
                     response = "TRADE";
-                } else if (input.equals("bankrupt") || input.equals("end me") || input.equals("6") || input.equals("BANKRUPT")) {
+                } else if (input.equals("bankrupt") || input.equals("end me") || input.equals("7") || input.equals("BANKRUPT")) {
                     response = "BANKRUPT";
                 } else if (input.equals("end") || input.equals("1") || input.equals("endturn") || input.equals("END") || input.isEmpty()) {
                     response = "END";
@@ -222,6 +242,8 @@ public class Action {
 
                 switch (response) {
                     case "BUILD":writer.println("BUILD");
+                        break;
+                    case "SELL":writer.println("SELL");
                         break;
                     case "MORTGAGE":writer.println("MORTGAGE");
                         break;
@@ -264,6 +286,34 @@ public class Action {
             } finally {
                 setCurrentAction("");
             }
+        }
+
+        public static void doNoMoney(Client client, Message message)  {
+            BufferedReader consoleReader = new BufferedReader(new InputStreamReader(System.in));
+
+            System.out.println(message.message());
+            do {
+                try {
+                    String selection = consoleReader.readLine();
+                    if (selection.equalsIgnoreCase("mortgage")) {
+                        client.getWriter().println("MORTGAGE");
+                        return;
+                    }
+                    else if (selection.equalsIgnoreCase("trade")) {
+                        client.getWriter().println("TRADE");
+                        return;
+                    }
+                    else if (selection.equalsIgnoreCase("bankrupt")) {
+                        client.getWriter().println("BANKRUPT");
+                        return;
+                    }
+                    else {
+                        System.out.println("Invalid selection. Please try again.");
+                    }
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            } while (true);
         }
 
         public static void doSelect(Client client) {
@@ -444,6 +494,35 @@ public class Action {
                 throw new RuntimeException(e);
             }
         }
+
+        public static void doGetAnswerKeepLift(Client client, Message message) {
+            BufferedReader consoleReader = new BufferedReader(new InputStreamReader(System.in));
+
+            System.out.println(message.message());
+            do {
+                try {
+                    String selection = consoleReader.readLine();
+                    if (selection.equalsIgnoreCase("keep")) {
+                        client.getWriter().println("KEEP");
+                        return;
+                    }
+                    else if (selection.equalsIgnoreCase("lift")) {
+                        client.getWriter().println("LIFT");
+                        return;
+                    }
+                    else {
+                        System.out.println("Invalid selection. Please try again.");
+                    }
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            } while (true);
+        }
+
+        public static void doCloseConnection(Client client) {
+            client.disconnect();
+        }
+
 
         public abstract void execute(Client client, Message message);
     }
