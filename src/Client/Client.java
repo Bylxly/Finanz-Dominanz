@@ -134,10 +134,18 @@ public class Client {
     public void disconnect() {
         try {
             if (isConnected) {
-                reader.close();
-                writer.close();
-                objectReader.close();
-                serverSocket.close();
+                if (reader != null) {
+                    reader.close();
+                }
+                if (writer != null) {
+                    writer.close();
+                }
+                if (objectReader != null) {
+                    objectReader.close();
+                }
+                if (serverSocket != null) {
+                    serverSocket.close();
+                }
                 isConnected = false;
                 System.out.println("Disconnected from the server.");
             }

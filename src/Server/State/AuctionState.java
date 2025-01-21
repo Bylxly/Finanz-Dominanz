@@ -45,7 +45,7 @@ public class AuctionState extends Thread implements GameState {
     private void handlePlayerBid(Player player) {
         try {
             while (auctionRunning.get() && contains(player)) {
-                String msg = player.recieveMessage();
+                String msg = player.receiveMessage();
                 if (msg.equalsIgnoreCase("QUIT_AUCTION")) {
                     if (player != highestBidder || activePlayers.size() == 1) {
                         removePlayerFromList(player);
@@ -62,6 +62,9 @@ public class AuctionState extends Thread implements GameState {
                                     currentBid = newBid;
                                     highestBidder = player;
                                     broadcast(new Message(MsgType.NEW_BID, String.valueOf(newBid)));
+                                    if (activePlayers.size() == 1) {
+                                        this.notifyAll();
+                                    }
                                 } else {
                                     player.sendObject(new Message(MsgType.INFO, "You don't have enough money."));
                                 }
@@ -84,7 +87,7 @@ public class AuctionState extends Thread implements GameState {
     public void run() {
         broadcast(new Message(MsgType.DO_AUCTION, "Auction started! Place your bids."));
         synchronized (this) {
-            while (auctionRunning.get() && activePlayers.size() > 1) {
+            while (auctionRunning.get() && (activePlayers.size() > 1 || getCurrentBid() == 0)) {
                 try {
                     this.wait();
                 } catch (InterruptedException e) {

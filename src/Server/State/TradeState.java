@@ -107,7 +107,7 @@ public class TradeState extends SelectState {
             requestingPlayer.sendObject(new Message(MsgType.SELECT_TRADE, "build"));
             requestingPlayer.sendObject(message);
 
-            String selection = requestingPlayer.recieveMessage();
+            String selection = requestingPlayer.receiveMessage();
             processSelection(selection, player);
         } while (check);
     }
@@ -246,7 +246,7 @@ public class TradeState extends SelectState {
 
         tradingPartner.sendObject(new Message(MsgType.SELECT_TRADE, "request"));
         tradingPartner.sendObject(generateTradingRequest());
-        String answer = tradingPartner.recieveMessage();
+        String answer = tradingPartner.receiveMessage();
 
         if (answer.equalsIgnoreCase("y")) {
             requestingPlayer.sendObject(
@@ -259,7 +259,7 @@ public class TradeState extends SelectState {
                     new Message(MsgType.INFO, tradingPartner.getName() + " rejected you trade request"));
             tradingPartner.sendObject(
                     new Message(MsgType.GET_ANSWER, "Do you want to make a counteroffer? (y/n)"));
-            answer = tradingPartner.recieveMessage();
+            answer = tradingPartner.receiveMessage();
             if (answer.equalsIgnoreCase("y")) {
                 demands.clear();
                 offers.clear();
@@ -331,7 +331,7 @@ public class TradeState extends SelectState {
             if (object instanceof Property property) {
                 GameUtilities.transferProperty(fromPlayer, toPlayer, property);
                 if (property.hasHypothek()) {
-                    game.askMortgage(toPlayer, property);
+                    property.askMortgage(toPlayer);
                 }
             } else if (object instanceof Integer amount) {
                 GameUtilities.transferMoney(fromPlayer, toPlayer, amount);

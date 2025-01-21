@@ -48,14 +48,14 @@ public abstract class SelectState implements GameState {
             List<String> message = new ArrayList<>();
             message.add(getSelectPropertyMessage());
 
-            Class<?> instaceOf = getInstanceOf(objectMap);
+            Class<?> instanceOf = getInstanceOf(objectMap);
 
-            if (Property.class.isAssignableFrom(instaceOf)) {
+            if (instanceOf == Property.class) {
                 for (Integer index : objectMap.keySet()) {
                     message.add(index + ": " + ((Property)objectMap.get(index)).getName() + generateObjectInfoMessage(index, objectMap));
                 }
             }
-            else if (Player.class.isAssignableFrom(instaceOf)) {
+            else if (instanceOf == Player.class) {
                 for (Integer index : objectMap.keySet()) {
                     message.add(index + ": " + ((Player)objectMap.get(index)).getName());
                 }
@@ -65,7 +65,7 @@ public abstract class SelectState implements GameState {
             game.getActivePlayer().sendObject(message);
 
             // Spieler wählt ein Objekt aus.
-            int index = Integer.parseInt(game.getActivePlayer().recieveMessage());
+            int index = Integer.parseInt(game.getActivePlayer().receiveMessage());
 
             // If player selects quit
             if (index == -1) return null;
@@ -75,14 +75,24 @@ public abstract class SelectState implements GameState {
     }
 
     public Class<?> getInstanceOf(Map<Integer, Object> objectMap) {
-        Class<?> instaceOf = objectMap.get(1).getClass();
+        Class<?> instanceOf;
+        if (Property.class.isAssignableFrom(objectMap.get(1).getClass())) {
+            instanceOf = Property.class;
+        }
+        else if (Player.class.isAssignableFrom(objectMap.get(1).getClass())) {
+            instanceOf = Player.class;
+        }
+        else {
+            return null;
+        }
+
         for (Object object : objectMap.values()) {
-            if (!object.getClass().equals(instaceOf)) {
-                instaceOf = null;
+            if (!instanceOf.isAssignableFrom(object.getClass())) {
+                instanceOf = null;
                 break;
             }
         }
-        return instaceOf;
+        return instanceOf;
     }
 
     public abstract String getNoSuitableObjectsMessage();

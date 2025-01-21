@@ -2,8 +2,8 @@ package Server.Field;
 
 import Server.Player;
 
-public class DummyField extends Field {
-    public DummyField(String name) {
+public class FreeParking extends Field {
+    public FreeParking(String name) {
         super(name);
     }
 

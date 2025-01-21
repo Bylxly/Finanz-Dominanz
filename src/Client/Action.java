@@ -288,8 +288,9 @@ public class Action {
             }
         }
 
-        public static void doNoMoney(Client client, Message message)  {
+        public static void doNoMoney(Client client, Message message) {
             BufferedReader consoleReader = new BufferedReader(new InputStreamReader(System.in));
+            boolean includeQuit = message.message().toLowerCase().contains("quit");
 
             System.out.println(message.message());
             do {
@@ -298,16 +299,16 @@ public class Action {
                     if (selection.equalsIgnoreCase("mortgage")) {
                         client.getWriter().println("MORTGAGE");
                         return;
-                    }
-                    else if (selection.equalsIgnoreCase("trade")) {
+                    } else if (selection.equalsIgnoreCase("trade")) {
                         client.getWriter().println("TRADE");
                         return;
-                    }
-                    else if (selection.equalsIgnoreCase("bankrupt")) {
+                    } else if (selection.equalsIgnoreCase("bankrupt")) {
                         client.getWriter().println("BANKRUPT");
                         return;
-                    }
-                    else {
+                    } else if (includeQuit && selection.equalsIgnoreCase("quit")) {
+                        client.getWriter().println("QUIT");
+                        return;
+                    } else {
                         System.out.println("Invalid selection. Please try again.");
                     }
                 } catch (IOException e) {
@@ -323,7 +324,6 @@ public class Action {
             try {
                 Object o = objectReader.readObject();
                 if (o instanceof List<?>) {
-                    //TODO: Check warning
                     List<String> message = (List<String>) o;
 
                     for (String s : message) {

@@ -24,6 +24,7 @@ public class Game extends Thread implements Serializable {
     private Player activePlayer;
     private Roll roll;
     private GameState currentGameState;
+    private Knast knast;
 
     public Game() {
         players = new ArrayList<Player>();
@@ -90,7 +91,8 @@ public class Game extends Thread implements Serializable {
                     board[i] = new Street("Poststraße", 120, 50, new int[]{8, 40, 100, 300, 450, 600}, 60, cyan);
                     break;
                 case 10:
-                    board[i] = new Knast("Knast", 1000, new int[]{50}, 500);
+                    knast = new Knast("Knast", 1000, new int[]{50}, 500);
+                    board[i] = knast;
                     break;
                 case 11:
                     board[i] = new Street("Seestraße", 140, 100, new int[]{10, 50, 150, 450, 625, 750}, 70, magenta);
@@ -118,6 +120,9 @@ public class Game extends Thread implements Serializable {
                     break;
                 case 19:
                     board[i] = new Street("Berliner Straße", 200, 100, new int[]{16, 80, 220, 600, 800, 1000}, 100, orange);
+                    break;
+                case 20:
+                    board[i] = new FreeParking("Frei Parken");
                     break;
                 case 21:
                     board[i] = new Street("Theaterstraße", 220, 150, new int[]{18, 90, 250, 700, 875, 1050}, 110, red);
@@ -177,14 +182,14 @@ public class Game extends Thread implements Serializable {
                     board[i] = new Street("Schlossallee", 400, 200, new int[]{50, 200, 600, 1400, 1700, 2000}, 200, blue);
                     break;
                 default:
-                    board[i] = new DummyField("Feld Nr." + i);
+                    board[i] = new FreeParking("Feld Nr." + i);
                     break;
             }
         }
     }
 
     public void makePlayer(String name, Socket client, ObjectOutputStream out, BufferedReader in) {
-        Player p = new Player(START_MONEY, name, client, out, in);
+        Player p = new Player(START_MONEY, name, this, client, out, in);
         players.add(p);
         if (activePlayer == null) {
             activePlayer = p;
@@ -196,7 +201,7 @@ public class Game extends Thread implements Serializable {
     public void askRoll(Player player) {
         boolean check;
         player.sendObject(new Message(MsgType.ASK_ROLL, null));
-        String msg = player.recieveMessage();
+        String msg = player.receiveMessage();
         check = Objects.equals(msg, "ROLL");
         if (!check){
             throw new RuntimeException("Reply not allowed");
@@ -283,7 +288,7 @@ public class Game extends Thread implements Serializable {
             getActivePlayer().removeProperty(property);
 
             if (property.hasHypothek()) {
-                askMortgage(player, property);
+                property.askMortgage(player);
             }
         }
         lastStepForPlayer();
@@ -293,22 +298,6 @@ public class Game extends Thread implements Serializable {
         players.remove(activePlayer);
         activePlayer.sendObject(new Message(MsgType.INFO, "You are bankrupt and lost the game!"));
         activePlayer.closeConnection();
-    }
-
-    public void askMortgage(Player player, Property property) {
-        //TODO: Player könnte 10 % nicht bezahlen können und muss selber eine Hypothek aufnehmen
-        player.sendObject(new Message(MsgType.GET_ANSWER_KEEP_LIFT, property.getName() + "is mortgaged.\n"
-                + "You can either keep the mortgage and pay 10 % of the mortgage value \n"
-                + "or you can lift the mortgage and pay the mortgage value + 10 % interest fee."
-                + "Choose an option: KEEP or LIFT"));
-
-        String selection = player.recieveMessage();
-        if (selection.equals("KEEP")) {
-            GameUtilities.payBank(player, (int) Math.round(property.getHypothek() * 0.1));
-        }
-        else if (selection.equals("LIFT")) {
-            property.redeemProperty();
-        }
     }
 
     public void startGame() {
@@ -356,7 +345,7 @@ public class Game extends Thread implements Serializable {
                 String msg;
                 do {
                     activePlayer.sendObject(new Message(MsgType.ASK_NEXT, null));
-                    msg = activePlayer.recieveMessage();
+                    msg = activePlayer.receiveMessage();
                     switch (msg) {
                         case "BUILD":
                             currentGameState = new BuildState(this);
@@ -367,7 +356,7 @@ public class Game extends Thread implements Serializable {
                             currentGameState.execute();
                             break;
                         case "MORTGAGE":
-                            currentGameState = new HypothekState(this);
+                            currentGameState = new MortgageState(this);
                             currentGameState.execute();
                             break;
                         case "LIFT":
@@ -418,7 +407,6 @@ public class Game extends Thread implements Serializable {
         printBoard();
     }
 
-
     public void printBoard() {
         for (Player player : players) {
             player.sendObject(this);
@@ -427,14 +415,10 @@ public class Game extends Thread implements Serializable {
 
     public void movePlayerToKnast(Player player) {
         player.setArrested(true);
-        ((Knast) getActivePlayer().getCurrentField()).addRollAmount(getActivePlayer(), 0);
-        getActivePlayer().sendObject(new Message(MsgType.INFO, "Du musst in den Knast gehen!"));
+        player.sendObject(new Message(MsgType.INFO, "Du musst in den Knast gehen!"));
 
-        for (Field f : board) {
-            if (f instanceof Knast) {
-                player.setCurrentField(f);
-            }
-        }
+        player.setCurrentField(knast);
+        knast.addRollAmount(player, 0);
     }
 
     private void wonGame() {
@@ -468,5 +452,9 @@ public class Game extends Thread implements Serializable {
 
     public int getBOARD_SIZE() {
         return BOARD_SIZE;
+    }
+
+    public Knast getKnast() {
+        return knast;
     }
 }

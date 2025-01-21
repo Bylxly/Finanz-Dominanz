@@ -7,22 +7,22 @@ import Server.Game;
 import java.util.HashMap;
 import java.util.Map;
 
-public class HypothekState extends SelectState {
+public class MortgageState extends SelectState {
 
-    public HypothekState(Game game) {
+    public MortgageState(Game game) {
         super(game);
     }
 
     @Override
     protected Map<Integer, Object> getEligibleObjects() {
         int mapIndex = 1;
-        Map<Integer, Object> mortageableProperties = new HashMap<>();
+        Map<Integer, Object> mortgageableProperties = new HashMap<>();
         for (Property property : game.getActivePlayer().getProperties()) {
             if (!property.hasHypothek() && (!(property instanceof Street) || ((Street) property).getHouses() == 0)) {
-                mortageableProperties.put(mapIndex++, property);
+                mortgageableProperties.put(mapIndex++, property);
             }
         }
-        return mortageableProperties;
+        return mortgageableProperties;
     }
 
     @Override

@@ -2,6 +2,8 @@ package Server.Field.Property;
 
 import Server.Field.Field;
 import Server.GameUtilities;
+import Server.Message;
+import Server.MsgType;
 import Server.Player;
 
 public abstract class Property extends Field {
@@ -49,6 +51,30 @@ public abstract class Property extends Field {
     public void mortgageProperty() {
         GameUtilities.receiveFromBank(owner, hypothek);
         this.hasHypothek = true;
+    }
+
+    public void askMortgage(Player player) {
+        player.sendObject(new Message(MsgType.GET_ANSWER_KEEP_LIFT, getName() + "is mortgaged.\n"
+                + "You can either keep the mortgage and pay 10 % of the mortgage value \n"
+                + "or you can lift the mortgage and pay the mortgage value + 10 % interest fee. \n"
+                + "Choose an option: KEEP or LIFT"));
+
+        String selection = player.receiveMessage();
+        if (selection.equals("KEEP")) {
+            GameUtilities.payBank(player, (int) Math.round(getHypothek() * 0.1));
+        }
+        else if (selection.equals("LIFT")) {
+            redeemProperty();
+        }
+    }
+
+    @Override
+    public String getName() {
+        String name = super.getName();
+        if (hasHypothek()) {
+            name += " ❌";
+        }
+        return name;
     }
 
     public int getPrice() {

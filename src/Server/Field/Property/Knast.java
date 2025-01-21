@@ -1,14 +1,11 @@
 package Server.Field.Property;
 
-import Server.Field.AbInKnast;
-import Server.GameUtilities;
-import Server.Message;
-import Server.MsgType;
-import Server.Player;
+import Server.*;
+import Server.State.RollDiceState;
 
-import javax.swing.event.ChangeListener;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class Knast extends Property {
 
@@ -38,6 +35,40 @@ public class Knast extends Property {
     public boolean startAction(Player player) {
         player.sendObject(new Message(MsgType.INFO, "Sie sind nur zu Besuch im Gefängnis!"));
         return true;
+    }
+
+    public void executeKnast(Game game) {
+        game.getActivePlayer().sendObject(new Message(MsgType.ASK_KNAST, null));
+        String msg = game.getActivePlayer().receiveMessage();
+
+        if (Objects.equals(msg, "ROLL") && this.getRollAmount(game.getActivePlayer()) < 3) {
+            game.askRoll(game.getActivePlayer());
+            this.incrementRollAmount(game.getActivePlayer());
+            if (game.getRoll().getPasch()) {
+                game.getActivePlayer().setArrested(false);
+                System.out.println("Pasch: " + game.getRoll().getPasch());
+            }
+            else {
+                game.getActivePlayer().sendObject(new Message(MsgType.INFO, "Du hast keinen Pasch gewürfelt"));
+                return;
+            }
+        }
+        else {
+            if (this.getRollAmount(game.getActivePlayer()) >= 3) {
+                game.getActivePlayer().sendObject(new Message(MsgType.INFO,
+                        "Sie haben bereits 3 mal gewürfelt und müssen jetzt zahlen"));
+            }
+            this.payRent(game.getActivePlayer());
+            game.getActivePlayer().setArrested(false);
+        }
+
+        this.removeRollAmount(game.getActivePlayer());
+        game.getActivePlayer().sendObject(new Message(MsgType.INFO, "Du bist wieder ein freier Mensch"));
+        // Roll after getting free
+        game.setCurrentGameState(new RollDiceState(game));
+        game.getCurrentGameState().execute();
+        game.movePlayer();
+        game.setBuildOrExecuteState();
     }
 
     public int getRollAmount(Player player) {
