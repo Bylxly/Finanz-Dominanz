@@ -18,7 +18,7 @@ public class SellState extends SelectState{
         int mapIndex = 1;
         Map<Integer, Object> sellableHouses = new HashMap<>();
         for (Property property : game.getActivePlayer().getProperties()) {
-            if (((Street) property).getHouses() != 0) {
+            if (property instanceof Street && ((Street) property).getHouses() != 0) {
                 sellableHouses.put(mapIndex++, property);
             }
         }
