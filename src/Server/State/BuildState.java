@@ -7,8 +7,15 @@ import Server.Game;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Zustand, der es einem Spieler ermöglicht, Häuser auf seinen Straßen zu bauen.
+ */
 public class BuildState extends SelectState {
 
+    /**
+     * Konstruktor für BuildState.
+     * @param game Das aktuelle Spielobjekt.
+     */
     public BuildState(Game game) {
         super(game);
     }

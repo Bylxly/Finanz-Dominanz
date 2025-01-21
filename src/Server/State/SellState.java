@@ -7,8 +7,15 @@ import Server.Game;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Zustand, der es einem Spieler ermöglicht, Häuser auf seinen Straßen zu verkaufen.
+ */
 public class SellState extends SelectState{
 
+    /**
+     * Konstruktor für SellState.
+     * @param game Das aktuelle Spielobjekt.
+     */
     public SellState(Game game) {
         super(game);
     }
@@ -18,7 +25,7 @@ public class SellState extends SelectState{
         int mapIndex = 1;
         Map<Integer, Object> sellableHouses = new HashMap<>();
         for (Property property : game.getActivePlayer().getProperties()) {
-            if (((Street) property).getHouses() != 0) {
+            if (property instanceof Street && ((Street) property).getHouses() != 0) {
                 sellableHouses.put(mapIndex++, property);
             }
         }

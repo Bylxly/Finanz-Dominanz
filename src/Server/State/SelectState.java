@@ -10,10 +10,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Abstrakte Klasse, die die Logik zum Auswählen eines Objekts für eine Aktion definiert.
+ * Konkrete Unterklassen implementieren spezifische Aktionen und Filterlogik.
+ */
 public abstract class SelectState implements GameState {
 
     protected final Game game;
 
+    /**
+     * Konstruktor für SelectState.
+     * @param game Das aktuelle Spielobjekt.
+     */
     public SelectState(Game game) {
         this.game = game;
     }
@@ -37,6 +45,10 @@ public abstract class SelectState implements GameState {
         }
     }
 
+    /**
+     * Ermöglicht dem Spieler, ein Objekt aus einer Liste von verfügbaren Objekten auszuwählen.
+     * @return Das ausgewählte Objekt oder null, wenn kein gültiges Objekt ausgewählt wurde.
+     */
     public Object selectObject() {
         Map<Integer, Object> objectMap = getEligibleObjects(); // Filterlogik wird von Unterklassen definiert.
 
@@ -74,6 +86,12 @@ public abstract class SelectState implements GameState {
         }
     }
 
+
+    /**
+     * Bestimmt den gemeinsamen Typ der Objekte in der Map.
+     * @param objectMap Map der verfügbaren Objekte.
+     * @return Der gemeinsame Typ der Objekte oder null, wenn kein Typ bestimmt werden kann.
+     */
     public Class<?> getInstanceOf(Map<Integer, Object> objectMap) {
         Class<?> instanceOf;
         if (Property.class.isAssignableFrom(objectMap.get(1).getClass())) {

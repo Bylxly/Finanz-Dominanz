@@ -40,6 +40,7 @@ public class Action {
                 }}
         },
         ASK_BUY {
+
             @Override
             public void execute(Client client, Message message) {
                 if (message != null && message.message() != null && !message.message().isEmpty()) {
@@ -48,6 +49,8 @@ public class Action {
                         client.getDraw().setButtonActive("btnBuyN",true);}
                 }
             }
+
+
         },
         ASK_KNAST {
             @Override
@@ -236,7 +239,6 @@ public class Action {
         }
 
         public static void doKnast(Client client) {
-            // Handle the situation when the user is in "Knast"
             BufferedReader consoleReader = new BufferedReader(new InputStreamReader(System.in));
             System.out.println("You are in the Knast!");
             try {
@@ -257,11 +259,10 @@ public class Action {
             } catch (IOException e) {
                 System.out.println("Error during knast decision: " + e.getMessage());
             }
+
         }
 
         public static void doNext(Client client) {
-            // Handle the selection of the next action
-            setCurrentAction("END");
             BufferedReader consoleReader = new BufferedReader(new InputStreamReader(System.in));
             try {
                 System.out.println("It's your turn. Choose an action: END, BUILD, SELL, MORTGAGE, LIFT, TRADE, BANKRUPT");
@@ -287,26 +288,44 @@ public class Action {
                     response = "END";
                 }
                 PrintWriter writer = client.getWriter();
-                if ( writer!= null) {
 
-                    switch (response) {
-                        case "BUILD":writer.println("BUILD");
+                if (writer != null) {
+                    switch (input) {
+                        case "1":
+                        case "END":
+                        case "ENDTURN":
+                        case "":
+                            writer.println("END");
                             break;
-                        case "SELL":writer.println("SELL");
+                        case "2":
+                        case "BUILD":
+                            writer.println("BUILD");
                             break;
-                        case "MORTGAGE":writer.println("MORTGAGE");
+                        case "3":
+                        case "SELL":
+                            writer.println("SELL");
                             break;
-                        case "LIFT":writer.println("LIFT");
+                        case "4":
+                        case "MORTGAGE":
+                            writer.println("MORTGAGE");
                             break;
-                        case "TRADE":writer.println("TRADE");
+                        case "5":
+                        case "LIFT":
+                            writer.println("LIFT");
                             break;
-                        case "BANKRUPT":writer.println("BANKRUPT");
+                        case "6":
+                        case "TRADE":
+                            writer.println("TRADE");
                             break;
-                        case "END":writer.println("END");
+                        case "7":
+                        case "BANKRUPT":
+                        case "END ME":
+                            writer.println("BANKRUPT");
                             break;
                         default:
                             System.out.println("Invalid Input");
-                    }}
+                    }
+                }
             } catch (IOException e) {
                 System.out.println("Error during next action selection: " + e.getMessage());
             } finally {

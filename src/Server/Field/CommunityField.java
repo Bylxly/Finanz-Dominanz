@@ -8,12 +8,23 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * Die Klasse CommunityField repräsentiert ein Gemeinschaftsfeld im Spiel.
+ * Wenn ein Spieler auf diesem Feld landet, zieht er eine Karte, die eine spezielle Aktion auslöst.
+ * Die Karten werden gemischt und nacheinander gezogen.
+ */
 public class CommunityField extends Field {
 
     private static final List<Card> cards = new ArrayList<>();
     private static final List<Card> drawnCards = new ArrayList<>();
     private final Game game;
 
+    /**
+     * Konstruktor für die Klasse CommunityField.
+     *
+     * @param name Der Name des Feldes.
+     * @param game Die Referenz auf das Spiel.
+     */
     public CommunityField(String name, Game game) {
         super(name);
         this.game = game;
@@ -40,6 +51,13 @@ public class CommunityField extends Field {
         shuffleCards();
     }
 
+    /**
+     * Führt die Aktion aus, wenn ein Spieler auf diesem Feld landet.
+     * Der Spieler zieht eine Karte und die entsprechende Aktion wird ausgeführt.
+     *
+     * @param player Der Spieler, der auf dem Feld landet.
+     * @return true, da die Aktion erfolgreich ausgeführt wurde.
+     */
     @Override
     public boolean startAction(Player player) {
         Card drawnCard = drawCard();
@@ -60,6 +78,12 @@ public class CommunityField extends Field {
         Collections.shuffle(cards);
     }
 
+    /**
+     * Zieht eine Karte aus dem Stapel.
+     * Wenn der Stapel leer ist, werden die gezogenen Karten zurückgelegt und gemischt.
+     *
+     * @return Die gezogene Karte.
+     */
     public Card drawCard() {
         if (cards.isEmpty()) {
             cards.addAll(drawnCards);

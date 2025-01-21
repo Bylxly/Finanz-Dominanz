@@ -12,18 +12,32 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Repräsentiert einen Spieler im Spiel.
+ * Verwaltet das Geld, die Eigenschaften und die Kommunikation mit dem Client.
+ */
 public class Player implements Serializable {
 
-    private int money;
-    private final String name;
-    private final Game game;
-    private Field currentField;
-    private List<Property> properties;
-    private boolean arrested;
-    private transient Socket client;
-    private transient ObjectOutputStream objectOutputStream;
-    private transient BufferedReader bufferedReader;
+    private int money; // Das Geld des Spielers.
+    private final String name; // Der Name des Spielers.
+    private final Game game; // Das Spiel, an dem der Spieler teilnimmt.
+    private Field currentField; // Das aktuelle Feld, auf dem der Spieler steht.
+    private List<Property> properties; // Die Grundstücke, die der Spieler besitzt.
+    private boolean arrested; // Gibt an, ob der Spieler im Gefängnis ist.
+    private transient Socket client; // Der Socket für die Client-Kommunikation.
+    private transient ObjectOutputStream objectOutputStream; // Der Output-Stream für die Kommunikation.
+    private transient BufferedReader bufferedReader; // Der Input-Stream für die Kommunikation.
 
+    /**
+     * Konstruktor für den Spieler.
+     *
+     * @param money              Das Startgeld des Spielers.
+     * @param name               Der Name des Spielers.
+     * @param game               Das Spiel, an dem der Spieler teilnimmt.
+     * @param client             Der Socket für die Client-Kommunikation.
+     * @param objectOutputStream Der Output-Stream für die Kommunikation.
+     * @param bufferedReader     Der Input-Stream für die Kommunikation.
+     */
     public Player(int money, String name, Game game, Socket client, ObjectOutputStream objectOutputStream, BufferedReader bufferedReader) {
         this.money = money;
         this.name = name;
@@ -34,6 +48,9 @@ public class Player implements Serializable {
         this.bufferedReader = bufferedReader;
     }
 
+    /**
+     * Sendet ein Objekt an den Client.
+     */
     public void sendObject(Object object) {
         try {
             if (objectOutputStream != null) {
@@ -56,6 +73,9 @@ public class Player implements Serializable {
         }
     }
 
+    /**
+     * Empfängt eine Nachricht vom Client.
+     */
     public String receiveMessage() {
         try {
             if (bufferedReader != null) {
@@ -69,6 +89,11 @@ public class Player implements Serializable {
         return null;
     }
 
+    /**
+     * Nimmt Geld vom Spieler.
+     *
+     * @param amount Der Betrag, der vom Spieler genommen wird.
+     */
     public void takeMoney(int amount) {
         while (amount > money) {
             showOptions(false);
@@ -76,6 +101,12 @@ public class Player implements Serializable {
         money -= amount;
     }
 
+    /**
+     * Zeigt Optionen an, wenn der Spieler nicht genug Geld hat.
+     *
+     * @param includeQuit Gibt an, ob die Option "QUIT" angezeigt werden soll.
+     * @return true, wenn der Spieler eine gültige Option gewählt hat, sonst false.
+     */
     public boolean showOptions(boolean includeQuit) {
         GameState lastState = game.getCurrentGameState();
 
@@ -123,10 +154,16 @@ public class Player implements Serializable {
         return false;
     }
 
+    /**
+     * Gibt dem Spieler Geld.
+     */
     public void giveMoney(int amount) {
         money += amount;
     }
 
+    /**
+     * Schließt die Verbindung zum Client.
+     */
     public void closeConnection() {
         sendObject(new Message(MsgType.CLOSE_CONNECTION, null));
         try {
