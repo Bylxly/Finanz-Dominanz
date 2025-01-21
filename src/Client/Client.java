@@ -27,7 +27,7 @@ public class Client {
     private PrintWriter writer;
     private ObjectInputStream objectReader;
     private Game game;
-    public static boolean debug = false;
+    public static boolean debug = true;
 
     public Client() {
         // Konstruktor, der die grundlegenden Felder initialisiert.
@@ -84,7 +84,6 @@ public class Client {
     }
 
     public boolean canRollThroughGUI() {
-        // Gibt zurück, ob der Spieler über die GUI würfeln kann (immer true).
         return true;
     }
 
