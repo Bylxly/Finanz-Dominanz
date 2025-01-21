@@ -11,12 +11,23 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * Die Klasse EventField repräsentiert ein Ereignisfeld im Spiel.
+ * Wenn ein Spieler auf diesem Feld landet, zieht er eine Karte, die eine spezielle Aktion auslöst.
+ * Die Karten werden gemischt und nacheinander gezogen.
+ */
 public class EventField extends Field {
 
     private static final List<Card> cards = new ArrayList<>();
     private static final List<Card> drawnCards = new ArrayList<>();
     private final Game game;
 
+    /**
+     * Konstruktor für die Klasse EventField.
+     *
+     * @param name Der Name des Feldes.
+     * @param game Die Referenz auf das Spiel.
+     */
     public EventField(String name, Game game) {
         super(name);
         this.game = game;
@@ -42,6 +53,13 @@ public class EventField extends Field {
         shuffleCards();
     }
 
+    /**
+     * Führt die Aktion aus, wenn ein Spieler auf diesem Feld landet.
+     * Der Spieler zieht eine Karte und die entsprechende Aktion wird ausgeführt.
+     *
+     * @param player Der Spieler, der auf dem Feld landet.
+     * @return true, da die Aktion erfolgreich ausgeführt wurde.
+     */
     @Override
     public boolean startAction(Player player) {
         Card drawnCard = drawCard();
