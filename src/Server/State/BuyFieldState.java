@@ -9,6 +9,9 @@ import Server.MsgType;
 
 import java.util.Objects;
 
+/**
+ * Repräsentiert den Zustand, in dem ein Spieler ein Feld kaufen kann.
+ */
 public class BuyFieldState implements GameState {
 
     private final Game game;
@@ -19,6 +22,9 @@ public class BuyFieldState implements GameState {
         this.currentProperty = (Property) game.getActivePlayer().getCurrentField();
     }
 
+    /**
+     * Führt die Kaufaktion aus
+     */
     @Override
     public void execute() {
         game.printBoard();
@@ -52,6 +58,9 @@ public class BuyFieldState implements GameState {
         }
     }
 
+    /**
+     * Fragt den Spieler, ob er das Feld kaufen möchte.
+     */
     private boolean askClient() {
         game.getActivePlayer().sendObject(new Message(MsgType.ASK_BUY, currentProperty.getName()));
 

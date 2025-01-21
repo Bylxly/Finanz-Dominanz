@@ -6,14 +6,26 @@ import Server.Message;
 import Server.MsgType;
 import Server.Player;
 
+/**
+ * Abstrakte Klasse, die ein Grundstück im Spiel repräsentiert.
+ * Enthält gemeinsame Funktionalitäten für Straßen, Bahnhöfe und Versorgungswerke.
+ */
 public abstract class Property extends Field {
 
-    private Player owner;
-    private final int price;
-    private final int[] rent;
-    private final int hypothek;
-    private boolean hasHypothek;
+    private Player owner; // Der Besitzer des Grundstücks.
+    private final int price; // Der Kaufpreis des Grundstücks.
+    private final int[] rent; // Die Miete, die basierend auf der Entwicklung des Grundstücks gezahlt wird.
+    private final int hypothek; // Der Hypothekenwert des Grundstücks.
+    private boolean hasHypothek; // Gibt an, ob das Grundstück hypothekarisch belastet ist.
 
+    /**
+     * Konstruktor für ein Grundstück.
+     *
+     * @param name     Der Name des Grundstücks.
+     * @param price    Der Kaufpreis des Grundstücks.
+     * @param rent     Die Mietstufen des Grundstücks.
+     * @param hypothek Der Hypothekenwert des Grundstücks.
+     */
     public Property(String name, int price, int[] rent, int hypothek) {
         super(name);
         owner = null;
@@ -23,6 +35,9 @@ public abstract class Property extends Field {
         this.hasHypothek = false;
     }
 
+    /**
+     * Kauft das Grundstück für einen Spieler.
+     */
     public void buy(Player player) {
         if (owner == null) {
             GameUtilities.payBank(player, price);
@@ -31,7 +46,12 @@ public abstract class Property extends Field {
         }
     }
 
-    // Buy for auctions
+    /**
+     * Kauft das Grundstück für einen Spieler während einer Auktion.
+     *
+     * @param player Der Spieler, der das Grundstück kauft.
+     * @param amount Der Betrag, den der Spieler bietet.
+     */
     public void buy(Player player, int amount) {
         if (owner == null) {
             GameUtilities.payBank(player, amount);
@@ -40,19 +60,31 @@ public abstract class Property extends Field {
         }
     }
 
+    /**
+     * Abstrakte Methode zur Berechnung der Miete.
+     */
     public abstract void payRent(Player player);
 
+    /**
+     * Löst die Hypothek auf dem Grundstück auf.
+     */
     public void redeemProperty() {
         // 10 % interest rate
         GameUtilities.payBank(owner, (int) Math.round((getHypothek() * 1.1)));
         this.hasHypothek = false;
     }
 
+    /**
+     * Belastet das Grundstück mit einer Hypothek.
+     */
     public void mortgageProperty() {
         GameUtilities.receiveFromBank(owner, hypothek);
         this.hasHypothek = true;
     }
 
+    /**
+     * Fragt den Spieler, ob er die Hypothek behalten oder lösen möchte.
+     */
     public void askMortgage(Player player) {
         player.sendObject(new Message(MsgType.GET_ANSWER_KEEP_LIFT, getName() + "is mortgaged.\n"
                 + "You can either keep the mortgage and pay 10 % of the mortgage value \n"

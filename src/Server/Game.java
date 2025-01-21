@@ -11,6 +11,11 @@ import java.net.Socket;
 import java.util.*;
 import java.util.List;
 
+/**
+ * Hauptklasse für die Spielverwaltung.
+ * Diese Klasse steuert das gesamte Spielgeschehen, einschließlich Spielerbewegungen, Zustandswechsel
+ * und Interaktionen zwischen Spielern und Spielfeldern.
+ */
 public class Game extends Thread implements Serializable {
 
     // Konstanten
@@ -35,6 +40,10 @@ public class Game extends Thread implements Serializable {
         currentGameState = null;
     }
 
+
+    /**
+     * Hauptmethode des Spiels. Wartet auf genügend Spieler und startet das Spiel.
+     */
     @Override
     public void run() {
         //TODO: LobbyState
@@ -48,6 +57,10 @@ public class Game extends Thread implements Serializable {
         }
     }
 
+
+    /**
+     * Erstellt das Spielbrett und initialisiert die Spielfelder.
+     */
     private void createBoard() {
         ColorGroup purple = new ColorGroup("purple", "\u001B[35m");
         ColorGroup cyan = new ColorGroup("Cyan", "\u001B[96m");
@@ -211,6 +224,9 @@ public class Game extends Thread implements Serializable {
         }
     }
 
+    /**
+     * Bewegt den aktiven Spieler basierend auf dem Würfelergebnis.
+     */
     public void movePlayer() {
             askRoll(activePlayer);
 
@@ -273,6 +289,9 @@ public class Game extends Thread implements Serializable {
         }
     }
 
+    /**
+     * Entfernt den Spieler aus dem Spiel, wenn er bankrott ist.
+     */
     public void declareBankruptcy() {
         for (Property property : activePlayer.getProperties()) {
             property.setOwner(null);
@@ -300,6 +319,9 @@ public class Game extends Thread implements Serializable {
         activePlayer.closeConnection();
     }
 
+    /**
+     * Startet das Spiel und führt die Spiellogik aus.
+     */
     public void startGame() {
         Map<Player, Integer> rolledResults = new HashMap<>();
 

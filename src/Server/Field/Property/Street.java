@@ -3,17 +3,31 @@ package Server.Field.Property;
 import Server.GameUtilities;
 import Server.Player;
 
+/**
+ * Repräsentiert eine Straße im Spiel.
+ * Eine Straße kann Häuser und Hotels haben, und die Miete hängt von der Anzahl der Häuser ab.
+ */
 public class Street extends Property {
 
-    private int houses;
-    private final ColorGroup colorGroup;
-    private int housePrice;
+    private int houses; // Die Anzahl der Häuser auf der Straße.
+    private final ColorGroup colorGroup; // Die Farbgruppe, zu der die Straße gehört.
+    private int housePrice; // Der Preis für den Kauf eines Hauses.
 
+    /**
+     * Konstruktor für eine Straße.
+     *
+     * @param name       Der Name der Straße.
+     * @param price      Der Kaufpreis der Straße.
+     * @param housePrice Der Preis für den Kauf eines Hauses.
+     * @param rent       Die Mietstufen der Straße.
+     * @param hypothek   Der Hypothekenwert der Straße.
+     * @param colorGroup Die Farbgruppe, zu der die Straße gehört.
+     */
     public Street(String name, int price, int housePrice, int[] rent, int hypothek, ColorGroup colorGroup) {
         super(name, price, rent, hypothek);
         this.housePrice = housePrice;
         this.colorGroup = colorGroup;
-        colorGroup.addStreet(this);
+        colorGroup.addStreet(this); // Fügt die Straße zur Farbgruppe hinzu.
     }
 
     @Override
@@ -28,6 +42,9 @@ public class Street extends Property {
         return true;
     }
 
+    /**
+     * Berechnet die Miete, die ein Spieler zahlen muss.
+     */
     @Override
     public void payRent(Player player) {
             if (getOwner() != null && getOwner() != player) {
@@ -35,6 +52,9 @@ public class Street extends Property {
             }
     }
 
+    /**
+     * Belastet die Straße mit einer Hypothek, wenn keine Häuser darauf stehen.
+     */
     @Override
     public void mortgageProperty() {
         if (getHouses() == 0) {
@@ -42,18 +62,24 @@ public class Street extends Property {
         }
     }
 
-    public void buyHouse(){
-        if(colorGroup.isComplete() && houses < 5){
-            if(GameUtilities.checkIfEnoughMoney(getOwner(), housePrice)){
+    /**
+     * Kauft ein Haus auf der Straße, wenn die Farbgruppe vollständig ist und der Spieler genug Geld hat.
+     */
+    public void buyHouse() {
+        if (colorGroup.isComplete() && houses < 5) {
+            if (GameUtilities.checkIfEnoughMoney(getOwner(), housePrice)) {
                 GameUtilities.payBank(getOwner(), housePrice);
                 houses++;
             }
         }
     }
 
-    public void sellHouse(){
-        if (houses > 0){
-            GameUtilities.receiveFromBank(getOwner(), (housePrice/2));
+    /**
+     * Verkauft ein Haus auf der Straße und gibt dem Spieler die Hälfte des Kaufpreises zurück.
+     */
+    public void sellHouse() {
+        if (houses > 0) {
+            GameUtilities.receiveFromBank(getOwner(), (housePrice / 2));
             houses--;
         }
     }
@@ -66,6 +92,9 @@ public class Street extends Property {
         return colorGroup;
     }
 
+    /**
+     * Gibt den Namen der Straße zurück, inklusive der Anzahl der Häuser.
+     */
     @Override
     public String getName() {
         StringBuilder name;

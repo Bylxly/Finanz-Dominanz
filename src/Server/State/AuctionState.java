@@ -7,14 +7,22 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+/**
+ * Der Zustand, der eine Auktion für ein Grundstück im Spiel verwaltet.
+ * Die Spieler können Gebote abgeben, und der Höchstbietende erhält das Grundstück.
+ */
 public class AuctionState extends Thread implements GameState {
 
     private final Game game;
-    private List<Player> activePlayers;
-    private Player highestBidder;
-    private volatile AtomicBoolean auctionRunning;
-    private int currentBid;
+    private List<Player> activePlayers; // Liste der Spieler, die an der Auktion teilnehmen
+    private Player highestBidder; // Spieler mit dem höchsten Gebot
+    private volatile AtomicBoolean auctionRunning; // Gibt an, ob die Auktion noch läuft
+    private int currentBid; // Aktuelles Höchstgebot
 
+    /**
+     * Konstruktor für AuctionState.
+     * @param game Das aktuelle Spielobjekt.
+     */
     public AuctionState(Game game) {
         this.game = game;
         this.auctionRunning = new AtomicBoolean(true);
@@ -36,12 +44,19 @@ public class AuctionState extends Thread implements GameState {
 
     }
 
+    /**
+     * Sendet eine Nachricht an alle aktiven Spieler.
+     */
     public void broadcast(Message message) {
         for (Player player : activePlayers) {
             player.sendObject(message);
         }
     }
 
+    /**
+     * Behandelt die Gebote eines Spielers während der Auktion.
+     * @param player Der Spieler, der ein Gebot abgeben möchte.
+     */
     private void handlePlayerBid(Player player) {
         try {
             while (auctionRunning.get() && contains(player)) {
@@ -99,6 +114,9 @@ public class AuctionState extends Thread implements GameState {
         endAuction();
     }
 
+    /**
+     * Beendet die Auktion und vergibt das Spielfeld an den Höchstbietenden.
+     */
     private void endAuction() {
         auctionRunning.set(false);
         if (highestBidder != null && activePlayers.contains(highestBidder)) {

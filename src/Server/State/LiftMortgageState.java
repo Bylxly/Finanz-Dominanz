@@ -6,7 +6,14 @@ import Server.Game;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Zustand, der es einem Spieler ermöglicht, eine Hypothek auf einem Eigentum aufzuheben.
+ */
 public class LiftMortgageState extends SelectState{
+    /**
+     * Konstruktor für LiftMortgageState.
+     * @param game Das aktuelle Spielobjekt.
+     */
     public LiftMortgageState(Game game) {
         super(game);
     }
