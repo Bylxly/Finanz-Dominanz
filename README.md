@@ -12,4 +12,4 @@ In dem Ordner Server, die Server.java Datei.
 #
 
 ## Benutzte Libraries
-Processing
+Processing https://processing.org/ LICENSE: GNU GPL License
